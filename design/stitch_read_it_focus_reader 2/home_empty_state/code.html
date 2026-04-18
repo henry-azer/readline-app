@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#31302e",
+                    "primary-fixed-dim": "#8ad3d7",
+                    "on-tertiary-fixed-variant": "#604100",
+                    "on-primary-fixed-variant": "#004f53",
+                    "on-secondary-fixed-variant": "#852300",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#bec8c9",
+                    "secondary": "#ac3509",
+                    "on-secondary": "#ffffff",
+                    "primary": "#00464a",
+                    "tertiary": "#563a00",
+                    "tertiary-container": "#744f00",
+                    "on-background": "#1c1c1a",
+                    "on-surface-variant": "#3f4949",
+                    "secondary-container": "#fe6f42",
+                    "tertiary-fixed-dim": "#ffba38",
+                    "inverse-primary": "#8ad3d7",
+                    "on-primary-container": "#8fd8dc",
+                    "surface-container-high": "#eae8e4",
+                    "surface-bright": "#fcf9f5",
+                    "secondary-fixed": "#ffdbd0",
+                    "on-primary-fixed": "#002021",
+                    "surface-dim": "#dcdad6",
+                    "surface": "#fcf9f5",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#1c1c1a",
+                    "surface-variant": "#e5e2de",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#006064",
+                    "primary-fixed": "#a6eff3",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#f3f0ec",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#14696d",
+                    "background": "#fcf9f5",
+                    "surface-container-low": "#f6f3ef",
+                    "surface-container-highest": "#e5e2de",
+                    "surface-container": "#f0ede9",
+                    "tertiary-fixed": "#ffdeac",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed-dim": "#ffb59f",
+                    "on-tertiary-fixed": "#281900",
+                    "on-secondary-fixed": "#3a0a00",
+                    "on-tertiary-container": "#ffc155",
+                    "on-secondary-container": "#631800",
+                    "outline": "#6f7979"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader", "serif"],
+                    "body": ["Newsreader", "serif"],
+                    "label": ["Inter", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .serif-italic { font-style: italic; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-tertiary-fixed selection:text-on-tertiary-fixed min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-[#fcf9f5]/80 dark:bg-slate-950/80 backdrop-blur-xl bg-gradient-to-b from-[#fcf9f5] to-transparent">
+<div class="flex items-center gap-4">
+<button class="hover:bg-[#f6f3ef] dark:hover:bg-slate-800 transition-colors p-2 rounded-full Active: scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-[#00464a] dark:text-cyan-400">menu</span>
+</button>
+<h1 class="font-newsreader font-bold text-[#00464a] dark:text-cyan-500 italic tracking-tight text-2xl">Read-It</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="hover:bg-[#f6f3ef] dark:hover:bg-slate-800 transition-colors p-2 rounded-full Active: scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-[#00464a] dark:text-cyan-400">analytics</span>
+</button>
+<button class="hover:bg-[#f6f3ef] dark:hover:bg-slate-800 transition-colors p-2 rounded-full Active: scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-[#00464a] dark:text-cyan-400">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col px-6 max-w-4xl mx-auto w-full pb-32">
+<!-- Stats Ribbon -->
+<section class="mt-4 mb-12">
+<div class="bg-surface-container-low rounded-xl px-8 py-4 flex justify-between items-center overflow-hidden">
+<div class="flex flex-col items-center">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Documents</span>
+<span class="font-headline text-xl font-semibold text-primary">0</span>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/30"></div>
+<div class="flex flex-col items-center">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Speed</span>
+<span class="font-headline text-xl font-semibold text-primary">---</span>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/30"></div>
+<div class="flex flex-col items-center">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Words</span>
+<span class="font-headline text-xl font-semibold text-primary">0</span>
+</div>
+</div>
+</section>
+<!-- Reading Area (Hero Zone) -->
+<section class="flex flex-col items-center justify-center text-center flex-grow py-8">
+<div class="relative w-full max-w-md aspect-[4/3] mb-12 flex items-center justify-center">
+<div class="absolute inset-0 bg-primary/5 rounded-[3rem] rotate-3 blur-2xl"></div>
+<div class="absolute inset-0 bg-tertiary-container/5 rounded-[3rem] -rotate-3 blur-2xl"></div>
+<div class="relative z-10 w-full h-full flex items-center justify-center">
+<img alt="Empty reading state" class="w-4/5 h-4/5 object-contain mix-blend-multiply opacity-80" data-alt="Minimalist abstract illustration of an open book with flowing artistic lines and soft neutral colors on a warm off-white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARohdpQ-YSm4nsEaHcOKcrMXaJrcF4RCB2CiMvOqJ8hYQe0jCJJ07OGwCs2-Y4FnIlpi0joUGqnHTo1rkoXXIMJBaVfrXuSFGvqPqhhcbaG-7s6lTTJChYC7Ci_ZU8KVdhX7ssRlf1089azF1iaPwwGtQKvO8W-r8v4QlYCmK24vrc4-fGR8S14aa9i5LPS5VVmL0D5PDFqBFg2hn7Y3jpnK-FZrRkv6YQgwZa6-2cNgCoZ6P9pmeRI1qfJF6dnZNw8DsLFg4Fb2w"/>
+<!-- Decorative Floating Elements -->
+<div class="absolute top-1/4 right-0 w-12 h-12 bg-secondary-fixed rounded-full blur-xl opacity-40"></div>
+<div class="absolute bottom-1/4 left-0 w-16 h-16 bg-primary-fixed-dim rounded-full blur-xl opacity-30"></div>
+</div>
+</div>
+<div class="space-y-4 max-w-xs mx-auto">
+<h2 class="font-headline text-4xl font-semibold text-on-background tracking-tight">No PDF loaded</h2>
+<p class="font-body text-lg text-on-surface-variant leading-relaxed">Import a PDF to start reading and build your digital library.</p>
+</div>
+<div class="mt-12">
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-10 py-4 rounded-xl flex items-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="font-label text-sm font-semibold uppercase tracking-wider">Import PDF</span>
+</button>
+</div>
+</section>
+<!-- Contextual Recommendation / Empty Library Hint -->
+<section class="mt-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl flex items-center gap-6 border-l-4 border-tertiary-fixed-dim">
+<div class="bg-tertiary-fixed-dim/20 p-3 rounded-full">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div>
+<h3 class="font-headline text-lg font-semibold text-on-surface">Reading Tip</h3>
+<p class="font-body text-on-surface-variant text-sm">Organize your reading with tags once you've uploaded your first document.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#fcf9f5]/80 dark:bg-slate-950/80 backdrop-blur-xl rounded-t-[1.5rem] shadow-[0_-4px_32px_rgba(28,28,26,0.06)]">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-[#006064]/10 dark:bg-cyan-900/30 text-[#00464a] dark:text-cyan-300 rounded-xl px-4 py-1.5 Active: scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-inter text-[10px] font-medium uppercase tracking-widest mt-1">Home</span>
+</a>
+<!-- Library -->
+<a class="flex flex-col items-center justify-center text-[#1c1c1a]/50 dark:text-slate-400 px-4 py-1.5 hover:bg-[#f6f3ef] dark:hover:bg-slate-800 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">local_library</span>
+<span class="font-inter text-[10px] font-medium uppercase tracking-widest mt-1">Library</span>
+</a>
+<!-- Vocab -->
+<a class="flex flex-col items-center justify-center text-[#1c1c1a]/50 dark:text-slate-400 px-4 py-1.5 hover:bg-[#f6f3ef] dark:hover:bg-slate-800 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-inter text-[10px] font-medium uppercase tracking-widest mt-1">Vocab</span>
+</a>
+<!-- Analytics -->
+<a class="flex flex-col items-center justify-center text-[#1c1c1a]/50 dark:text-slate-400 px-4 py-1.5 hover:bg-[#f6f3ef] dark:hover:bg-slate-800 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-inter text-[10px] font-medium uppercase tracking-widest mt-1">Analytics</span>
+</a>
+</nav>
+</body></html>
