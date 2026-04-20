@@ -20,6 +20,7 @@ import 'package:read_it/presentation/home/viewmodels/home_viewmodel.dart';
 import 'package:read_it/presentation/home/widgets/active_state.dart';
 import 'package:read_it/presentation/home/widgets/empty_state.dart';
 import 'package:read_it/presentation/home/widgets/stats_bar.dart';
+import 'package:read_it/presentation/widgets/brand_mark.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,10 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: bgColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu_rounded, color: onSurface),
-          onPressed: () {},
-        ),
+        leading: const BrandMark(),
+        leadingWidth: 100,
         title: Text(
           AppStrings.homeTitle.tr,
           style: AppTypography.titleLarge.copyWith(color: onSurface),
