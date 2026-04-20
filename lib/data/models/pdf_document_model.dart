@@ -2,88 +2,108 @@ class PdfDocumentModel {
   final String id;
   final String title;
   final String filePath;
-  final int pageCount;
-  final int wordCount;
-  final DateTime createdAt;
-  final DateTime? lastRead;
+  final String fileName;
+  final int totalPages;
+  final int currentPage;
+  final int totalWords;
+  final int wordsRead;
+  final double complexityScore;
+  final String complexityLevel;
+  final String extractedText;
+  final String readingStatus;
+  final DateTime importedAt;
+  final DateTime? lastReadAt;
+  final String? thumbnailPath;
 
   const PdfDocumentModel({
     required this.id,
     required this.title,
     required this.filePath,
-    required this.pageCount,
-    required this.wordCount,
-    required this.createdAt,
-    this.lastRead,
+    required this.fileName,
+    this.totalPages = 0,
+    this.currentPage = 0,
+    this.totalWords = 0,
+    this.wordsRead = 0,
+    this.complexityScore = 0.0,
+    this.complexityLevel = 'beginner',
+    this.extractedText = '',
+    this.readingStatus = 'unread',
+    required this.importedAt,
+    this.lastReadAt,
+    this.thumbnailPath,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'file_path': filePath,
-      'page_count': pageCount,
-      'word_count': wordCount,
-      'created_at': createdAt.millisecondsSinceEpoch,
-      'last_read': lastRead?.millisecondsSinceEpoch,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'title': title,
+    'filePath': filePath,
+    'fileName': fileName,
+    'totalPages': totalPages,
+    'currentPage': currentPage,
+    'totalWords': totalWords,
+    'wordsRead': wordsRead,
+    'complexityScore': complexityScore,
+    'complexityLevel': complexityLevel,
+    'extractedText': extractedText,
+    'readingStatus': readingStatus,
+    'importedAt': importedAt.millisecondsSinceEpoch,
+    'lastReadAt': lastReadAt?.millisecondsSinceEpoch,
+    'thumbnailPath': thumbnailPath,
+  };
 
-  factory PdfDocumentModel.fromMap(Map<String, dynamic> map) {
+  factory PdfDocumentModel.fromMap(Map<dynamic, dynamic> map) {
     return PdfDocumentModel(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      filePath: map['file_path'] as String,
-      pageCount: map['page_count'] as int,
-      wordCount: map['word_count'] as int,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
-      lastRead: map['last_read'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['last_read'] as int)
+      id: map['id'] as String? ?? '',
+      title: map['title'] as String? ?? '',
+      filePath: map['filePath'] as String? ?? '',
+      fileName: map['fileName'] as String? ?? '',
+      totalPages: map['totalPages'] as int? ?? 0,
+      currentPage: map['currentPage'] as int? ?? 0,
+      totalWords: map['totalWords'] as int? ?? 0,
+      wordsRead: map['wordsRead'] as int? ?? 0,
+      complexityScore: (map['complexityScore'] as num?)?.toDouble() ?? 0.0,
+      complexityLevel: map['complexityLevel'] as String? ?? 'beginner',
+      extractedText: map['extractedText'] as String? ?? '',
+      readingStatus: map['readingStatus'] as String? ?? 'unread',
+      importedAt: DateTime.fromMillisecondsSinceEpoch(
+        map['importedAt'] as int? ?? 0,
+      ),
+      lastReadAt: map['lastReadAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['lastReadAt'] as int)
           : null,
+      thumbnailPath: map['thumbnailPath'] as String?,
     );
   }
 
   PdfDocumentModel copyWith({
-    String? id,
     String? title,
-    String? filePath,
-    int? pageCount,
-    int? wordCount,
-    DateTime? createdAt,
-    DateTime? lastRead,
+    int? currentPage,
+    int? wordsRead,
+    String? readingStatus,
+    DateTime? lastReadAt,
+    String? extractedText,
+    int? totalPages,
+    int? totalWords,
+    double? complexityScore,
+    String? complexityLevel,
+    String? thumbnailPath,
   }) {
     return PdfDocumentModel(
-      id: id ?? this.id,
+      id: id,
       title: title ?? this.title,
-      filePath: filePath ?? this.filePath,
-      pageCount: pageCount ?? this.pageCount,
-      wordCount: wordCount ?? this.wordCount,
-      createdAt: createdAt ?? this.createdAt,
-      lastRead: lastRead ?? this.lastRead,
+      filePath: filePath,
+      fileName: fileName,
+      totalPages: totalPages ?? this.totalPages,
+      currentPage: currentPage ?? this.currentPage,
+      totalWords: totalWords ?? this.totalWords,
+      wordsRead: wordsRead ?? this.wordsRead,
+      complexityScore: complexityScore ?? this.complexityScore,
+      complexityLevel: complexityLevel ?? this.complexityLevel,
+      extractedText: extractedText ?? this.extractedText,
+      readingStatus: readingStatus ?? this.readingStatus,
+      importedAt: importedAt,
+      lastReadAt: lastReadAt ?? this.lastReadAt,
+      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
     );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is PdfDocumentModel &&
-        other.id == id &&
-        other.title == title &&
-        other.filePath == filePath &&
-        other.pageCount == pageCount &&
-        other.wordCount == wordCount &&
-        other.createdAt == createdAt &&
-        other.lastRead == lastRead;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        title.hashCode ^
-        filePath.hashCode ^
-        pageCount.hashCode ^
-        wordCount.hashCode ^
-        createdAt.hashCode ^
-        lastRead.hashCode;
   }
 }

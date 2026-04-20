@@ -1,96 +1,96 @@
 class ReadingSessionModel {
-  final int? id;
-  final String pdfId;
-  final DateTime startTime;
-  final DateTime? endTime;
+  final String id;
+  final String documentId;
+  final String documentTitle;
+  final DateTime startedAt;
+  final DateTime? endedAt;
+  final double durationMinutes;
   final int wordsRead;
-  final double averageSpeed;
-  final Map<String, dynamic> settingsSnapshot;
+  final int averageWpm;
+  final int startPage;
+  final int endPage;
+  final double focusScore;
+  final int wordsCollected;
+  final String performanceLabel;
 
   const ReadingSessionModel({
-    this.id,
-    required this.pdfId,
-    required this.startTime,
-    this.endTime,
+    required this.id,
+    required this.documentId,
+    required this.documentTitle,
+    required this.startedAt,
+    this.endedAt,
+    this.durationMinutes = 0,
     this.wordsRead = 0,
-    this.averageSpeed = 0.0,
-    this.settingsSnapshot = const {},
+    this.averageWpm = 0,
+    this.startPage = 0,
+    this.endPage = 0,
+    this.focusScore = 0,
+    this.wordsCollected = 0,
+    this.performanceLabel = 'warming up',
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'pdf_id': pdfId,
-      'start_time': startTime.millisecondsSinceEpoch,
-      'end_time': endTime?.millisecondsSinceEpoch,
-      'words_read': wordsRead,
-      'average_speed': averageSpeed,
-      'settings_snapshot': settingsSnapshot.toString(),
-    };
-  }
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'documentId': documentId,
+    'documentTitle': documentTitle,
+    'startedAt': startedAt.millisecondsSinceEpoch,
+    'endedAt': endedAt?.millisecondsSinceEpoch,
+    'durationMinutes': durationMinutes,
+    'wordsRead': wordsRead,
+    'averageWpm': averageWpm,
+    'startPage': startPage,
+    'endPage': endPage,
+    'focusScore': focusScore,
+    'wordsCollected': wordsCollected,
+    'performanceLabel': performanceLabel,
+  };
 
-  factory ReadingSessionModel.fromMap(Map<String, dynamic> map) {
+  factory ReadingSessionModel.fromMap(Map<dynamic, dynamic> map) {
     return ReadingSessionModel(
-      id: map['id'] as int?,
-      pdfId: map['pdf_id'] as String,
-      startTime: DateTime.fromMillisecondsSinceEpoch(map['start_time'] as int),
-      endTime: map['end_time'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['end_time'] as int)
+      id: map['id'] as String? ?? '',
+      documentId: map['documentId'] as String? ?? '',
+      documentTitle: map['documentTitle'] as String? ?? '',
+      startedAt: DateTime.fromMillisecondsSinceEpoch(
+        map['startedAt'] as int? ?? 0,
+      ),
+      endedAt: map['endedAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['endedAt'] as int)
           : null,
-      wordsRead: map['words_read'] as int,
-      averageSpeed: (map['average_speed'] as num).toDouble(),
-      settingsSnapshot: map['settings_snapshot'] != null
-          ? Map<String, dynamic>.from(map['settings_snapshot'])
-          : {},
+      durationMinutes: (map['durationMinutes'] as num?)?.toDouble() ?? 0,
+      wordsRead: map['wordsRead'] as int? ?? 0,
+      averageWpm: map['averageWpm'] as int? ?? 0,
+      startPage: map['startPage'] as int? ?? 0,
+      endPage: map['endPage'] as int? ?? 0,
+      focusScore: (map['focusScore'] as num?)?.toDouble() ?? 0,
+      wordsCollected: map['wordsCollected'] as int? ?? 0,
+      performanceLabel: map['performanceLabel'] as String? ?? 'warming up',
     );
   }
 
   ReadingSessionModel copyWith({
-    int? id,
-    String? pdfId,
-    DateTime? startTime,
-    DateTime? endTime,
+    DateTime? endedAt,
+    double? durationMinutes,
     int? wordsRead,
-    double? averageSpeed,
-    Map<String, dynamic>? settingsSnapshot,
+    int? averageWpm,
+    int? endPage,
+    double? focusScore,
+    int? wordsCollected,
+    String? performanceLabel,
   }) {
     return ReadingSessionModel(
-      id: id ?? this.id,
-      pdfId: pdfId ?? this.pdfId,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
+      id: id,
+      documentId: documentId,
+      documentTitle: documentTitle,
+      startedAt: startedAt,
+      endedAt: endedAt ?? this.endedAt,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
       wordsRead: wordsRead ?? this.wordsRead,
-      averageSpeed: averageSpeed ?? this.averageSpeed,
-      settingsSnapshot: settingsSnapshot ?? this.settingsSnapshot,
+      averageWpm: averageWpm ?? this.averageWpm,
+      startPage: startPage,
+      endPage: endPage ?? this.endPage,
+      focusScore: focusScore ?? this.focusScore,
+      wordsCollected: wordsCollected ?? this.wordsCollected,
+      performanceLabel: performanceLabel ?? this.performanceLabel,
     );
-  }
-
-  Duration? get duration {
-    if (endTime == null) return null;
-    return endTime!.difference(startTime);
-  }
-
-  bool get isActive => endTime == null;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is ReadingSessionModel &&
-        other.id == id &&
-        other.pdfId == pdfId &&
-        other.startTime == startTime &&
-        other.endTime == endTime &&
-        other.wordsRead == wordsRead &&
-        other.averageSpeed == averageSpeed;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        pdfId.hashCode ^
-        startTime.hashCode ^
-        endTime.hashCode ^
-        wordsRead.hashCode ^
-        averageSpeed.hashCode;
   }
 }
