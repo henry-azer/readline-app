@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
 import 'package:read_it/core/theme/app_colors.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
@@ -158,7 +160,7 @@ class _SessionView extends StatelessWidget {
 
                 // Action buttons (only when flipped)
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
+                  duration: AppDurations.normal,
                   child: isFlipped
                       ? _ActionButtons(
                           key: const ValueKey('actions'),
@@ -324,9 +326,23 @@ class _FlashCard extends StatelessWidget {
     return TapScale(
       onTap: isFlipped ? null : onFlip,
       child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
+        duration: AppDurations.calm,
         transitionBuilder: (child, animation) {
-          return FadeTransition(opacity: animation, child: child);
+          final scaleAnimation = TweenSequence<double>([
+            TweenSequenceItem(
+              tween: Tween(begin: 1.0, end: 0.97),
+              weight: 50,
+            ),
+            TweenSequenceItem(
+              tween: Tween(begin: 0.97, end: 1.0),
+              weight: 50,
+            ),
+          ]).animate(animation);
+
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(scale: scaleAnimation, child: child),
+          );
         },
         child: Container(
           key: ValueKey('card-$isFlipped-${word.id}'),
@@ -453,7 +469,10 @@ class _ActionButtons extends StatelessWidget {
           // Still Learning
           Expanded(
             child: TapScale(
-              onTap: () => onLearning(),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                onLearning();
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 decoration: BoxDecoration(
@@ -493,7 +512,10 @@ class _ActionButtons extends StatelessWidget {
           // I Know This (mastered)
           Expanded(
             child: TapScale(
-              onTap: () => onMastered(),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                onMastered();
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 decoration: BoxDecoration(
