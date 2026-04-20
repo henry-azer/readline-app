@@ -5,6 +5,8 @@ import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
+import 'package:read_it/core/theme/app_curves.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/presentation/onboarding/viewmodels/onboarding_viewmodel.dart';
 import 'package:read_it/presentation/onboarding/widgets/assessment_step.dart';
 import 'package:read_it/presentation/onboarding/widgets/first_import_step.dart';
@@ -33,8 +35,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (_pageController.hasClients) {
         _pageController.animateToPage(
           step,
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeInOut,
+          duration: AppDurations.calm,
+          curve: AppCurves.standard,
         );
       }
     });
@@ -120,14 +122,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
 
-              // Step indicator dots (visible on steps 1 and 2; pinned top-center on step 3)
-              if (step > 0)
-                Positioned(
-                  top: MediaQuery.of(context).padding.top + AppSpacing.lg,
-                  left: 0,
-                  right: 0,
-                  child: _StepIndicator(currentStep: step, totalSteps: 3),
-                ),
+              // Step indicator dots (visible on all steps)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + AppSpacing.lg,
+                left: 0,
+                right: 0,
+                child: _StepIndicator(currentStep: step, totalSteps: 3),
+              ),
             ],
           );
         },
@@ -155,7 +156,7 @@ class _StepIndicator extends StatelessWidget {
       children: List.generate(totalSteps, (index) {
         final isActive = index == currentStep;
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
+          duration: AppDurations.normal,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: isActive ? 24 : 8,
           height: 6,
