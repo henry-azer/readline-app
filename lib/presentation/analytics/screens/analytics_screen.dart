@@ -6,10 +6,13 @@ import 'package:read_it/core/localization/app_strings.dart';
 import 'package:read_it/core/router/app_router.dart';
 import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
+import 'package:read_it/core/theme/app_curves.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/theme/app_typography.dart';
 import 'package:read_it/data/models/reading_session_model.dart';
 import 'package:read_it/data/models/streak_model.dart';
 import 'package:read_it/presentation/analytics/viewmodels/analytics_viewmodel.dart';
+import 'package:read_it/presentation/widgets/brand_mark.dart';
 import 'package:read_it/presentation/analytics/widgets/growth_insight_card.dart';
 import 'package:read_it/presentation/analytics/widgets/reading_volume_chart.dart';
 import 'package:read_it/presentation/analytics/widgets/recent_activity_list.dart';
@@ -56,10 +59,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         backgroundColor: bgColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu_rounded, color: onSurface),
-          onPressed: () {},
-        ),
+        leading: const BrandMark(),
+        leadingWidth: 100,
         title: Text(
           AppStrings.analyticsTitle.tr,
           style: AppTypography.titleLarge.copyWith(color: onSurface),
@@ -245,7 +246,21 @@ class _AnalyticsBody extends StatelessWidget {
                                   AppSpacing.xl,
                                   AppSpacing.xl,
                                 ),
-                                child: ReadingVolumeChart(stats: weekly),
+                                child: TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  duration: AppDurations.slow,
+                                  curve: AppCurves.enter,
+                                  builder: (context, value, child) {
+                                    return Opacity(
+                                      opacity: value,
+                                      child: Transform.translate(
+                                        offset: Offset(0, 20 * (1 - value)),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: ReadingVolumeChart(stats: weekly),
+                                ),
                               ),
                             ),
 
@@ -274,7 +289,21 @@ class _AnalyticsBody extends StatelessWidget {
                                   AppSpacing.xl,
                                   AppSpacing.xl,
                                 ),
-                                child: VelocityChart(velocity: velocity),
+                                child: TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  duration: AppDurations.slow,
+                                  curve: AppCurves.enter,
+                                  builder: (context, value, child) {
+                                    return Opacity(
+                                      opacity: value,
+                                      child: Transform.translate(
+                                        offset: Offset(0, 20 * (1 - value)),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: VelocityChart(velocity: velocity),
+                                ),
                               ),
                             ),
 
@@ -349,9 +378,8 @@ class _SectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTypography.headlineMedium.copyWith(
+                style: AppTypography.sectionHeader.copyWith(
                   color: onSurface,
-                  fontSize: 18,
                 ),
               ),
               if (subtitle != null) ...[
