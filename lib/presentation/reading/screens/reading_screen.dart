@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:read_it/core/theme/app_curves.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:read_it/core/constants/app_constants.dart';
 import 'package:read_it/core/di/injection.dart';
@@ -64,6 +67,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   // ── User actions ───────────────────────────────────────────────────────────
 
   void _handleWordTap(String word) {
+    HapticFeedback.lightImpact();
     getIt<ReadingEngineService>().highlightWord(word);
     setState(() {
       _tappedWord = word;
@@ -307,7 +311,7 @@ class _ReadingBody extends StatelessWidget {
 
             // ── Vocabulary highlight bar (conditional) ─────────────────
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
+              duration: AppDurations.calm,
               transitionBuilder: (child, animation) {
                 return SlideTransition(
                   position:
@@ -317,7 +321,7 @@ class _ReadingBody extends StatelessWidget {
                       ).animate(
                         CurvedAnimation(
                           parent: animation,
-                          curve: Curves.easeOutCubic,
+                          curve: AppCurves.enter,
                         ),
                       ),
                   child: FadeTransition(opacity: animation, child: child),
