@@ -5,8 +5,10 @@ import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
 import 'package:read_it/core/router/app_router.dart';
 import 'package:read_it/core/theme/app_colors.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
+import 'package:read_it/presentation/widgets/brand_mark.dart';
 import 'package:read_it/data/enums/app_enums.dart';
 import 'package:read_it/data/models/pdf_document_model.dart';
 import 'package:read_it/presentation/library/viewmodels/library_viewmodel.dart';
@@ -53,61 +55,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Future<void> _confirmDelete(PdfDocumentModel document) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final isDark = context.isDark;
-        final surfaceBg = isDark
-            ? AppColors.surfaceContainer
-            : AppColors.lightSurface;
-        final onSurface = isDark
-            ? AppColors.onSurface
-            : AppColors.lightOnSurface;
+    await _viewModel.deleteDocument(document.id);
 
-        return AlertDialog(
-          backgroundColor: surfaceBg,
-          title: Text(
-            AppStrings.libraryRemoveTitle.tr,
-            style: AppTypography.headlineMedium.copyWith(color: onSurface),
-          ),
-          content: Text(
-            AppStrings.libraryRemoveBody.trParams({'title': document.title}),
-            style: AppTypography.bodyMedium.copyWith(
-              color: isDark
-                  ? AppColors.onSurfaceVariant
-                  : AppColors.lightOnSurfaceVariant,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(
-                AppStrings.cancel.tr,
-                style: AppTypography.button.copyWith(
-                  color: isDark
-                      ? AppColors.onSurfaceVariant
-                      : AppColors.lightOnSurfaceVariant,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(
-                AppStrings.remove.tr,
-                style: AppTypography.button.copyWith(
-                  color: AppColors.error,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppStrings.libraryRemoveBody.trParams({'title': document.title}),
+        ),
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () => _viewModel.undoDelete(document),
+        ),
+      ),
     );
-    if (confirmed == true) {
-      await _viewModel.deleteDocument(document.id);
-    }
   }
 
   @override
@@ -126,20 +88,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
         backgroundColor: bgColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu_rounded, color: onSurface),
-          onPressed: () {},
-        ),
+        leading: const BrandMark(),
+        leadingWidth: 100,
         title: Text(
           AppStrings.libraryTitle.tr,
           style: AppTypography.titleLarge.copyWith(color: onSurface),
         ),
         centerTitle: false,
         actions: [
-          IconButton(
-            icon: Icon(Icons.search_rounded, color: onSurfaceVariant),
-            onPressed: () {},
-          ),
           IconButton(
             icon: Icon(Icons.settings_outlined, color: onSurfaceVariant),
             onPressed: () => context.push(AppRoutes.settings),
@@ -436,7 +392,7 @@ class _ToggleIcon extends StatelessWidget {
     return GestureDetector(
       onTap: isSelected ? null : onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
+        duration: AppDurations.short,
         width: 36,
         height: 36,
         decoration: BoxDecoration(

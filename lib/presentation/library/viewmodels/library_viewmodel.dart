@@ -69,6 +69,13 @@ class LibraryViewModel {
     _applyFilter(activeFilter$.value);
   }
 
+  Future<void> undoDelete(PdfDocumentModel document) async {
+    await _docRepo.save(document);
+    final updated = [...allDocuments$.value, document];
+    allDocuments$.add(updated);
+    _applyFilter(activeFilter$.value);
+  }
+
   Future<bool> importDocument() async {
     importError$.add(null);
     try {
