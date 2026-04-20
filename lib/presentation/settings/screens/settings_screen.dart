@@ -4,6 +4,7 @@ import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
 import 'package:read_it/core/theme/app_colors.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
 import 'package:read_it/data/models/user_preferences_model.dart';
@@ -22,12 +23,25 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late final SettingsViewModel _viewModel;
+  bool _wasSaving = false;
 
   @override
   void initState() {
     super.initState();
     _viewModel = SettingsViewModel();
     _viewModel.init();
+    _viewModel.isSaving$.listen((saving) {
+      if (_wasSaving && !saving && mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Settings saved'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      _wasSaving = saving;
+    });
   }
 
   @override
@@ -67,7 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             builder: (context, snap) {
               final saving = snap.data == true;
               return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: AppDurations.normal,
                 child: saving
                     ? Padding(
                         key: const ValueKey('saving'),
