@@ -65,7 +65,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ),
         duration: const Duration(seconds: 5),
         action: SnackBarAction(
-          label: 'Undo',
+          label: AppStrings.undo.tr,
           onPressed: () => _viewModel.undoDelete(document),
         ),
       ),
@@ -237,64 +237,73 @@ class _LibraryBody extends StatelessWidget {
                           onImport: onImport,
                         ),
                       )
-                    else if (viewMode == ViewMode.grid)
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.xl,
-                          0,
-                          AppSpacing.xl,
-                          // Extra bottom padding for FAB clearance
-                          AppSpacing.xxxxl + AppSpacing.xxl,
-                        ),
-                        sliver: SliverGrid(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: AppSpacing.md,
-                                mainAxisSpacing: AppSpacing.md,
-                                childAspectRatio: 0.65,
-                              ),
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final doc = docs[index];
-                            return DocumentGridCard(
-                              document: doc,
-                              onTap: () =>
-                                  context.go('${AppRoutes.reading}/${doc.id}'),
-                              onDelete: () => onDeleteDocument(doc),
-                            );
-                          }, childCount: docs.length),
-                        ),
-                      )
                     else
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.xl,
-                          0,
-                          AppSpacing.xl,
-                          AppSpacing.xxxxl + AppSpacing.xxl,
-                        ),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final doc = docs[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: AppSpacing.sm,
-                              ),
-                              child: DocumentListTile(
-                                document: doc,
-                                onTap: () => context.go(
-                                  '${AppRoutes.reading}/${doc.id}',
+                      SliverToBoxAdapter(
+                        child: AnimatedSwitcher(
+                          duration: AppDurations.calm,
+                          child: viewMode == ViewMode.grid
+                              ? Padding(
+                                  key: const ValueKey('grid'),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.xl,
+                                    0,
+                                    AppSpacing.xl,
+                                    AppSpacing.xxxxl + AppSpacing.xxl,
+                                  ),
+                                  child: GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: AppSpacing.md,
+                                          mainAxisSpacing: AppSpacing.md,
+                                          childAspectRatio: 0.65,
+                                        ),
+                                    itemCount: docs.length,
+                                    itemBuilder: (context, index) {
+                                      final doc = docs[index];
+                                      return DocumentGridCard(
+                                        document: doc,
+                                        onTap: () => context.go(
+                                          '${AppRoutes.reading}/${doc.id}',
+                                        ),
+                                        onDelete: () => onDeleteDocument(doc),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : Padding(
+                                  key: const ValueKey('list'),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.xl,
+                                    0,
+                                    AppSpacing.xl,
+                                    AppSpacing.xxxxl + AppSpacing.xxl,
+                                  ),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: docs.length,
+                                    itemBuilder: (context, index) {
+                                      final doc = docs[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: AppSpacing.sm,
+                                        ),
+                                        child: DocumentListTile(
+                                          document: doc,
+                                          onTap: () => context.go(
+                                            '${AppRoutes.reading}/${doc.id}',
+                                          ),
+                                          onDelete: () => onDeleteDocument(doc),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                                onDelete: () => onDeleteDocument(doc),
-                              ),
-                            );
-                          }, childCount: docs.length),
                         ),
                       ),
                   ],

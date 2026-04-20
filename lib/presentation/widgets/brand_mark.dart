@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
+import 'package:read_it/core/theme/app_colors.dart';
+import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_tracking.dart';
 import 'package:read_it/core/theme/app_typography.dart';
-import 'package:read_it/core/theme/app_colors.dart';
 
 /// Branded "READ-IT" text mark for AppBar leading position.
 class BrandMark extends StatelessWidget {
@@ -14,7 +15,7 @@ class BrandMark extends StatelessWidget {
     final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 16),
+      padding: const EdgeInsets.only(left: AppSpacing.md),
       child: Text(
         'READ-IT',
         style: AppTypography.label.copyWith(

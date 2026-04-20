@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
@@ -24,19 +26,20 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late final SettingsViewModel _viewModel;
   bool _wasSaving = false;
+  StreamSubscription<bool>? _savingSub;
 
   @override
   void initState() {
     super.initState();
     _viewModel = SettingsViewModel();
     _viewModel.init();
-    _viewModel.isSaving$.listen((saving) {
+    _savingSub = _viewModel.isSaving$.listen((saving) {
       if (_wasSaving && !saving && mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Settings saved'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(AppStrings.settingsSaved.tr),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -46,6 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
+    _savingSub?.cancel();
     _viewModel.dispose();
     super.dispose();
   }
@@ -243,9 +247,8 @@ class _SectionHeader extends StatelessWidget {
         const SizedBox(width: AppSpacing.xs),
         Text(
           title,
-          style: AppTypography.headlineMedium.copyWith(
+          style: AppTypography.sectionHeader.copyWith(
             color: onSurface,
-            fontSize: 18,
           ),
         ),
       ],

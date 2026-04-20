@@ -29,6 +29,7 @@ class AppStrings {
   static const String monthsAgo = 'general.monthsAgo';
   static const String weeksAgoUpper = 'general.weeksAgoUpper';
   static const String monthsAgoUpper = 'general.monthsAgoUpper';
+  static const String undo = 'general.undo';
   static const String errorImportPdf = 'general.errorImportPdf';
   static const String errorSomethingWrong = 'general.errorSomethingWrong';
   static const String errorSampleText = 'general.errorSampleText';
@@ -281,6 +282,7 @@ class AppStrings {
   static const String settingsResetBody = 'settings.resetBody';
   static const String settingsResetCancel = 'settings.resetCancel';
   static const String settingsResetConfirm = 'settings.resetConfirm';
+  static const String settingsSaved = 'settings.saved';
   static const String settingsVersionInfo = 'settings.versionInfo';
   static const String settingsPreviewFocusMode = 'settings.previewFocusMode';
   static const String settingsPreviewPtSize = 'settings.previewPtSize';
