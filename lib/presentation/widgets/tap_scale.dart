@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 
 class TapScale extends StatefulWidget {
   final Widget child;
@@ -13,7 +14,7 @@ class TapScale extends StatefulWidget {
     this.onTap,
     this.onLongPress,
     this.scale = 0.95,
-    this.duration = const Duration(milliseconds: 100),
+    this.duration = AppDurations.quick,
   });
 
   @override

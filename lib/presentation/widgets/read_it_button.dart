@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_gradients.dart';
@@ -48,7 +49,12 @@ class ReadItButton extends StatelessWidget {
     }
 
     return TapScale(
-      onTap: onTap,
+      onTap: onTap == null
+          ? null
+          : () {
+              HapticFeedback.lightImpact();
+              onTap!();
+            },
       child: Container(
         height: AppSpacing.buttonHeight,
         decoration: BoxDecoration(
