@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:read_it/core/router/app_page_transitions.dart';
 import 'package:read_it/core/di/injection.dart';
 import 'package:read_it/data/contracts/preferences_repository.dart';
 import 'package:read_it/presentation/shell/app_shell.dart';
@@ -51,7 +52,10 @@ final appRouter = GoRouter(
     // Onboarding (full-screen, no nav)
     GoRoute(
       path: AppRoutes.onboarding,
-      builder: (ctx, st) => const OnboardingScreen(),
+      pageBuilder: (ctx, state) => slideUpFadePage(
+        state: state,
+        child: const OnboardingScreen(),
+      ),
     ),
     // Shell route for persistent bottom nav (4 tabs)
     StatefulShellRoute.indexedStack(
@@ -96,16 +100,24 @@ final appRouter = GoRouter(
     // Full-screen routes (outside shell, no bottom nav)
     GoRoute(
       path: '${AppRoutes.reading}/:documentId',
-      builder: (_, state) =>
-          ReadingScreen(documentId: state.pathParameters['documentId']!),
+      pageBuilder: (_, state) => slideUpFadePage(
+        state: state,
+        child: ReadingScreen(documentId: state.pathParameters['documentId']!),
+      ),
     ),
     GoRoute(
       path: AppRoutes.settings,
-      builder: (ctx, st) => const SettingsScreen(),
+      pageBuilder: (ctx, state) => slideUpFadePage(
+        state: state,
+        child: const SettingsScreen(),
+      ),
     ),
     GoRoute(
       path: AppRoutes.review,
-      builder: (ctx, st) => const ReviewSessionScreen(),
+      pageBuilder: (ctx, state) => slideUpFadePage(
+        state: state,
+        child: const ReviewSessionScreen(),
+      ),
     ),
   ],
 );
