@@ -71,6 +71,10 @@ abstract final class AppTypography {
     letterSpacing: AppTracking.wide,
   );
 
+  // ── Section header (Newsreader — analytics/library section titles) ──
+  static TextStyle get sectionHeader =>
+      _serif.copyWith(fontSize: 18, fontWeight: FontWeight.w600, height: 1.3);
+
   // ── Reading body (Newsreader — long-form reading display) ──
   static TextStyle get readingBody =>
       _serif.copyWith(fontSize: 18, fontWeight: FontWeight.w400, height: 1.6);
