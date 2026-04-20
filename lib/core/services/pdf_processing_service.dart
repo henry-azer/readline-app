@@ -1,167 +1,202 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
-import '../../data/models/pdf_document_model.dart';
+import 'package:read_it/core/constants/app_constants.dart';
+import 'package:read_it/data/models/pdf_document_model.dart';
 
 class PdfProcessingService {
-  static const Uuid _uuid = Uuid();
+  static const _uuid = Uuid();
 
-  Future<PdfDocumentModel> processPdfFile(String filePath) async {
-    try {
-      final file = File(filePath);
-      if (!await file.exists()) {
-        throw Exception('PDF file not found: $filePath');
-      }
+  /// Common English words (top ~100) for complexity detection
+  static const _commonWords = <String>{
+    'the',
+    'be',
+    'to',
+    'of',
+    'and',
+    'a',
+    'in',
+    'that',
+    'have',
+    'i',
+    'it',
+    'for',
+    'not',
+    'on',
+    'with',
+    'he',
+    'as',
+    'you',
+    'do',
+    'at',
+    'this',
+    'but',
+    'his',
+    'by',
+    'from',
+    'they',
+    'we',
+    'say',
+    'her',
+    'she',
+    'or',
+    'an',
+    'will',
+    'my',
+    'one',
+    'all',
+    'would',
+    'there',
+    'their',
+    'what',
+    'so',
+    'up',
+    'out',
+    'if',
+    'about',
+    'who',
+    'get',
+    'which',
+    'go',
+    'me',
+    'when',
+    'make',
+    'can',
+    'like',
+    'time',
+    'no',
+    'just',
+    'him',
+    'know',
+    'take',
+    'people',
+    'into',
+    'year',
+    'your',
+    'good',
+    'some',
+    'could',
+    'them',
+    'see',
+    'other',
+    'than',
+    'then',
+    'now',
+    'look',
+    'only',
+    'come',
+    'its',
+    'over',
+    'think',
+    'also',
+    'back',
+    'after',
+    'use',
+    'two',
+    'how',
+    'our',
+    'work',
+    'first',
+    'well',
+    'way',
+    'even',
+    'new',
+    'want',
+    'because',
+    'any',
+    'these',
+    'give',
+    'day',
+    'most',
+    'us',
+    'was',
+    'were',
+    'been',
+    'had',
+    'are',
+    'is',
+  };
 
-      final fileName = path.basenameWithoutExtension(filePath);
-      final documentId = _uuid.v4();
+  Future<PdfDocumentModel> processFile(File file) async {
+    final bytes = await file.readAsBytes();
+    final document = PdfDocument(inputBytes: bytes);
 
-      // Load PDF document
-      final pdfDocument = PdfDocument(inputBytes: await file.readAsBytes());
-      
-      // Extract text content
-      final textContent = await _extractTextFromPdf(pdfDocument);
-      
-      // Calculate metrics
-      final pageCount = pdfDocument.pages.count;
-      final wordCount = _calculateWordCount(textContent);
-      
-      // Dispose document
-      pdfDocument.dispose();
+    final text = PdfTextExtractor(document).extractText();
+    final pageCount = document.pages.count;
+    document.dispose();
 
-      return PdfDocumentModel(
-        id: documentId,
-        title: fileName,
-        filePath: filePath,
-        pageCount: pageCount,
-        wordCount: wordCount,
-        createdAt: DateTime.now(),
-      );
-    } catch (e) {
-      throw Exception('Failed to process PDF: $e');
-    }
+    final words = text
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    final wordCount = words.length;
+    final complexity = _calculateComplexity(words);
+
+    final fileName = file.path.split('/').last;
+    final title = fileName.replaceAll('.pdf', '');
+
+    return PdfDocumentModel(
+      id: _uuid.v4(),
+      title: title,
+      filePath: file.path,
+      fileName: fileName,
+      totalPages: pageCount,
+      totalWords: wordCount,
+      complexityScore: complexity,
+      complexityLevel: _complexityLevel(complexity),
+      extractedText: text,
+      importedAt: DateTime.now(),
+    );
   }
 
-  Future<List<String>> extractPages(String filePath) async {
-    try {
-      final file = File(filePath);
-      final pdfDocument = PdfDocument(inputBytes: await file.readAsBytes());
-      
-      final List<String> pages = [];
-      
-      for (int i = 0; i < pdfDocument.pages.count; i++) {
-        final page = pdfDocument.pages[i];
-        final textExtractor = PdfTextExtractor(page);
-        final pageText = textExtractor.extractText();
-        pages.add(pageText);
-      }
-      
-      pdfDocument.dispose();
-      return pages;
-    } catch (e) {
-      throw Exception('Failed to extract pages: $e');
-    }
+  double _calculateComplexity(List<String> words) {
+    if (words.isEmpty) return 0;
+    final avgLength =
+        words.fold<int>(0, (sum, w) => sum + w.length) / words.length;
+    final uncommonRatio =
+        words.where((w) => !_commonWords.contains(w.toLowerCase())).length /
+        words.length;
+    return (avgLength * 10 + uncommonRatio * 50).clamp(0, 100);
   }
 
-  Future<String> extractFullText(String filePath) async {
-    try {
-      final pages = await extractPages(filePath);
-      return pages.join('\n\n');
-    } catch (e) {
-      throw Exception('Failed to extract full text: $e');
-    }
+  String _complexityLevel(double score) {
+    if (score < AppConstants.beginnerMax) return 'beginner';
+    if (score < AppConstants.intermediateMax) return 'intermediate';
+    if (score < AppConstants.advancedMax) return 'advanced';
+    return 'expert';
   }
 
-  Future<List<String>> splitIntoReadableChunks(String content, {int maxWordsPerChunk = 100}) async {
-    final words = content.split(RegExp(r'\s+'));
-    final List<String> chunks = [];
-    
-    for (int i = 0; i < words.length; i += maxWordsPerChunk) {
-      final end = (i + maxWordsPerChunk < words.length) 
-          ? i + maxWordsPerChunk 
-          : words.length;
-      final chunk = words.sublist(i, end).join(' ');
-      chunks.add(chunk);
-    }
-    
-    return chunks;
+  /// Detect complex words for auto-vocabulary collection
+  List<String> detectComplexWords(String text) {
+    final words = text
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .map((w) => w.replaceAll(RegExp(r'[^\w]'), '').toLowerCase())
+        .where((w) => w.length > 3)
+        .toSet();
+    return words
+        .where((w) => !_commonWords.contains(w) && w.length >= 7)
+        .toList();
   }
 
-  Future<String> _extractTextFromPdf(PdfDocument document) async {
-    final StringBuffer fullText = StringBuffer();
-    
-    for (int i = 0; i < document.pages.count; i++) {
-      final page = document.pages[i];
-      final textExtractor = PdfTextExtractor(page);
-      final pageText = textExtractor.extractText();
-      fullText.writeln(pageText);
-    }
-    
-    return fullText.toString();
-  }
+  Future<PdfDocumentModel> processSampleText(String text) async {
+    final words = text
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    final complexity = _calculateComplexity(words);
 
-  int _calculateWordCount(String text) {
-    if (text.isEmpty) return 0;
-    
-    // Remove extra whitespace and split into words
-    final words = text.trim().split(RegExp(r'\s+'));
-    
-    // Filter out empty strings and count actual words
-    return words.where((word) => word.isNotEmpty).length;
-  }
-
-  Future<double> estimateReadingTime(String content, {double wordsPerMinute = 200}) async {
-    final wordCount = _calculateWordCount(content);
-    return wordCount / wordsPerMinute; // Returns time in minutes
-  }
-
-  Future<Map<String, dynamic>> analyzeTextComplexity(String content) async {
-    final words = content.split(RegExp(r'\s+'));
-    final sentences = content.split(RegExp(r'[.!?]+'));
-    
-    final averageWordsPerSentence = words.length / sentences.length;
-    final averageWordLength = words
-        .where((word) => word.isNotEmpty)
-        .map((word) => word.length)
-        .reduce((a, b) => a + b) / words.length;
-    
-    // Simple complexity score based on average word length and sentence length
-    final complexityScore = (averageWordLength * 0.3 + averageWordsPerSentence * 0.7);
-    
-    return {
-      'wordCount': words.length,
-      'sentenceCount': sentences.length,
-      'averageWordsPerSentence': averageWordsPerSentence,
-      'averageWordLength': averageWordLength,
-      'complexityScore': complexityScore,
-      'difficultyLevel': _getDifficultyLevel(complexityScore),
-    };
-  }
-
-  String _getDifficultyLevel(double score) {
-    if (score < 10) return 'Beginner';
-    if (score < 15) return 'Intermediate';
-    if (score < 20) return 'Advanced';
-    return 'Expert';
-  }
-
-  Future<bool> validatePdfFile(String filePath) async {
-    try {
-      final file = File(filePath);
-      if (!await file.exists()) return false;
-      
-      final bytes = await file.readAsBytes();
-      if (bytes.length < 4) return false;
-      
-      // Check PDF header
-      final header = String.fromCharCodes(bytes.take(4).toList());
-      return header == '%PDF';
-    } catch (e) {
-      return false;
-    }
+    return PdfDocumentModel(
+      id: _uuid.v4(),
+      title: 'Sample Text',
+      filePath: '',
+      fileName: 'sample_text.txt',
+      totalPages: 1,
+      totalWords: words.length,
+      complexityScore: complexity,
+      complexityLevel: _complexityLevel(complexity),
+      extractedText: text,
+      importedAt: DateTime.now(),
+    );
   }
 }
