@@ -13,6 +13,8 @@ import 'package:read_it/presentation/vocabulary/viewmodels/vocabulary_viewmodel.
 import 'package:read_it/presentation/vocabulary/widgets/daily_insight_card.dart';
 import 'package:read_it/presentation/vocabulary/widgets/review_bloom_card.dart';
 import 'package:read_it/presentation/vocabulary/widgets/word_card.dart';
+import 'package:read_it/presentation/widgets/brand_mark.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 
 class VocabularyScreen extends StatefulWidget {
   const VocabularyScreen({super.key});
@@ -53,20 +55,14 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
         backgroundColor: bgColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu_rounded, color: onSurface),
-          onPressed: () {},
-        ),
+        leading: const BrandMark(),
+        leadingWidth: 100,
         title: Text(
           AppStrings.vocabTitle.tr,
           style: AppTypography.titleLarge.copyWith(color: onSurface),
         ),
         centerTitle: false,
         actions: [
-          IconButton(
-            icon: Icon(Icons.search_rounded, color: onSurfaceVariant),
-            onPressed: () {},
-          ),
           IconButton(
             icon: Icon(Icons.settings_outlined, color: onSurfaceVariant),
             onPressed: () => context.push(AppRoutes.settings),
@@ -424,8 +420,11 @@ class _Chip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        duration: AppDurations.short,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.msl,
+          vertical: AppSpacing.sxs,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? primary : surfaceHigh,
           borderRadius: AppRadius.fullBorder,
