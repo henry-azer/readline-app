@@ -1,35 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'core/localization/app_localization.dart';
+import 'core/localization/app_strings.dart';
+import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'features/pdf_processing/providers/pdf_processing_provider.dart';
-import 'features/reading_display/providers/reading_display_provider.dart';
-import 'features/user_preferences/providers/user_preferences_provider.dart';
-import 'features/analytics/providers/analytics_provider.dart';
-import 'presentation/screens/home_screen.dart';
-import 'presentation/screens/settings_screen.dart';
-import 'presentation/screens/analytics_screen.dart';
+import 'main.dart' show languageProvider;
+
+/// Global theme mode notifier. 'system' | 'light' | 'dark'
+final themeModeNotifier = ValueNotifier<String>('system');
 
 class ReadItApp extends StatelessWidget {
   const ReadItApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserPreferencesProvider>(
-      builder: (context, preferencesProvider, child) {
-        return MaterialApp(
-          title: 'Read-It',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: preferencesProvider.preferences.themeMode,
-          home: const HomeScreen(),
-          routes: {
-            '/home': (context) => const HomeScreen(),
-            '/settings': (context) => const SettingsScreen(),
-            '/analytics': (context) => const AnalyticsScreen(),
+    return ValueListenableBuilder<Locale?>(
+      valueListenable: languageProvider.locale,
+      builder: (context, locale, _) {
+        return ValueListenableBuilder<String>(
+          valueListenable: themeModeNotifier,
+          builder: (context, themeMode, _) {
+            return MaterialApp.router(
+              title: AppStrings.generalAppName.tr,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: _resolveThemeMode(themeMode),
+              routerConfig: appRouter,
+              debugShowCheckedModeBanner: false,
+              locale: locale,
+              supportedLocales: languageProvider.supportedLocales,
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+            );
           },
         );
       },
     );
+  }
+}
+
+ThemeMode _resolveThemeMode(String mode) {
+  switch (mode) {
+    case 'light':
+      return ThemeMode.light;
+    case 'dark':
+      return ThemeMode.dark;
+    default:
+      return ThemeMode.system;
   }
 }
