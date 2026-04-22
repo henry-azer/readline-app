@@ -13,9 +13,11 @@ import 'package:read_it/core/localization/app_strings.dart';
 import 'package:read_it/core/router/app_router.dart';
 import 'package:read_it/core/services/reading_engine_service.dart';
 import 'package:read_it/core/theme/app_colors.dart';
+import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
 import 'package:read_it/data/entities/reading_state.dart';
+import 'package:read_it/data/models/pdf_document_model.dart';
 import 'package:read_it/data/models/reading_session_model.dart';
 import 'package:read_it/data/models/streak_model.dart';
 import 'package:read_it/presentation/reading/viewmodels/reading_viewmodel.dart';
@@ -26,8 +28,13 @@ import 'package:read_it/presentation/reading/widgets/vocab_highlight.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String documentId;
+  final bool autoPlay;
 
-  const ReadingScreen({super.key, required this.documentId});
+  const ReadingScreen({
+    super.key,
+    required this.documentId,
+    this.autoPlay = false,
+  });
 
   @override
   State<ReadingScreen> createState() => _ReadingScreenState();
@@ -43,7 +50,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
   void initState() {
     super.initState();
     _viewModel = ReadingViewModel(documentId: widget.documentId);
-    _viewModel.init();
+    _viewModel.init().then((_) {
+      if (widget.autoPlay && mounted) {
+        _viewModel.togglePlayPause();
+      }
+    });
     _listenForCompletion();
   }
 
@@ -104,12 +115,22 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   Future<void> _handleBack() async {
     await _viewModel.saveSession();
-    if (mounted) context.go(AppRoutes.library);
+    if (!mounted) return;
+    if (Navigator.of(context).canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.home);
+    }
   }
 
   Future<void> _handleStop() async {
     await _viewModel.saveSession();
-    if (mounted) context.go(AppRoutes.library);
+    if (!mounted) return;
+    if (Navigator.of(context).canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.home);
+    }
   }
 
   Future<void> _handleComplete() async {
@@ -238,9 +259,17 @@ class _ReadingScreenState extends State<ReadingScreen> {
         onPressed: _handleBack,
         tooltip: AppStrings.readingBack.tr,
       ),
-      title: Text(
-        AppStrings.appTitle.tr,
-        style: AppTypography.titleLarge.copyWith(color: onSurface),
+      title: StreamBuilder<PdfDocumentModel?>(
+        stream: _viewModel.document$,
+        builder: (context, snap) {
+          final doc = snap.data;
+          return Text(
+            doc?.title ?? '',
+            style: AppTypography.titleMedium.copyWith(color: onSurface),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          );
+        },
       ),
       centerTitle: false,
       actions: [
@@ -254,11 +283,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
               child: Center(child: StreakBadge(streak: streak)),
             );
           },
-        ),
-        IconButton(
-          icon: Icon(Icons.more_vert_rounded, color: onSurfaceVariant),
-          onPressed: () {},
-          tooltip: AppStrings.readingMoreOptions.tr,
         ),
       ],
     );
@@ -428,7 +452,7 @@ class _SessionSummaryDialog extends StatelessWidget {
 
     return Dialog(
       backgroundColor: bgColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.xlBorder),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(

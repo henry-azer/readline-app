@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
+import 'package:read_it/core/router/app_router.dart';
 import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
@@ -65,10 +67,10 @@ class AdvancedSection extends StatelessWidget {
         // Reset to defaults button
         _ResetButton(viewModel: viewModel, isDark: isDark),
 
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.md),
 
-        // App version info
-        _AppVersionInfo(isDark: isDark),
+        // Clear all data button
+        _ClearDataButton(viewModel: viewModel, isDark: isDark),
       ],
     );
   }
@@ -252,28 +254,97 @@ class _ResetButton extends StatelessWidget {
   }
 }
 
-// ── App version info ──────────────────────────────────────────────────────────
-
-class _AppVersionInfo extends StatelessWidget {
+class _ClearDataButton extends StatelessWidget {
+  final SettingsViewModel viewModel;
   final bool isDark;
-  const _AppVersionInfo({required this.isDark});
+
+  const _ClearDataButton({required this.viewModel, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
+    final errorColor = isDark ? AppColors.error : AppColors.lightError;
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () => _confirmClear(context),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: errorColor, width: 1.5),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.lgBorder),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+        ),
+        child: Text(
+          AppStrings.settingsClearAllData.tr,
+          style: AppTypography.button.copyWith(
+            color: errorColor,
+            letterSpacing: 1.5,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _confirmClear(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final errorColor = isDark ? AppColors.error : AppColors.lightError;
+    final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
     final onSurfaceVariant = isDark
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
+    final dialogBg = isDark
+        ? AppColors.surfaceContainerHighest
+        : AppColors.lightSurfaceContainerLowest;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      child: Text(
-        AppStrings.settingsVersionInfo.tr,
-        style: AppTypography.bodySmall.copyWith(
-          color: onSurfaceVariant,
-          fontSize: 11,
+    showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: dialogBg,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.lgBorder),
+        title: Text(
+          AppStrings.settingsClearAllDataTitle.tr,
+          style: AppTypography.headlineMedium.copyWith(
+            color: onSurface,
+            fontSize: 18,
+          ),
         ),
-        textAlign: TextAlign.center,
+        content: Text(
+          AppStrings.settingsClearAllDataBody.tr,
+          style: AppTypography.bodyMedium.copyWith(color: onSurfaceVariant),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              AppStrings.cancel.tr,
+              style: AppTypography.button.copyWith(
+                color: onSurfaceVariant,
+                letterSpacing: 1,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop(true);
+              await viewModel.clearAllData();
+              if (context.mounted) {
+                resetOnboardingFlag();
+                context.go(AppRoutes.onboarding);
+              }
+            },
+            child: Text(
+              AppStrings.settingsClearAllDataConfirm.tr,
+              style: AppTypography.button.copyWith(
+                color: errorColor,
+                letterSpacing: 1,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+

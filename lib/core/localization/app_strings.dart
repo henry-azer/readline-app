@@ -282,12 +282,26 @@ class AppStrings {
   static const String settingsResetBody = 'settings.resetBody';
   static const String settingsResetCancel = 'settings.resetCancel';
   static const String settingsResetConfirm = 'settings.resetConfirm';
+  static const String settingsClearAllData = 'settings.clearAllData';
+  static const String settingsClearAllDataTitle = 'settings.clearAllDataTitle';
+  static const String settingsClearAllDataBody = 'settings.clearAllDataBody';
+  static const String settingsClearAllDataConfirm =
+      'settings.clearAllDataConfirm';
   static const String settingsSaved = 'settings.saved';
   static const String settingsVersionInfo = 'settings.versionInfo';
   static const String settingsPreviewFocusMode = 'settings.previewFocusMode';
   static const String settingsPreviewPtSize = 'settings.previewPtSize';
   static const String settingsPreviewLineH = 'settings.previewLineH';
   static const String settingsPreviewWpm = 'settings.previewWpm';
+  static const String settingsSectionAbout = 'settings.sectionAbout';
+  static const String settingsAboutContactDeveloper =
+      'settings.aboutContactDeveloper';
+  static const String settingsAboutSendFeedback = 'settings.aboutSendFeedback';
+  static const String settingsAboutReportBug = 'settings.aboutReportBug';
+  static const String settingsAboutRateApp = 'settings.aboutRateApp';
+  static const String settingsAboutLinkedIn = 'settings.aboutLinkedIn';
+  static const String settingsAboutGitHub = 'settings.aboutGitHub';
+  static const String settingsAboutLinkCopied = 'settings.aboutLinkCopied';
 
   // ── Week day abbreviations ─────────────────────────────────────────────────────
 
@@ -314,10 +328,13 @@ class AppStrings {
   static const String monthNov = 'month.nov';
   static const String monthDec = 'month.dec';
 
+  // ── Splash ──────────────────────────────────────────────────────────────────
+
+  static const String splashBrand = 'splash.brand';
+  static const String splashTagline = 'splash.tagline';
+
   // ── Onboarding ────────────────────────────────────────────────────────────────
 
-  static const String onboardingSkip = 'onboarding.skip';
-  static const String onboardingStreakBadge = 'onboarding.streakBadge';
   static const String onboardingMindfulJourney = 'onboarding.mindfulJourney';
   static const String onboardingHeadlinePace = 'onboarding.headlinePace';
   static const String onboardingHeadlinePaceItalic =
@@ -338,12 +355,11 @@ class AppStrings {
       'onboarding.assessmentSubtitle';
   static const String onboardingContinueJourney = 'onboarding.continueJourney';
   static const String onboardingCustomizeLater = 'onboarding.customizeLater';
+  static const String onboardingFormatPdf = 'onboarding.formatPdf';
+  static const String onboardingFormatTxt = 'onboarding.formatTxt';
+  static const String onboardingFormatEpub = 'onboarding.formatEpub';
   static const String onboardingImportHeadline = 'onboarding.importHeadline';
   static const String onboardingImportSubtitle = 'onboarding.importSubtitle';
-  static const String onboardingDropFiles = 'onboarding.dropFiles';
-  static const String onboardingDropFilesSupport =
-      'onboarding.dropFilesSupport';
-  static const String onboardingOcrEnhanced = 'onboarding.ocrEnhanced';
   static const String onboardingChooseFromFiles = 'onboarding.chooseFromFiles';
   static const String onboardingTrySampleText = 'onboarding.trySampleText';
   static const String onboardingSkipForNow = 'onboarding.skipForNow';

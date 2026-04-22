@@ -39,26 +39,22 @@ class ReadingTipCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      padding: const EdgeInsets.all(AppSpacing.md),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: AppRadius.mdBorder,
-        border: Border(
-          left: BorderSide(color: accentColor, width: 3),
-          top: BorderSide(
-            color: borderColor.withValues(alpha: 0.3),
-            width: 0.5,
-          ),
-          right: BorderSide(
-            color: borderColor.withValues(alpha: 0.3),
-            width: 0.5,
-          ),
-          bottom: BorderSide(
-            color: borderColor.withValues(alpha: 0.3),
-            width: 0.5,
-          ),
+        border: Border.all(
+          color: borderColor.withValues(alpha: 0.3),
+          width: 0.5,
         ),
       ),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(color: accentColor, width: 3),
+          ),
+        ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -98,6 +94,7 @@ class ReadingTipCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

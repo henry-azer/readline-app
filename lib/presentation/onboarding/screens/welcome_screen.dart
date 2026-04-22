@@ -3,17 +3,14 @@ import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
 import 'package:read_it/core/theme/app_colors.dart';
-import 'package:read_it/core/theme/app_gradients.dart';
-import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
 import 'package:read_it/presentation/widgets/read_it_button.dart';
-import 'package:read_it/presentation/widgets/tap_scale.dart';
 
-class WelcomeStep extends StatelessWidget {
+class WelcomeScreen extends StatelessWidget {
   final VoidCallback onBegin;
 
-  const WelcomeStep({super.key, required this.onBegin});
+  const WelcomeScreen({super.key, required this.onBegin});
 
   @override
   Widget build(BuildContext context) {
@@ -31,59 +28,16 @@ class WelcomeStep extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: AppSpacing.xxl),
-
-            // Skip to app link
-            Align(
-              alignment: Alignment.topRight,
-              child: TapScale(
-                onTap: onBegin,
-                child: Text(
-                  AppStrings.onboardingSkip.tr,
-                  style: AppTypography.label.copyWith(color: onSurfaceVariant),
-                ),
-              ),
-            ),
+            const SizedBox(height: AppSpacing.xxl),
             const SizedBox(height: AppSpacing.xxl),
 
-            // Streak preview badge
-            Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  gradient: AppGradients.streakLight,
-                  borderRadius: AppRadius.fullBorder,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.local_fire_department,
-                      color: AppColors.white,
-                      size: 16,
-                    ),
-                    const SizedBox(width: AppSpacing.xxs),
-                    Text(
-                      AppStrings.onboardingStreakBadge.tr,
-                      style: AppTypography.labelMedium.copyWith(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
             Center(
               child: Text(
                 AppStrings.onboardingMindfulJourney.tr,
                 style: AppTypography.label.copyWith(color: onSurfaceVariant),
               ),
             ),
-            const SizedBox(height: AppSpacing.xxl),
+            const SizedBox(height: AppSpacing.xxxxl),
 
             // Headline
             RichText(
@@ -115,11 +69,11 @@ class WelcomeStep extends StatelessWidget {
                       height: 1.15,
                     ),
                   ),
-                  const TextSpan(text: '.'),
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.xxl),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Subtitle
             Text(

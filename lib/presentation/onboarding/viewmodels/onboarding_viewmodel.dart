@@ -122,6 +122,15 @@ class OnboardingViewModel {
     selectedLevel$.add(levelId);
   }
 
+  void handleSwipeVelocity(double velocity) {
+    const threshold = 300.0;
+    if (velocity < -threshold) {
+      nextStep();
+    } else if (velocity > threshold) {
+      previousStep();
+    }
+  }
+
   /// Saves preferences and navigates to home.
   Future<void> completeOnboarding(BuildContext context) async {
     isLoading$.add(true);
@@ -173,7 +182,7 @@ class OnboardingViewModel {
     }
   }
 
-  /// Handles "Use sample text" — loads bundled asset, saves, then completes.
+  /// Handles "Use sample text" — loads bundled asset, saves, then navigates to reading.
   Future<void> useSampleText(BuildContext context) async {
     isLoading$.add(true);
     errorMessage$.add(null);
@@ -182,7 +191,24 @@ class OnboardingViewModel {
       final doc = await _pdfService.processSampleText(text);
       await _docRepo.save(doc);
       if (!context.mounted) return;
-      await completeOnboarding(context);
+
+      // Save onboarding prefs
+      final prefs = await _prefsRepo.get();
+      final level = selectedLevel$.value.isEmpty
+          ? 'intermediate'
+          : selectedLevel$.value;
+      await _prefsRepo.save(
+        prefs.copyWith(
+          onboardingCompleted: true,
+          readingLevel: level,
+          readingSpeedWpm: wpmForLevel(level),
+        ),
+      );
+      markOnboardingCompleted();
+
+      if (context.mounted) {
+        context.go('${AppRoutes.reading}/${doc.id}?autoPlay=true');
+      }
     } catch (_) {
       errorMessage$.add(AppStrings.errorSampleText.tr);
       isLoading$.add(false);

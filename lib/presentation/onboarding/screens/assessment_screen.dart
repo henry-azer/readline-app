@@ -10,13 +10,13 @@ import 'package:read_it/presentation/onboarding/widgets/level_card.dart';
 import 'package:read_it/presentation/widgets/read_it_button.dart';
 import 'package:read_it/presentation/widgets/tap_scale.dart';
 
-class AssessmentStep extends StatelessWidget {
+class AssessmentScreen extends StatelessWidget {
   final String selectedLevel;
   final void Function(String levelId) onSelectLevel;
   final VoidCallback onContinue;
   final VoidCallback onCustomizeLater;
 
-  const AssessmentStep({
+  const AssessmentScreen({
     super.key,
     required this.selectedLevel,
     required this.onSelectLevel,
@@ -47,15 +47,8 @@ class AssessmentStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Logo
-                Text(
-                  AppStrings.onboardingAssessmentLogo.tr,
-                  style: AppTypography.titleLarge.copyWith(
-                    color: isDark ? AppColors.primary : AppColors.lightPrimary,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Headline
                 Text(
@@ -77,21 +70,29 @@ class AssessmentStep extends StatelessWidget {
             ),
           ),
 
-          // Scrollable level cards
+          // Level cards grid (2x2)
           Expanded(
-            child: ListView.separated(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              itemCount: readingLevels.length,
-              separatorBuilder: (ctx, idx) =>
-                  const SizedBox(height: AppSpacing.md),
-              itemBuilder: (context, index) {
-                final level = readingLevels[index];
-                return LevelCard(
-                  level: level,
-                  isSelected: selectedLevel == level.id,
-                  onTap: () => onSelectLevel(level.id),
-                );
-              },
+              child: GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: AppSpacing.sm,
+                      mainAxisSpacing: AppSpacing.sm,
+                      childAspectRatio: 0.82,
+                    ),
+                itemCount: readingLevels.length,
+                itemBuilder: (context, index) {
+                  final level = readingLevels[index];
+                  return LevelCard(
+                    level: level,
+                    isSelected: selectedLevel == level.id,
+                    onTap: () => onSelectLevel(level.id),
+                  );
+                },
+              ),
             ),
           ),
 

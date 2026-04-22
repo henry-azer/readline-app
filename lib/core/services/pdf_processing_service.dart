@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:uuid/uuid.dart';
 import 'package:read_it/core/constants/app_constants.dart';
@@ -119,18 +120,7 @@ class PdfProcessingService {
 
   Future<PdfDocumentModel> processFile(File file) async {
     final bytes = await file.readAsBytes();
-    final document = PdfDocument(inputBytes: bytes);
-
-    final text = PdfTextExtractor(document).extractText();
-    final pageCount = document.pages.count;
-    document.dispose();
-
-    final words = text
-        .split(RegExp(r'\s+'))
-        .where((w) => w.isNotEmpty)
-        .toList();
-    final wordCount = words.length;
-    final complexity = _calculateComplexity(words);
+    final result = await compute(_extractPdf, bytes);
 
     final fileName = file.path.split('/').last;
     final title = fileName.replaceAll('.pdf', '');
@@ -140,12 +130,39 @@ class PdfProcessingService {
       title: title,
       filePath: file.path,
       fileName: fileName,
-      totalPages: pageCount,
-      totalWords: wordCount,
-      complexityScore: complexity,
-      complexityLevel: _complexityLevel(complexity),
-      extractedText: text,
+      totalPages: result.pageCount,
+      totalWords: result.wordCount,
+      complexityScore: result.complexity,
+      complexityLevel: _complexityLevel(result.complexity),
+      extractedText: result.text,
       importedAt: DateTime.now(),
+    );
+  }
+
+  static _PdfExtractResult _extractPdf(List<int> bytes) {
+    final document = PdfDocument(inputBytes: bytes);
+    final text = PdfTextExtractor(document).extractText();
+    final pageCount = document.pages.count;
+    document.dispose();
+
+    final words = text
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+
+    final avgLength =
+        words.isEmpty ? 0.0 : words.fold<int>(0, (sum, w) => sum + w.length) / words.length;
+    final uncommonRatio = words.isEmpty
+        ? 0.0
+        : words.where((w) => !_commonWords.contains(w.toLowerCase())).length /
+            words.length;
+    final complexity = (avgLength * 10 + uncommonRatio * 50).clamp(0.0, 100.0);
+
+    return _PdfExtractResult(
+      text: text,
+      pageCount: pageCount,
+      wordCount: words.length,
+      complexity: complexity,
     );
   }
 
@@ -199,4 +216,18 @@ class PdfProcessingService {
       importedAt: DateTime.now(),
     );
   }
+}
+
+class _PdfExtractResult {
+  final String text;
+  final int pageCount;
+  final int wordCount;
+  final double complexity;
+
+  const _PdfExtractResult({
+    required this.text,
+    required this.pageCount,
+    required this.wordCount,
+    required this.complexity,
+  });
 }

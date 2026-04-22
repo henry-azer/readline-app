@@ -1,3 +1,4 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:read_it/app.dart';
 import 'package:read_it/core/di/injection.dart';
@@ -96,6 +97,21 @@ class SettingsViewModel {
       themeModeNotifier.value = defaults.themeMode;
     } finally {
       isSaving$.add(false);
+    }
+  }
+
+  /// Clears all Hive boxes — removes all app data.
+  Future<void> clearAllData() async {
+    const boxNames = [
+      'preferences',
+      'documents',
+      'reading_sessions',
+      'streaks',
+      'vocabulary',
+    ];
+    for (final name in boxNames) {
+      final box = await Hive.openBox(name);
+      await box.clear();
     }
   }
 

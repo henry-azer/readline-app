@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/theme/app_colors.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
@@ -34,18 +35,18 @@ class LevelCard extends StatelessWidget {
         ? AppColors.outlineVariant
         : AppColors.lightOutlineVariant;
 
-    // Advanced level gets a highlighted accent on the WPM range
-    final isAdvanced = level.id == 'advanced';
-    final wpmColor = isAdvanced
-        ? (isDark ? AppColors.tertiary : const Color(0xFFB44B3C))
-        : primary;
+    final wpmColor = Color.lerp(
+      primary,
+      isDark ? AppColors.tertiary : AppColors.lightTertiaryContainer,
+      (level.levelNumber - 1) / 3,
+    )!;
 
     return TapScale(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppDurations.short,
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
           color: surface,
           borderRadius: AppRadius.lgBorder,
@@ -66,54 +67,61 @@ class LevelCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Icon bubble + level tag
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Icon bubble
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: isDark
                         ? AppColors.surfaceContainerHigh
-                        : AppColors.lightSurfaceContainer,
+                        : AppColors.lightSurfaceContainerHigh,
                     borderRadius: AppRadius.smBorder,
                   ),
-                  child: Icon(level.icon, size: 22, color: onSurface),
+                  child: Icon(level.icon, size: 18, color: onSurface),
                 ),
                 const Spacer(),
-                // Level tag
                 Text(
                   level.levelTag,
                   style: AppTypography.label.copyWith(
-                    color: isAdvanced ? wpmColor : onSurfaceVariant,
+                    color: wpmColor,
+                    fontSize: 9,
                     letterSpacing: 1.0,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.xs),
             // Level name
             Text(
               level.label,
-              style: AppTypography.headlineMedium.copyWith(color: onSurface),
+              style: AppTypography.titleMedium.copyWith(color: onSurface),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: AppSpacing.xxs),
+            const SizedBox(height: 2),
             // WPM range
             Text(
               level.wpmRange,
-              style: AppTypography.labelMedium.copyWith(
+              style: AppTypography.label.copyWith(
                 color: wpmColor,
                 fontWeight: FontWeight.w600,
+                fontSize: 10,
               ),
             ),
-            const SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xxs),
             // Description
-            Text(
-              level.description,
-              style: AppTypography.bodySmall.copyWith(
-                color: onSurfaceVariant,
-                height: 1.5,
+            Expanded(
+              child: Text(
+                level.description,
+                style: AppTypography.bodySmall.copyWith(
+                  color: onSurfaceVariant,
+                  fontSize: 11,
+                  height: 1.4,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
