@@ -44,6 +44,24 @@ abstract final class AppColors {
   static const Color white = Color(0xFFFFFFFF);
   static const Color transparent = Color(0x00000000);
 
+  // ── Semantic: Success / Completion ──
+  static const Color lightSuccess = Color(0xFF1E7E34);
+  static const Color success = Color(0xFF81C995);
+
+  // ── Semantic: Mastery levels ──
+  static const Color lightMasteredBg = Color(0xFFE6F4EA);
+  static const Color masteredBg = Color(0xFF1B3A2E);
+  static const Color lightMasteredText = Color(0xFF1E7E34);
+  static const Color masteredText = Color(0xFF81C995);
+  static const Color lightLearningBg = Color(0xFFFFF3CD);
+  static const Color lightLearningText = Color(0xFF856404);
+
+  // ── Semantic: Complexity levels ──
+  static const Color complexityBeginner = Color(0xFF4CAF50);
+  static const Color complexityIntermediate = Color(0xFF2196F3);
+  static const Color complexityAdvanced = Color(0xFFFF9800);
+  static const Color complexityExpert = Color(0xFFF44336);
+
   // ── Streak gradient (light) ──
   static const Color streakGradientStart = Color(0xFFE8734A);
   static const Color streakGradientEnd = Color(0xFFD4A04A);
@@ -54,8 +72,23 @@ abstract final class AppColors {
 
   // ── Glass effects ──
   static Color glassBackground(bool isDark) => isDark
-      ? surfaceContainer.withValues(alpha: 0.7)
-      : lightSurface.withValues(alpha: 0.8);
+      ? const Color(0x0AFFFFFF) // rgba(255,255,255,0.04)
+      : const Color(0x08000000); // rgba(0,0,0,0.03)
+
+  static Color glassBorder(bool isDark) => isDark
+      ? const Color(0x14FFFFFF) // rgba(255,255,255,0.08)
+      : const Color(0x0F000000); // rgba(0,0,0,0.06)
+
+  static Color glassInner(bool isDark) => isDark
+      ? const Color(0x0FFFFFFF) // rgba(255,255,255,0.06)
+      : const Color(0x0A000000); // rgba(0,0,0,0.04)
+
+  static Color glassTrack(bool isDark) => isDark
+      ? const Color(0x0AFFFFFF) // rgba(255,255,255,0.04)
+      : const Color(0x0A000000); // rgba(0,0,0,0.04)
+
+  // ── Home background gradient (dark only) ──
+  static const Color homeGradientTop = Color(0xFF0E1A2A);
 
   // ── Ambient shadows ──
   static BoxShadow ambientShadow({double blur = 32, double opacity = 0.06}) =>
