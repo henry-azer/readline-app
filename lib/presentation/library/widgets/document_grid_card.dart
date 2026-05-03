@@ -6,26 +6,40 @@ import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
-import 'package:read_it/data/models/pdf_document_model.dart';
+import 'package:read_it/data/models/document_model.dart';
+import 'package:read_it/presentation/library/widgets/highlighted_text.dart';
+import 'package:read_it/presentation/library/widgets/source_type_icon.dart';
 import 'package:read_it/presentation/widgets/tap_scale.dart';
 
 class DocumentGridCard extends StatelessWidget {
-  final PdfDocumentModel document;
+  final DocumentModel document;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
+  final bool isSelected;
+  final bool isMultiSelectMode;
+  final VoidCallback? onToggleSelect;
+  final VoidCallback? onLongPress;
+  final String? searchQuery;
 
   const DocumentGridCard({
     super.key,
     required this.document,
     required this.onTap,
     this.onDelete,
+    this.onEdit,
+    this.isSelected = false,
+    this.isMultiSelectMode = false,
+    this.onToggleSelect,
+    this.onLongPress,
+    this.searchQuery,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
     final cardColor = isDark
-        ? AppColors.surfaceContainerLow
+        ? AppColors.surfaceContainer
         : AppColors.lightSurfaceContainerLowest;
     final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
     final onSurfaceVariant = isDark
@@ -39,100 +53,151 @@ class DocumentGridCard extends StatelessWidget {
     final progress = document.totalPages > 0
         ? (document.currentPage / document.totalPages).clamp(0.0, 1.0)
         : 0.0;
-    final isCompleted = document.readingStatus == 'completed';
-    final progressColor = isCompleted ? AppColors.error : primary;
+    final isCompleted = document.isCompleted;
+    final progressColor = isCompleted
+        ? (isDark ? AppColors.success : AppColors.lightSuccess)
+        : primary;
 
-    return TapScale(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: AppRadius.lgBorder,
-          border: Border.all(color: outlineVariant.withValues(alpha: 0.3)),
-          boxShadow: [
-            isDark
-                ? AppColors.darkAmbientShadow(blur: 16, opacity: 0.25)
-                : AppColors.ambientShadow(blur: 16, opacity: 0.06),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cover / thumbnail area
-            Expanded(
-              child: _CoverArea(
-                document: document,
-                isDark: isDark,
-                onDelete: onDelete,
-              ),
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: TapScale(
+        onTap: isMultiSelectMode ? onToggleSelect : onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: AppRadius.lgBorder,
+            border: Border.all(
+              color: isSelected
+                  ? primary
+                  : outlineVariant.withValues(alpha: 0.3),
+              width: isSelected ? 2 : 1,
             ),
-
-            // Info section
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.sm,
-                AppSpacing.xs,
-                AppSpacing.sm,
-                AppSpacing.sm,
+            boxShadow: [
+              isDark
+                  ? AppColors.darkAmbientShadow(blur: 16, opacity: 0.25)
+                  : AppColors.ambientShadow(blur: 16, opacity: 0.06),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Cover / thumbnail area
+              Expanded(
+                child: _CoverArea(
+                  document: document,
+                  isDark: isDark,
+                  isMultiSelectMode: isMultiSelectMode,
+                  isSelected: isSelected,
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    document.title,
-                    style: AppTypography.labelMedium.copyWith(
-                      color: onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
 
-                  const SizedBox(height: AppSpacing.xxs),
-
-                  // Page count
-                  Text(
-                    AppStrings.libraryPageCount.trParams({
-                      'current': '${document.currentPage}',
-                      'total': '${document.totalPages}',
-                    }),
-                    style: AppTypography.label.copyWith(
-                      color: onSurfaceVariant,
-                      fontSize: 10,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  const SizedBox(height: AppSpacing.xs),
-
-                  // Progress bar
-                  Stack(
-                    children: [
-                      Container(
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: outlineVariant.withValues(alpha: 0.4),
-                          borderRadius: AppRadius.fullBorder,
-                        ),
+              // Info section
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.sm,
+                  AppSpacing.xs,
+                  AppSpacing.sm,
+                  AppSpacing.sm,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    HighlightedText(
+                      text: document.title,
+                      query: searchQuery,
+                      style: AppTypography.labelMedium.copyWith(
+                        color: onSurface,
+                        fontWeight: FontWeight.w600,
                       ),
-                      FractionallySizedBox(
-                        widthFactor: progress,
-                        child: Container(
+                      highlightColor: primary,
+                      maxLines: 2,
+                    ),
+
+                    // Description
+                    if (document.description != null &&
+                        document.description!.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.micro),
+                      HighlightedText(
+                        text: document.description!,
+                        query: searchQuery,
+                        style: AppTypography.label.copyWith(
+                          color: onSurfaceVariant,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        highlightColor: primary,
+                        maxLines: 1,
+                      ),
+                    ],
+
+                    const SizedBox(height: AppSpacing.xxs),
+
+                    // Source type + page count row
+                    Row(
+                      children: [
+                        Icon(
+                          sourceTypeIcon(document.sourceType),
+                          size: 10,
+                          color: onSurfaceVariant,
+                        ),
+                        const SizedBox(width: AppSpacing.micro),
+                        Expanded(
+                          child: Text(
+                            AppStrings.libraryPageCount.trParams({
+                              'current': '${document.currentPage}',
+                              'total': '${document.totalPages}',
+                            }),
+                            style: AppTypography.label.copyWith(
+                              color: onSurfaceVariant,
+                              fontSize: 10,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: AppSpacing.xs),
+
+                    // Progress bar
+                    Stack(
+                      children: [
+                        Container(
                           height: 3,
                           decoration: BoxDecoration(
-                            color: progressColor,
+                            color: outlineVariant.withValues(alpha: 0.4),
                             borderRadius: AppRadius.fullBorder,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        FractionallySizedBox(
+                          widthFactor: progress,
+                          child: Container(
+                            height: 3,
+                            decoration: BoxDecoration(
+                              color: progressColor,
+                              borderRadius: AppRadius.fullBorder,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: AppSpacing.xxs),
+
+                    // Status label
+                    _StatusLabel(
+                      status: document.isCompleted
+                          ? 'completed'
+                          : (document.isInProgress ? 'reading' : 'unread'),
+                      isDark: isDark,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -140,14 +205,16 @@ class DocumentGridCard extends StatelessWidget {
 }
 
 class _CoverArea extends StatelessWidget {
-  final PdfDocumentModel document;
+  final DocumentModel document;
   final bool isDark;
-  final VoidCallback? onDelete;
+  final bool isMultiSelectMode;
+  final bool isSelected;
 
   const _CoverArea({
     required this.document,
     required this.isDark,
-    this.onDelete,
+    this.isMultiSelectMode = false,
+    this.isSelected = false,
   });
 
   @override
@@ -158,7 +225,7 @@ class _CoverArea extends StatelessWidget {
     final onSurfaceVariant = isDark
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
-    final isCompleted = document.readingStatus == 'completed';
+    final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
@@ -175,7 +242,7 @@ class _CoverArea extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.description_outlined,
+                    Icons.menu_book_rounded,
                     size: 36,
                     color: onSurfaceVariant.withValues(alpha: 0.5),
                   ),
@@ -192,8 +259,8 @@ class _CoverArea extends StatelessWidget {
             ),
           ),
 
-          // Completed badge (top right)
-          if (isCompleted)
+          // Multi-select checkbox
+          if (isMultiSelectMode)
             Positioned(
               top: AppSpacing.xs,
               right: AppSpacing.xs,
@@ -201,45 +268,66 @@ class _CoverArea extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.9),
+                  color: isSelected ? primary : surfaceHigh,
                   shape: BoxShape.circle,
+                  border: isSelected
+                      ? null
+                      : Border.all(color: onSurfaceVariant, width: 1.5),
                 ),
-                child: const Icon(
-                  Icons.check_rounded,
-                  size: 14,
-                  color: AppColors.white,
-                ),
+                child: isSelected
+                    ? const Icon(
+                        Icons.check_rounded,
+                        size: 14,
+                        color: AppColors.white,
+                      )
+                    : null,
               ),
             ),
 
-          // Delete button (top right, if not completed badge)
-          if (!isCompleted && onDelete != null)
-            Positioned(
-              top: AppSpacing.xs,
-              right: AppSpacing.xs,
-              child: GestureDetector(
-                onTap: onDelete,
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color:
-                        (isDark
-                                ? AppColors.surfaceContainer
-                                : AppColors.lightSurface)
-                            .withValues(alpha: 0.85),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.description_rounded,
-                    size: 14,
-                    color: onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
+    );
+  }
+}
+
+class _StatusLabel extends StatelessWidget {
+  final String status;
+  final bool isDark;
+
+  const _StatusLabel({required this.status, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, color) = switch (status) {
+      'completed' => (
+        AppStrings.libraryStatusCompleted.tr,
+        isDark ? AppColors.success : AppColors.lightSuccess,
+      ),
+      'reading' => (
+        AppStrings.libraryStatusInProgress.tr,
+        isDark
+            ? AppColors.complexityIntermediate
+            : AppColors.complexityIntermediate,
+      ),
+      _ => (
+        AppStrings.libraryStatusNotStarted.tr,
+        isDark ? AppColors.onSurfaceVariant : AppColors.lightOnSurfaceVariant,
+      ),
+    };
+
+    return Row(
+      children: [
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: AppSpacing.micro),
+        Text(
+          label,
+          style: AppTypography.label.copyWith(color: color, fontSize: 8),
+        ),
+      ],
     );
   }
 }

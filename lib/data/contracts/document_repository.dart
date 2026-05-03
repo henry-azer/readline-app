@@ -1,10 +1,14 @@
-import 'package:read_it/data/models/pdf_document_model.dart';
+import 'package:read_it/data/models/document_model.dart';
 
 abstract class DocumentRepository {
-  Future<List<PdfDocumentModel>> getAll();
-  Future<PdfDocumentModel?> getById(String id);
-  Future<void> save(PdfDocumentModel document);
+  Future<List<DocumentModel>> getAll();
+  Future<DocumentModel?> getById(String id);
+  Future<void> save(DocumentModel document);
   Future<void> delete(String id);
-  Future<List<PdfDocumentModel>> getByStatus(String status);
+  Future<List<DocumentModel>> getByStatus(String status);
   Future<void> updateProgress(String id, int currentPage, int wordsRead);
+
+  /// Resets a document's progress to the beginning so it can be re-read.
+  /// Sets `wordsRead`/`currentPage` back to 0 and status to `reading`.
+  Future<void> resetProgress(String id);
 }

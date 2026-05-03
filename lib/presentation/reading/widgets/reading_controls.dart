@@ -1,31 +1,35 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:read_it/core/di/injection.dart';
+import 'package:read_it/core/services/haptic_service.dart';
 import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/constants/app_constants.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
+import 'package:read_it/core/theme/app_breakpoints.dart';
 import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
 import 'package:read_it/data/entities/reading_state.dart';
 import 'package:read_it/presentation/widgets/glass_container.dart';
+import 'package:read_it/presentation/widgets/tap_scale.dart';
 
 /// Glass-effect controls bar at the bottom of the reading screen.
 ///
-/// Displays:
-/// - Font/typography toggle (left)
-/// - Speed display with decrease/increase buttons
-/// - Play/Pause button (center, prominent)
-/// - Progress (words read / total)
-/// - Stop button (right)
+/// Layout: [Font−] [Speed−] [Play/Pause + WPM] [Speed+] [Font+]
 class ReadingControls extends StatelessWidget {
   final ReadingState state;
   final VoidCallback onPlayPause;
-  final VoidCallback onStop;
   final VoidCallback onSpeedDecrease;
   final VoidCallback onSpeedIncrease;
+  final VoidCallback onFontSizeDecrease;
+  final VoidCallback onFontSizeIncrease;
+  final bool canDecreaseFontSize;
+  final bool canIncreaseFontSize;
+  final ValueChanged<double> onSeek;
 
   static const int _minWpm = AppConstants.minWpm;
   static const int _maxWpm = AppConstants.maxWpm;
@@ -34,23 +38,72 @@ class ReadingControls extends StatelessWidget {
     super.key,
     required this.state,
     required this.onPlayPause,
-    required this.onStop,
     required this.onSpeedDecrease,
     required this.onSpeedIncrease,
+    required this.onFontSizeDecrease,
+    required this.onFontSizeIncrease,
+    required this.canDecreaseFontSize,
+    required this.canIncreaseFontSize,
+    required this.onSeek,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
-    final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
     final onSurfaceVariant = isDark
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
     final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
+    final screenWidth = context.screenWidth;
 
     final progress = state.totalWords > 0
         ? state.currentWordIndex / state.totalWords
         : 0.0;
+
+    // ── Responsive sizing ──────────────────────────────────────────────
+    final bool isCompact = screenWidth < AppBreakpoints.compact;
+    final bool isExpanded = screenWidth >= AppBreakpoints.expanded;
+
+    final double playSize = isCompact
+        ? 48
+        : isExpanded
+        ? 64
+        : 56;
+    final double playIcon = isCompact
+        ? 24
+        : isExpanded
+        ? 32
+        : 28;
+    final double speedSize = isCompact
+        ? 30
+        : isExpanded
+        ? 42
+        : 36;
+    final double speedIcon = isCompact
+        ? 14
+        : isExpanded
+        ? 20
+        : 17;
+    final double fontSize = isCompact
+        ? 24
+        : isExpanded
+        ? 34
+        : 28;
+    final double fontIcon = isCompact
+        ? 11
+        : isExpanded
+        ? 16
+        : 13;
+    final double labelSize = isCompact
+        ? 9
+        : isExpanded
+        ? 12
+        : 10;
+    final double hPad = isCompact
+        ? AppSpacing.sm
+        : isExpanded
+        ? AppSpacing.xl
+        : AppSpacing.md;
 
     return GlassContainer(
       blur: 16,
@@ -59,79 +112,148 @@ class ReadingControls extends StatelessWidget {
         topRight: Radius.circular(AppRadius.xl),
       ),
       padding: EdgeInsets.only(
-        left: AppSpacing.md,
-        right: AppSpacing.md,
+        left: hPad,
+        right: hPad,
         top: AppSpacing.sm,
         bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.md,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── Progress bar ────────────────────────────────────────────────
-          ClipRRect(
-            borderRadius: AppRadius.fullBorder,
-            child: LinearProgressIndicator(
-              value: progress.clamp(0.0, 1.0),
-              minHeight: 3,
-              backgroundColor: onSurfaceVariant.withValues(alpha: 0.15),
-              valueColor: AlwaysStoppedAnimation<Color>(primary),
+          // ── Seekable progress bar ─────────────────────────────────────
+          SliderTheme(
+            data: SliderThemeData(
+              trackHeight: 3,
+              activeTrackColor: primary,
+              inactiveTrackColor: onSurfaceVariant.withValues(alpha: 0.15),
+              thumbColor: primary,
+              overlayColor: primary.withValues(alpha: 0.12),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+              trackShape: const RoundedRectSliderTrackShape(),
+            ),
+            child: Slider(value: progress.clamp(0.0, 1.0), onChanged: onSeek),
+          ),
+
+          // ── Time labels — elapsed (left) / remaining (right) ──────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.smd),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _formatTime(_elapsedSeconds(state)),
+                  style: AppTypography.label.copyWith(
+                    color: onSurfaceVariant,
+                    fontSize: labelSize,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                Text(
+                  '-${_formatTime(_remainingSeconds(state))}',
+                  style: AppTypography.label.copyWith(
+                    color: onSurfaceVariant,
+                    fontSize: labelSize,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
             ),
           ),
 
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.md),
 
-          // ── Control row ─────────────────────────────────────────────────
+          // ── Control row — all icons on same baseline ─────────────────
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Left — font toggle (decorative / future use)
-              _IconAction(
-                icon: Icons.text_fields_rounded,
-                label: AppStrings.readingFontSize.tr,
+              _CircleAction(
+                icon: Icons.text_decrease_rounded,
+                size: fontSize,
+                iconSize: fontIcon,
                 color: onSurfaceVariant,
-                onTap: () {}, // Font cycle — future feature
+                enabled: canDecreaseFontSize,
+                onTap: onFontSizeDecrease,
               ),
-
-              // Speed controls
-              _SpeedControl(
-                wpm: state.currentWpm,
-                onDecrease: onSpeedDecrease,
-                onIncrease: onSpeedIncrease,
-                canDecrease: state.currentWpm > _minWpm,
-                canIncrease: state.currentWpm < _maxWpm,
-                primary: primary,
-                onSurface: onSurface,
-                onSurfaceVariant: onSurfaceVariant,
+              _CircleAction(
+                icon: Icons.remove_rounded,
+                size: speedSize,
+                iconSize: speedIcon,
+                color: onSurfaceVariant,
+                enabled: state.currentWpm > _minWpm,
+                onTap: onSpeedDecrease,
               ),
-
-              // Center — Play/Pause (prominent)
               _PlayPauseButton(
                 isPlaying: state.isPlaying,
                 primary: primary,
                 onTap: onPlayPause,
+                size: playSize,
+                iconSize: playIcon,
               ),
-
-              // Progress label
-              _ProgressLabel(
-                wordsRead: state.currentWordIndex,
-                total: state.totalWords,
-                onSurfaceVariant: onSurfaceVariant,
-              ),
-
-              // Right — Stop / bookmark
-              _IconAction(
-                icon: Icons.stop_rounded,
-                label: null,
+              _CircleAction(
+                icon: Icons.add_rounded,
+                size: speedSize,
+                iconSize: speedIcon,
                 color: onSurfaceVariant,
-                onTap: onStop,
-                tooltip: AppStrings.readingEndSession.tr,
+                enabled: state.currentWpm < _maxWpm,
+                onTap: onSpeedIncrease,
+              ),
+              _CircleAction(
+                icon: Icons.text_increase_rounded,
+                size: fontSize,
+                iconSize: fontIcon,
+                color: onSurfaceVariant,
+                enabled: canIncreaseFontSize,
+                onTap: onFontSizeIncrease,
               ),
             ],
+          ),
+
+          const SizedBox(height: AppSpacing.smd),
+
+          // ── Speed label — centered below controls ──────────────────────
+          Text(
+            '${state.currentWpm} ${AppStrings.readingWpm.tr}',
+            style: AppTypography.label.copyWith(
+              color: onSurfaceVariant,
+              fontSize: labelSize,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+// ── Time formatting ────────────────────────────────────────────────────────────
+
+int _elapsedSeconds(ReadingState state) {
+  final wpm = state.currentWpm > 0 ? state.currentWpm : 1;
+  final words = state.currentWordIndex.clamp(0, state.totalWords);
+  return (words * 60 / wpm).round();
+}
+
+int _remainingSeconds(ReadingState state) {
+  final wpm = state.currentWpm > 0 ? state.currentWpm : 1;
+  final words = (state.totalWords - state.currentWordIndex).clamp(
+    0,
+    state.totalWords,
+  );
+  return (words * 60 / wpm).round();
+}
+
+String _formatTime(int totalSeconds) {
+  final h = totalSeconds ~/ 3600;
+  final m = (totalSeconds % 3600) ~/ 60;
+  final s = totalSeconds % 60;
+  final ss = s.toString().padLeft(2, '0');
+  if (h > 0) {
+    final mm = m.toString().padLeft(2, '0');
+    return '$h:$mm:$ss';
+  }
+  return '$m:$ss';
 }
 
 // ── Sub-widgets ────────────────────────────────────────────────────────────────
@@ -140,24 +262,29 @@ class _PlayPauseButton extends StatelessWidget {
   final bool isPlaying;
   final Color primary;
   final VoidCallback onTap;
+  final double size;
+  final double iconSize;
 
   const _PlayPauseButton({
     required this.isPlaying,
     required this.primary,
     required this.onTap,
+    this.size = 56,
+    this.iconSize = 28,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TapScale(
+      scale: 0.9,
       onTap: () {
-        HapticFeedback.lightImpact();
+        getIt<HapticService>().medium();
         onTap();
       },
       child: AnimatedContainer(
         duration: AppDurations.normal,
-        width: 56,
-        height: 56,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           color: primary,
           shape: BoxShape.circle,
@@ -174,180 +301,118 @@ class _PlayPauseButton extends StatelessWidget {
           color: context.isDark
               ? AppColors.onPrimary
               : AppColors.lightOnPrimary,
-          size: 28,
+          size: iconSize,
         ),
       ),
     );
   }
 }
 
-class _SpeedControl extends StatelessWidget {
-  final int wpm;
-  final VoidCallback onDecrease;
-  final VoidCallback onIncrease;
-  final bool canDecrease;
-  final bool canIncrease;
-  final Color primary;
-  final Color onSurface;
-  final Color onSurfaceVariant;
-
-  const _SpeedControl({
-    required this.wpm,
-    required this.onDecrease,
-    required this.onIncrease,
-    required this.canDecrease,
-    required this.canIncrease,
-    required this.primary,
-    required this.onSurface,
-    required this.onSurfaceVariant,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-          onTap: canDecrease ? onDecrease : null,
-          child: Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: onSurfaceVariant.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.remove,
-              size: 14,
-              color: canDecrease
-                  ? onSurfaceVariant
-                  : onSurfaceVariant.withValues(alpha: 0.3),
-            ),
-          ),
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '$wpm',
-              style: AppTypography.titleMedium.copyWith(
-                color: onSurface,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
-            ),
-            Text(
-              AppStrings.readingWpm.tr,
-              style: AppTypography.label.copyWith(
-                color: onSurfaceVariant,
-                fontSize: 8,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        GestureDetector(
-          onTap: canIncrease ? onIncrease : null,
-          child: Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: onSurfaceVariant.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.add,
-              size: 14,
-              color: canIncrease
-                  ? onSurfaceVariant
-                  : onSurfaceVariant.withValues(alpha: 0.3),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ProgressLabel extends StatelessWidget {
-  final int wordsRead;
-  final int total;
-  final Color onSurfaceVariant;
-
-  const _ProgressLabel({
-    required this.wordsRead,
-    required this.total,
-    required this.onSurfaceVariant,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final pct = total > 0 ? ((wordsRead / total) * 100).round() : 0;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '$pct%',
-          style: AppTypography.titleMedium.copyWith(
-            color: onSurfaceVariant,
-            fontSize: 14,
-          ),
-        ),
-        Text(
-          '${_compact(wordsRead)}/${_compact(total)}',
-          style: AppTypography.label.copyWith(
-            color: onSurfaceVariant.withValues(alpha: 0.7),
-            fontSize: 8,
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _compact(int n) {
-    if (n >= 1000) return '${(n / 1000).toStringAsFixed(1)}k';
-    return '$n';
-  }
-}
-
-class _IconAction extends StatelessWidget {
+class _CircleAction extends StatefulWidget {
   final IconData icon;
-  final String? label;
+  final double size;
+  final double iconSize;
   final Color color;
+  final bool enabled;
   final VoidCallback onTap;
-  final String? tooltip;
 
-  const _IconAction({
+  const _CircleAction({
     required this.icon,
-    required this.label,
+    this.size = 36,
+    this.iconSize = 18,
     required this.color,
+    required this.enabled,
     required this.onTap,
-    this.tooltip,
   });
 
   @override
+  State<_CircleAction> createState() => _CircleActionState();
+}
+
+class _CircleActionState extends State<_CircleAction> {
+  static const _holdDelay = Duration(milliseconds: 400);
+  static const _repeatInterval = Duration(milliseconds: 80);
+
+  bool _pressed = false;
+  Timer? _holdDelayTimer;
+  Timer? _repeatTimer;
+
+  void _startPress() {
+    if (!widget.enabled) return;
+    setState(() => _pressed = true);
+    getIt<HapticService>().light();
+    widget.onTap();
+    _holdDelayTimer = Timer(_holdDelay, _beginRepeating);
+  }
+
+  void _beginRepeating() {
+    _repeatTimer = Timer.periodic(_repeatInterval, (_) {
+      if (!widget.enabled) {
+        _endPress();
+        return;
+      }
+      widget.onTap();
+    });
+  }
+
+  void _endPress() {
+    _holdDelayTimer?.cancel();
+    _holdDelayTimer = null;
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+    if (mounted && _pressed) setState(() => _pressed = false);
+  }
+
+  @override
+  void didUpdateWidget(_CircleAction oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.enabled && (_holdDelayTimer != null || _repeatTimer != null)) {
+      _endPress();
+    }
+  }
+
+  @override
+  void dispose() {
+    _holdDelayTimer?.cancel();
+    _repeatTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final button = GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: 40,
-        height: 40,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 20, color: color),
-            if (label != null)
-              Text(
-                label!,
-                style: AppTypography.label.copyWith(color: color, fontSize: 8),
-              ),
-          ],
-        ),
+    final reduceMotion = MediaQuery.of(context).disableAnimations;
+    final circle = Container(
+      width: widget.size,
+      height: widget.size,
+      decoration: BoxDecoration(
+        color: widget.color.withValues(alpha: 0.12),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        widget.icon,
+        size: widget.iconSize,
+        color: widget.enabled
+            ? widget.color
+            : widget.color.withValues(alpha: 0.3),
       ),
     );
-    if (tooltip != null) {
-      return Tooltip(message: tooltip!, child: button);
-    }
-    return button;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: widget.enabled ? (_) => _startPress() : null,
+      onTapUp: (_) => _endPress(),
+      onTapCancel: _endPress,
+      child: reduceMotion
+          ? AnimatedOpacity(
+              opacity: _pressed ? 0.7 : 1.0,
+              duration: AppDurations.instant,
+              child: circle,
+            )
+          : AnimatedScale(
+              scale: _pressed ? 0.95 : 1.0,
+              duration: AppDurations.quick,
+              child: circle,
+            ),
+    );
   }
 }

@@ -67,10 +67,8 @@ final appRouter = GoRouter(
     // Onboarding (full-screen, no nav)
     GoRoute(
       path: AppRoutes.onboarding,
-      pageBuilder: (ctx, state) => slideUpFadePage(
-        state: state,
-        child: const OnboardingScreen(),
-      ),
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const OnboardingScreen()),
     ),
     // Shell route for persistent bottom nav (4 tabs)
     StatefulShellRoute.indexedStack(
@@ -97,16 +95,16 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.vocabulary,
-              builder: (ctx, st) => const VocabularyScreen(),
+              path: AppRoutes.analytics,
+              builder: (ctx, st) => const AnalyticsScreen(),
             ),
           ],
         ),
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.analytics,
-              builder: (ctx, st) => const AnalyticsScreen(),
+              path: AppRoutes.settings,
+              builder: (ctx, st) => const SettingsScreen(),
             ),
           ],
         ),
@@ -115,27 +113,24 @@ final appRouter = GoRouter(
     // Full-screen routes (outside shell, no bottom nav)
     GoRoute(
       path: '${AppRoutes.reading}/:documentId',
-      pageBuilder: (_, state) => slideUpFadePage(
+      pageBuilder: (_, state) => immersiveFadePage(
         state: state,
         child: ReadingScreen(
           documentId: state.pathParameters['documentId']!,
           autoPlay: state.uri.queryParameters['autoPlay'] == 'true',
+          restart: state.uri.queryParameters['restart'] == 'true',
         ),
       ),
     ),
     GoRoute(
-      path: AppRoutes.settings,
-      pageBuilder: (ctx, state) => slideUpFadePage(
-        state: state,
-        child: const SettingsScreen(),
-      ),
+      path: AppRoutes.vocabulary,
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const VocabularyScreen()),
     ),
     GoRoute(
       path: AppRoutes.review,
-      pageBuilder: (ctx, state) => slideUpFadePage(
-        state: state,
-        child: const ReviewSessionScreen(),
-      ),
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const ReviewSessionScreen()),
     ),
   ],
 );

@@ -1,6 +1,6 @@
 import 'package:read_it/data/contracts/document_repository.dart';
 import 'package:read_it/data/datasources/local/hive_document_source.dart';
-import 'package:read_it/data/models/pdf_document_model.dart';
+import 'package:read_it/data/models/document_model.dart';
 
 class DocumentRepositoryImpl implements DocumentRepository {
   final HiveDocumentSource _source;
@@ -9,19 +9,19 @@ class DocumentRepositoryImpl implements DocumentRepository {
   DocumentRepositoryImpl(this._source);
 
   @override
-  Future<List<PdfDocumentModel>> getAll() => _source.getAll();
+  Future<List<DocumentModel>> getAll() => _source.getAll();
 
   @override
-  Future<PdfDocumentModel?> getById(String id) => _source.getById(id);
+  Future<DocumentModel?> getById(String id) => _source.getById(id);
 
   @override
-  Future<void> save(PdfDocumentModel document) => _source.save(document);
+  Future<void> save(DocumentModel document) => _source.save(document);
 
   @override
   Future<void> delete(String id) => _source.delete(id);
 
   @override
-  Future<List<PdfDocumentModel>> getByStatus(String status) async {
+  Future<List<DocumentModel>> getByStatus(String status) async {
     final all = await _source.getAll();
     return all.where((d) => d.readingStatus == status).toList();
   }
@@ -37,6 +37,23 @@ class DocumentRepositoryImpl implements DocumentRepository {
           currentPage: currentPage,
           wordsRead: wordsRead,
           readingStatus: status,
+          lastReadAt: DateTime.now(),
+        ),
+      );
+    });
+    return _pendingUpdate;
+  }
+
+  @override
+  Future<void> resetProgress(String id) {
+    _pendingUpdate = _pendingUpdate.then((_) async {
+      final doc = await _source.getById(id);
+      if (doc == null) return;
+      await _source.save(
+        doc.copyWith(
+          currentPage: 0,
+          wordsRead: 0,
+          readingStatus: 'reading',
           lastReadAt: DateTime.now(),
         ),
       );

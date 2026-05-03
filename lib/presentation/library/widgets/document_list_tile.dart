@@ -6,19 +6,33 @@ import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
-import 'package:read_it/data/models/pdf_document_model.dart';
+import 'package:read_it/data/models/document_model.dart';
+import 'package:read_it/presentation/library/widgets/highlighted_text.dart';
+import 'package:read_it/presentation/library/widgets/source_type_icon.dart';
 import 'package:read_it/presentation/widgets/tap_scale.dart';
 
 class DocumentListTile extends StatelessWidget {
-  final PdfDocumentModel document;
+  final DocumentModel document;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
+  final bool isSelected;
+  final bool isMultiSelectMode;
+  final VoidCallback? onToggleSelect;
+  final VoidCallback? onLongPress;
+  final String? searchQuery;
 
   const DocumentListTile({
     super.key,
     required this.document,
     required this.onTap,
     this.onDelete,
+    this.onEdit,
+    this.isSelected = false,
+    this.isMultiSelectMode = false,
+    this.onToggleSelect,
+    this.onLongPress,
+    this.searchQuery,
   });
 
   @override
@@ -42,159 +56,245 @@ class DocumentListTile extends StatelessWidget {
     final progress = document.totalPages > 0
         ? (document.currentPage / document.totalPages).clamp(0.0, 1.0)
         : 0.0;
-    final isCompleted = document.readingStatus == 'completed';
-    final progressColor = isCompleted ? AppColors.error : primary;
+    final isCompleted = document.isCompleted;
+    final progressColor = isCompleted
+        ? (isDark ? AppColors.success : AppColors.lightSuccess)
+        : primary;
     final lastReadLabel = _formatLastRead(document.lastReadAt);
 
-    return TapScale(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: AppRadius.lgBorder,
-          border: Border.all(color: outlineVariant.withValues(alpha: 0.3)),
-          boxShadow: [
-            isDark
-                ? AppColors.darkAmbientShadow(blur: 12, opacity: 0.2)
-                : AppColors.ambientShadow(blur: 12, opacity: 0.05),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Thumbnail / cover
-            ClipRRect(
-              borderRadius: AppRadius.mdBorder,
-              child: Container(
-                width: 56,
-                height: 72,
-                color: surfaceHigh,
-                child: Center(
-                  child: Icon(
-                    Icons.description_outlined,
-                    size: 28,
-                    color: onSurfaceVariant.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
+    final tileContent = TapScale(
+      onTap: isMultiSelectMode ? onToggleSelect : onTap,
+      child: GestureDetector(
+        onLongPress: onLongPress,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.sm),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: AppRadius.lgBorder,
+            border: Border.all(
+              color: isSelected
+                  ? primary
+                  : outlineVariant.withValues(alpha: 0.3),
+              width: isSelected ? 2 : 1,
             ),
-
-            const SizedBox(width: AppSpacing.sm),
-
-            // Document info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title row with status badge
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          document.title,
-                          style: AppTypography.titleMedium.copyWith(
-                            color: onSurface,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (isCompleted)
-                        Padding(
-                          padding: const EdgeInsets.only(left: AppSpacing.xs),
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: AppColors.error.withValues(alpha: 0.85),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.check_rounded,
-                              size: 12,
-                              color: AppColors.white,
-                            ),
-                          ),
-                        ),
-                    ],
+            boxShadow: [
+              isDark
+                  ? AppColors.darkAmbientShadow(blur: 12, opacity: 0.2)
+                  : AppColors.ambientShadow(blur: 12, opacity: 0.05),
+            ],
+          ),
+          child: Row(
+            children: [
+              // Multi-select checkbox or thumbnail
+              if (isMultiSelectMode)
+                Padding(
+                  padding: const EdgeInsets.only(right: AppSpacing.sm),
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: isSelected ? primary : AppColors.transparent,
+                      shape: BoxShape.circle,
+                      border: isSelected
+                          ? null
+                          : Border.all(color: onSurfaceVariant, width: 1.5),
+                    ),
+                    child: isSelected
+                        ? const Icon(
+                            Icons.check_rounded,
+                            size: 14,
+                            color: AppColors.white,
+                          )
+                        : null,
                   ),
-
-                  const SizedBox(height: AppSpacing.xxs),
-
-                  // Page count
-                  Text(
-                    AppStrings.libraryPageCount.trParams({
-                      'current': '${document.currentPage}',
-                      'total': '${document.totalPages}',
-                    }),
-                    style: AppTypography.label.copyWith(
-                      color: onSurfaceVariant,
-                      fontSize: 10,
+                )
+              else
+                // Thumbnail / cover
+                ClipRRect(
+                  borderRadius: AppRadius.mdBorder,
+                  child: Container(
+                    width: 56,
+                    height: 72,
+                    color: surfaceHigh,
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Icon(
+                            sourceTypeIcon(document.sourceType),
+                            size: 28,
+                            color: onSurfaceVariant.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: AppSpacing.xs),
+              const SizedBox(width: AppSpacing.sm),
 
-                  // Progress bar
-                  Stack(
-                    children: [
-                      Container(
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: outlineVariant.withValues(alpha: 0.4),
-                          borderRadius: AppRadius.fullBorder,
+              // Document info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title row with status
+                    Row(
+                      children: [
+                        Expanded(
+                          child: HighlightedText(
+                            text: document.title,
+                            query: searchQuery,
+                            style: AppTypography.titleMedium.copyWith(
+                              color: onSurface,
+                            ),
+                            highlightColor: primary,
+                            maxLines: 2,
+                          ),
                         ),
+                        const SizedBox(width: AppSpacing.xs),
+                        _StatusBadge(
+                          status: document.isCompleted
+                              ? 'completed'
+                              : (document.isInProgress ? 'reading' : 'unread'),
+                          isDark: isDark,
+                        ),
+                      ],
+                    ),
+
+                    // Description
+                    if (document.description != null &&
+                        document.description!.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.micro),
+                      HighlightedText(
+                        text: document.description!,
+                        query: searchQuery,
+                        style: AppTypography.bodySmall.copyWith(
+                          color: onSurfaceVariant,
+                          fontSize: 11,
+                        ),
+                        highlightColor: primary,
+                        maxLines: 1,
                       ),
-                      FractionallySizedBox(
-                        widthFactor: progress,
-                        child: Container(
+                    ],
+
+                    const SizedBox(height: AppSpacing.xxs),
+
+                    // Page count
+                    Text(
+                      AppStrings.libraryPageCount.trParams({
+                        'current': '${document.currentPage}',
+                        'total': '${document.totalPages}',
+                      }),
+                      style: AppTypography.label.copyWith(
+                        color: onSurfaceVariant,
+                        fontSize: 10,
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.xs),
+
+                    // Progress bar
+                    Stack(
+                      children: [
+                        Container(
                           height: 3,
                           decoration: BoxDecoration(
-                            color: progressColor,
+                            color: outlineVariant.withValues(alpha: 0.4),
                             borderRadius: AppRadius.fullBorder,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: AppSpacing.xxs),
-
-                  // Last read + complexity
-                  Row(
-                    children: [
-                      if (lastReadLabel != null)
-                        Text(
-                          lastReadLabel,
-                          style: AppTypography.label.copyWith(
-                            color: onSurfaceVariant,
-                            fontSize: 10,
+                        FractionallySizedBox(
+                          widthFactor: progress,
+                          child: Container(
+                            height: 3,
+                            decoration: BoxDecoration(
+                              color: progressColor,
+                              borderRadius: AppRadius.fullBorder,
+                            ),
                           ),
                         ),
-                      const Spacer(),
-                      _ComplexityBadge(level: document.complexityLevel),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                      ],
+                    ),
 
-            // Delete icon
-            if (onDelete != null)
-              IconButton(
-                onPressed: onDelete,
-                icon: Icon(
-                  Icons.delete_outline_rounded,
-                  size: 20,
-                  color: onSurfaceVariant.withValues(alpha: 0.6),
+                    const SizedBox(height: AppSpacing.xxs),
+
+                    // Last read + complexity
+                    Row(
+                      children: [
+                        Icon(
+                          sourceTypeIcon(document.sourceType),
+                          size: 10,
+                          color: onSurfaceVariant,
+                        ),
+                        if (lastReadLabel != null) ...[
+                          const SizedBox(width: AppSpacing.xxs),
+                          Text(
+                            lastReadLabel,
+                            style: AppTypography.label.copyWith(
+                              color: onSurfaceVariant,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                        const Spacer(),
+                        _ComplexityBadge(level: document.complexityLevel),
+                      ],
+                    ),
+                  ],
                 ),
-                padding: const EdgeInsets.all(AppSpacing.xs),
-                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
-          ],
+
+              // Actions (only when not in multi-select mode)
+              if (!isMultiSelectMode && onDelete != null)
+                IconButton(
+                  onPressed: onDelete,
+                  icon: Icon(
+                    Icons.delete_outline_rounded,
+                    size: 20,
+                    color: onSurfaceVariant.withValues(alpha: 0.6),
+                  ),
+                  padding: const EdgeInsets.all(AppSpacing.xs),
+                  constraints: const BoxConstraints(
+                    minWidth: AppSpacing.buttonHeight,
+                    minHeight: AppSpacing.buttonHeight,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
+
+    // Wrap in Dismissible for swipe-to-delete in list mode
+    if (onDelete != null && !isMultiSelectMode) {
+      return Dismissible(
+        key: ValueKey(document.id),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: AppSpacing.xl),
+          decoration: BoxDecoration(
+            color: (isDark ? AppColors.error : AppColors.lightError).withValues(
+              alpha: 0.15,
+            ),
+            borderRadius: AppRadius.lgBorder,
+          ),
+          child: Icon(
+            Icons.delete_rounded,
+            color: isDark ? AppColors.error : AppColors.lightError,
+          ),
+        ),
+        confirmDismiss: (_) async {
+          onDelete?.call();
+          // Always return false — the onDelete callback handles
+          // the confirmation dialog and actual deletion.
+          return false;
+        },
+        child: tileContent,
+      );
+    }
+
+    return tileContent;
   }
 
   String? _formatLastRead(DateTime? lastReadAt) {
@@ -213,6 +313,56 @@ class DocumentListTile extends StatelessWidget {
     return AppStrings.monthsAgoUpper.trParams({
       'n': '${(diff.inDays / 30).floor()}',
     });
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String status;
+  final bool isDark;
+
+  const _StatusBadge({required this.status, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, color, icon) = switch (status) {
+      'completed' => (
+        AppStrings.libraryStatusCompleted.tr,
+        isDark ? AppColors.success : AppColors.lightSuccess,
+        Icons.check_rounded,
+      ),
+      'reading' => (
+        AppStrings.libraryStatusInProgress.tr,
+        AppColors.complexityIntermediate,
+        null,
+      ),
+      _ => (
+        AppStrings.libraryStatusNotStarted.tr,
+        isDark ? AppColors.onSurfaceVariant : AppColors.lightOnSurfaceVariant,
+        null,
+      ),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: AppRadius.fullBorder,
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 10, color: color),
+            const SizedBox(width: AppSpacing.micro),
+          ],
+          Text(
+            label,
+            style: AppTypography.label.copyWith(color: color, fontSize: 8),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -241,13 +391,13 @@ class _ComplexityBadge extends StatelessWidget {
   Color _color(String level) {
     switch (level) {
       case 'beginner':
-        return const Color(0xFF4CAF50);
+        return AppColors.complexityBeginner;
       case 'intermediate':
-        return const Color(0xFF2196F3);
+        return AppColors.complexityIntermediate;
       case 'advanced':
-        return const Color(0xFFFF9800);
+        return AppColors.complexityAdvanced;
       case 'expert':
-        return const Color(0xFFF44336);
+        return AppColors.complexityExpert;
       default:
         return AppColors.onSurfaceVariant;
     }
