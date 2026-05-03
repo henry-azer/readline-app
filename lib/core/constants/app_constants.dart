@@ -2,12 +2,12 @@ abstract final class AppConstants {
   // Reading speed
   static const int defaultWpm = 200;
   static const int minWpm = 50;
-  static const int maxWpm = 500;
-  static const int wpmStep = 25;
+  static const int maxWpm = 800;
+  static const int wpmStep = 10;
 
   // Font size
-  static const int minFontSize = 14;
-  static const int maxFontSize = 28;
+  static const int minFontSize = 8;
+  static const int maxFontSize = 48;
   static const int fontSizeStep = 2;
 
   // Line spacing
