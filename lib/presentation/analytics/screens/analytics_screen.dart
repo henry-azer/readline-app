@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
-import 'package:read_it/core/router/app_router.dart';
 import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
-import 'package:read_it/core/theme/app_curves.dart';
-import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/theme/app_typography.dart';
+import 'package:read_it/presentation/widgets/brand_mark.dart';
+import 'package:read_it/data/models/milestone_model.dart';
 import 'package:read_it/data/models/reading_session_model.dart';
 import 'package:read_it/data/models/streak_model.dart';
 import 'package:read_it/presentation/analytics/viewmodels/analytics_viewmodel.dart';
-import 'package:read_it/presentation/widgets/brand_mark.dart';
+import 'package:read_it/presentation/analytics/widgets/activity_feed.dart';
+import 'package:read_it/presentation/analytics/widgets/daily_progress_section.dart';
 import 'package:read_it/presentation/analytics/widgets/growth_insight_card.dart';
 import 'package:read_it/presentation/analytics/widgets/reading_volume_chart.dart';
-import 'package:read_it/presentation/analytics/widgets/recent_activity_list.dart';
 import 'package:read_it/presentation/analytics/widgets/stats_grid.dart';
+import 'package:read_it/presentation/analytics/widgets/streak_calendar.dart';
 import 'package:read_it/presentation/analytics/widgets/streak_card.dart';
 import 'package:read_it/presentation/analytics/widgets/velocity_chart.dart';
 
@@ -47,7 +46,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   Widget build(BuildContext context) {
     final isDark = context.isDark;
     final bgColor = isDark ? AppColors.surface : AppColors.lightSurface;
-    final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
     final onSurfaceVariant = isDark
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
@@ -59,15 +57,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         backgroundColor: bgColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: const BrandMark(),
-        leadingWidth: 100,
-        title: Text(
-          AppStrings.analyticsTitle.tr,
-          style: AppTypography.titleLarge.copyWith(color: onSurface),
-        ),
+        titleSpacing: AppSpacing.lg,
+        title: const BrandMark(),
         centerTitle: false,
         actions: [
-          // Refresh button
           StreamBuilder<bool>(
             stream: _viewModel.isLoading$,
             builder: (context, snap) {
@@ -87,10 +80,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               );
             },
           ),
-          IconButton(
-            icon: Icon(Icons.settings_outlined, color: onSurfaceVariant),
-            onPressed: () => context.push(AppRoutes.settings),
-          ),
         ],
       ),
       body: RefreshIndicator(
@@ -102,7 +91,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 }
 
-// ── Body ─────────────────────────────────────────────────────────────────────
+// ── Body ───��──────────────��──────────────────────────────────────────────────
 
 class _AnalyticsBody extends StatelessWidget {
   final AnalyticsViewModel viewModel;
@@ -123,222 +112,312 @@ class _AnalyticsBody extends StatelessWidget {
         return StreamBuilder<AnalyticsTotalStats>(
           stream: viewModel.totalStats$,
           builder: (context, statsSnap) {
-            return StreamBuilder<WeeklyStats>(
-              stream: viewModel.weeklyStats$,
-              builder: (context, weeklySnap) {
-                return StreamBuilder<MonthlyVelocity>(
-                  stream: viewModel.monthlyVelocity$,
-                  builder: (context, velocitySnap) {
-                    return StreamBuilder<List<ReadingSessionModel>>(
-                      stream: viewModel.recentSessions$,
-                      builder: (context, sessionsSnap) {
-                        final streak = streakSnap.data ?? const StreakModel();
-                        final stats =
-                            statsSnap.data ?? const AnalyticsTotalStats();
-                        final weekly = weeklySnap.data ?? const WeeklyStats();
-                        final velocity =
-                            velocitySnap.data ?? const MonthlyVelocity();
-                        final sessions = sessionsSnap.data ?? const [];
+            return StreamBuilder<List<ReadingSessionModel>>(
+              stream: viewModel.recentSessions$,
+              builder: (context, sessionsSnap) {
+                final streak = streakSnap.data ?? const StreakModel();
+                final stats = statsSnap.data ?? const AnalyticsTotalStats();
+                final sessions = sessionsSnap.data ?? const [];
 
-                        return CustomScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          slivers: [
-                            // Headline
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  AppSpacing.xs,
-                                  AppSpacing.xl,
-                                  AppSpacing.sm,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppStrings.analyticsYourProgress.tr,
-                                      style: AppTypography.label.copyWith(
-                                        color: onSurfaceVariant,
-                                        fontSize: 10,
-                                        letterSpacing: 2,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      AppStrings.analyticsReadingInsights.tr,
-                                      style: AppTypography.headlineLarge
-                                          .copyWith(color: onSurface),
-                                    ),
-                                  ],
-                                ),
+                return CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    // Headline
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          AppSpacing.xs,
+                          AppSpacing.xl,
+                          AppSpacing.sm,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppStrings.analyticsYourProgress.tr,
+                              style: AppTypography.label.copyWith(
+                                color: onSurfaceVariant,
+                                fontSize: 10,
+                                letterSpacing: 2,
                               ),
                             ),
-
-                            // Streak card
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.md,
-                                ),
-                                child: StreakCard(streak: streak),
-                              ),
-                            ),
-
-                            // Stats grid
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.md,
-                                ),
-                                child: StatsGrid(
-                                  stats: stats,
-                                  currentStreak: streak.currentStreak,
-                                  longestStreak: streak.longestStreak,
-                                ),
-                              ),
-                            ),
-
-                            // Growth insight
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.xl,
-                                ),
-                                child: GrowthInsightCard(
-                                  recentSessions: sessions,
-                                  streak: streak,
-                                ),
-                              ),
-                            ),
-
-                            // Reading Volume section
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.sm,
-                                ),
-                                child: _SectionHeader(
-                                  title: AppStrings.analyticsSectionVolume.tr,
-                                  subtitle: AppStrings
-                                      .analyticsSectionVolumeSubtitle
-                                      .tr,
-                                  badge: AppStrings.analyticsBadgePast7Days.tr,
-                                ),
-                              ),
-                            ),
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.xl,
-                                ),
-                                child: TweenAnimationBuilder<double>(
-                                  tween: Tween(begin: 0.0, end: 1.0),
-                                  duration: AppDurations.slow,
-                                  curve: AppCurves.enter,
-                                  builder: (context, value, child) {
-                                    return Opacity(
-                                      opacity: value,
-                                      child: Transform.translate(
-                                        offset: Offset(0, 20 * (1 - value)),
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  child: ReadingVolumeChart(stats: weekly),
-                                ),
-                              ),
-                            ),
-
-                            // Reading Velocity section
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.sm,
-                                ),
-                                child: _SectionHeader(
-                                  title: AppStrings.analyticsSectionVelocity.tr,
-                                  subtitle: AppStrings
-                                      .analyticsSectionVelocitySubtitle
-                                      .tr,
-                                ),
-                              ),
-                            ),
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.xl,
-                                ),
-                                child: TweenAnimationBuilder<double>(
-                                  tween: Tween(begin: 0.0, end: 1.0),
-                                  duration: AppDurations.slow,
-                                  curve: AppCurves.enter,
-                                  builder: (context, value, child) {
-                                    return Opacity(
-                                      opacity: value,
-                                      child: Transform.translate(
-                                        offset: Offset(0, 20 * (1 - value)),
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  child: VelocityChart(velocity: velocity),
-                                ),
-                              ),
-                            ),
-
-                            // Recent Activity section
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.sm,
-                                ),
-                                child: _SectionHeader(
-                                  title: AppStrings
-                                      .analyticsSectionRecentActivity
-                                      .tr,
-                                ),
-                              ),
-                            ),
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(
-                                AppSpacing.xl,
-                                0,
-                                AppSpacing.xl,
-                                AppSpacing.xxxxl + AppSpacing.xxl,
-                              ),
-                              sliver: SliverToBoxAdapter(
-                                child: RecentActivityList(sessions: sessions),
+                            const SizedBox(height: AppSpacing.micro),
+                            Text(
+                              AppStrings.analyticsReadingInsights.tr,
+                              style: AppTypography.headlineLarge.copyWith(
+                                color: onSurface,
                               ),
                             ),
                           ],
-                        );
-                      },
-                    );
-                  },
+                        ),
+                      ),
+                    ),
+
+                    // Streak card
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
+                        child: StreakCard(streak: streak),
+                      ),
+                    ),
+
+                    // Daily progress section
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.sm,
+                        ),
+                        child: _SectionHeader(
+                          title: AppStrings.analyticsSectionDailyProgress.tr,
+                          subtitle: AppStrings
+                              .analyticsSectionDailyProgressSubtitle
+                              .tr,
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
+                        child: StreamBuilder<double>(
+                          stream: viewModel.todayMinutes$,
+                          builder: (context, todaySnap) {
+                            return StreamBuilder<int>(
+                              stream: viewModel.dailyGoalMinutes$,
+                              builder: (context, goalSnap) {
+                                return StreamBuilder<List<WeekDayProgress>>(
+                                  stream: viewModel.weekProgress$,
+                                  builder: (context, weekSnap) {
+                                    return DailyProgressSection(
+                                      todayMinutes: todaySnap.data ?? 0,
+                                      dailyGoalMinutes: goalSnap.data ?? 20,
+                                      weekProgress: weekSnap.data ?? const [],
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Stats grid
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
+                        child: StatsGrid(
+                          stats: stats,
+                        ),
+                      ),
+                    ),
+
+                    // Growth insight
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
+                        child: GrowthInsightCard(
+                          recentSessions: sessions,
+                          streak: streak,
+                        ),
+                      ),
+                    ),
+
+                    // Streak Calendar section
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.sm,
+                        ),
+                        child: _SectionHeader(
+                          title: AppStrings.analyticsSectionCalendar.tr,
+                          subtitle:
+                              AppStrings.analyticsSectionCalendarSubtitle.tr,
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
+                        child: StreamBuilder<DateTime>(
+                          stream: viewModel.calendarMonth$,
+                          builder: (context, monthSnap) {
+                            return StreamBuilder<Map<String, CalendarDayStats>>(
+                              stream: viewModel.calendarData$,
+                              builder: (context, calSnap) {
+                                return StreamBuilder<int>(
+                                  stream: viewModel.dailyGoalMinutes$,
+                                  builder: (context, goalSnap) {
+                                    return StreakCalendar(
+                                      displayedMonth:
+                                          monthSnap.data ??
+                                          DateTime(
+                                            DateTime.now().year,
+                                            DateTime.now().month,
+                                          ),
+                                      calendarData: calSnap.data ?? const {},
+                                      dailyGoalMinutes: goalSnap.data ?? 20,
+                                      onChangeMonth: viewModel.changeMonth,
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Reading Volume section
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.sm,
+                        ),
+                        child: _SectionHeader(
+                          title: AppStrings.analyticsSectionVolume.tr,
+                          subtitle:
+                              AppStrings.analyticsSectionVolumeSubtitle.tr,
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
+                        child: StreamBuilder<VolumeChartData>(
+                          stream: viewModel.volumeData$,
+                          builder: (context, volSnap) {
+                            return StreamBuilder<VolumePeriod>(
+                              stream: viewModel.selectedPeriod$,
+                              builder: (context, periodSnap) {
+                                return ReadingVolumeChart(
+                                  data: volSnap.data ?? const VolumeChartData(),
+                                  selectedPeriod:
+                                      periodSnap.data ?? VolumePeriod.days7,
+                                  onPeriodChanged: viewModel.changePeriod,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Reading Velocity section
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.sm,
+                        ),
+                        child: _SectionHeader(
+                          title: AppStrings.analyticsSectionVelocity.tr,
+                          subtitle:
+                              AppStrings.analyticsSectionVelocitySubtitle.tr,
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
+                        child: StreamBuilder<VelocityChartData>(
+                          stream: viewModel.velocityData$,
+                          builder: (context, velSnap) {
+                            return VelocityChart(
+                              data: velSnap.data ?? const VelocityChartData(),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Activity Feed section
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          0,
+                          AppSpacing.xl,
+                          AppSpacing.sm,
+                        ),
+                        child: _SectionHeader(
+                          title: AppStrings.analyticsSectionActivityFeed.tr,
+                        ),
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.xl,
+                        0,
+                        AppSpacing.xl,
+                        AppSpacing.bottomNavClearance,
+                      ),
+                      sliver: SliverToBoxAdapter(
+                        child: StreamBuilder<bool>(
+                          stream: viewModel.hasMoreSessions$,
+                          builder: (context, hasMoreSnap) {
+                            return StreamBuilder<List<MilestoneModel>>(
+                              stream: viewModel.milestones$,
+                              builder: (context, milestoneSnap) {
+                                return ActivityFeed(
+                                  sessions: sessions,
+                                  milestones: milestoneSnap.data ?? const [],
+                                  hasMore: hasMoreSnap.data ?? false,
+                                  onLoadMore: viewModel.loadMoreSessions,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
             );
@@ -349,14 +428,13 @@ class _AnalyticsBody extends StatelessWidget {
   }
 }
 
-// ── Section header ────────────────────────────────────────────────────────────
+// ── Section header ───────���────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final String? badge;
 
-  const _SectionHeader({required this.title, this.subtitle, this.badge});
+  const _SectionHeader({required this.title, this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -365,54 +443,21 @@ class _SectionHeader extends StatelessWidget {
     final onSurfaceVariant = isDark
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
-    final badgeBg = isDark
-        ? AppColors.surfaceContainerHighest
-        : AppColors.lightSurfaceContainerHighest;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: AppTypography.sectionHeader.copyWith(
-                  color: onSurface,
-                ),
-              ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle!,
-                  style: AppTypography.bodySmall.copyWith(
-                    color: onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ],
-          ),
+        Text(
+          title,
+          style: AppTypography.sectionHeader.copyWith(color: onSurface),
         ),
-        if (badge != null)
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.xxs,
-            ),
-            decoration: BoxDecoration(
-              color: badgeBg,
-              borderRadius: BorderRadius.circular(AppSpacing.sm),
-            ),
-            child: Text(
-              badge!,
-              style: AppTypography.label.copyWith(
-                color: onSurfaceVariant,
-                fontSize: 10,
-                letterSpacing: 1,
-              ),
-            ),
+        if (subtitle != null) ...[
+          const SizedBox(height: AppSpacing.micro),
+          Text(
+            subtitle!,
+            style: AppTypography.bodySmall.copyWith(color: onSurfaceVariant),
           ),
+        ],
       ],
     );
   }
