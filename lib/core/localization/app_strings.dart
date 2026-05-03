@@ -47,6 +47,7 @@ class AppStrings {
   static const String navLibrary = 'nav.library';
   static const String navVocab = 'nav.vocab';
   static const String navAnalytics = 'nav.analytics';
+  static const String navSettings = 'nav.settings';
 
   // ── Home ─────────────────────────────────────────────────────────────────────
 
@@ -55,9 +56,16 @@ class AppStrings {
   static const String homeEmptyBody = 'home.emptyBody';
   static const String homeImportPdf = 'home.importPdf';
   static const String homeContinueReading = 'home.continueReading';
+  static const String homeReadyToStart = 'home.readyToStart';
+  static const String homeReadAgainLabel = 'home.readAgainLabel';
+  static const String homeResume = 'home.resume';
+  static const String homeStart = 'home.start';
+  static const String homeReadAgain = 'home.readAgain';
+  static const String homeReadAgainBody = 'home.readAgainBody';
   static const String homeRecentActivity = 'home.recentActivity';
   static const String homeMinSession = 'home.minSession';
   static const String homeSessionWpm = 'home.sessionWpm';
+  static const String homeSessionWordsLabel = 'home.sessionWordsLabel';
   static const String homeProgressComplete = 'home.progressComplete';
   static const String homeWordsRead = 'home.wordsRead';
   static const String homeStatDocuments = 'home.statDocuments';
@@ -72,6 +80,136 @@ class AppStrings {
   static const String homeTip3 = 'home.tip3';
   static const String homeTip4 = 'home.tip4';
   static const String homeTip5 = 'home.tip5';
+  static const String homeTip6 = 'home.tip6';
+  static const String homeTip7 = 'home.tip7';
+  static const String homeTip8 = 'home.tip8';
+  static const String homeTip9 = 'home.tip9';
+  static const String homeTip10 = 'home.tip10';
+  static const String homeTip11 = 'home.tip11';
+  static const String homeTip12 = 'home.tip12';
+  static const String homeTip13 = 'home.tip13';
+  static const String homeTip14 = 'home.tip14';
+  static const String homeTip15 = 'home.tip15';
+  static const String homeTip16 = 'home.tip16';
+  static const String homeTip17 = 'home.tip17';
+  static const String homeTip18 = 'home.tip18';
+  static const String homeTip19 = 'home.tip19';
+  static const String homeTip20 = 'home.tip20';
+  static const String homeTip21 = 'home.tip21';
+  static const String homeTip22 = 'home.tip22';
+  static const String homeTip23 = 'home.tip23';
+  static const String homeTip24 = 'home.tip24';
+  static const String homeTip25 = 'home.tip25';
+  static const String homeTip26 = 'home.tip26';
+  static const String homeTip27 = 'home.tip27';
+  static const String homeTip28 = 'home.tip28';
+  static const String homeTip29 = 'home.tip29';
+  static const String homeTip30 = 'home.tip30';
+  static const String homeTip31 = 'home.tip31';
+  static const String homeTip32 = 'home.tip32';
+  static const String homeTip33 = 'home.tip33';
+  static const String homeTip34 = 'home.tip34';
+  static const String homeTip35 = 'home.tip35';
+  static const String homeTip36 = 'home.tip36';
+  static const String homeTip37 = 'home.tip37';
+  static const String homeTip38 = 'home.tip38';
+  static const String homeTip39 = 'home.tip39';
+  static const String homeTip40 = 'home.tip40';
+  static const String homeTip41 = 'home.tip41';
+  static const String homeTip42 = 'home.tip42';
+  static const String homeTip43 = 'home.tip43';
+  static const String homeTip44 = 'home.tip44';
+  static const String homeTip45 = 'home.tip45';
+  static const String homeTip46 = 'home.tip46';
+  static const String homeTip47 = 'home.tip47';
+  static const String homeTip48 = 'home.tip48';
+  static const String homeTip49 = 'home.tip49';
+  static const String homeTip50 = 'home.tip50';
+  static const String homeTip51 = 'home.tip51';
+  static const String homeTip52 = 'home.tip52';
+  static const String homeTip53 = 'home.tip53';
+  static const String homeTip54 = 'home.tip54';
+  static const String homeTip55 = 'home.tip55';
+  static const String homeTip56 = 'home.tip56';
+  static const String homeTip57 = 'home.tip57';
+  static const String homeTip58 = 'home.tip58';
+  static const String homeTip59 = 'home.tip59';
+  static const String homeTip60 = 'home.tip60';
+  static const String homeGreetingMorning = 'home.greetingMorning';
+  static const String homeGreetingAfternoon = 'home.greetingAfternoon';
+  static const String homeGreetingEvening = 'home.greetingEvening';
+  static const String homeGreetingMorningName = 'home.greetingMorningName';
+  static const String homeGreetingAfternoonName = 'home.greetingAfternoonName';
+  static const String homeGreetingEveningName = 'home.greetingEveningName';
+  static const String homeGreetingDefaultName = 'home.greetingDefaultName';
+  static const String homeReadyToRead = 'home.readyToRead';
+  static const String homeEstimatedLeft = 'home.estimatedLeft';
+  static const String homeEstimatedTotal = 'home.estimatedTotal';
+  static const String homePagesProgress = 'home.pagesProgress';
+  static const String homeTodayMinutes = 'home.todayMinutes';
+  static const String homeNoReadingToday = 'home.noReadingToday';
+  static const String homePerformance = 'home.performance';
+  static const String homeTodaysGoal = 'home.todaysGoal';
+  static const String homeGoalProgress = 'home.goalProgress';
+  static const String homeGoalComplete = 'home.goalComplete';
+  static const String homeDailyTarget = 'home.dailyTarget';
+  static const String homeYourLibrary = 'home.yourLibrary';
+  static const String homeAddText = 'home.addText';
+  static const String homeImportFile = 'home.importFile';
+  static const String homeImportSheetTitle = 'home.importSheetTitle';
+  static const String homeImportSheetHint = 'home.importSheetHint';
+  static const String homeImportSheetStartReading =
+      'home.importSheetStartReading';
+  static const String homeImportSheetPickPdf = 'home.importSheetPickPdf';
+  static const String homeImportSheetEmptyError = 'home.importSheetEmptyError';
+  static const String homeImportSheetProcessing = 'home.importSheetProcessing';
+  static const String homeImportSheetTitleLabel = 'home.importSheetTitleLabel';
+  static const String homeImportSheetTitleHint = 'home.importSheetTitleHint';
+  static const String homeStreakLabel = 'home.streakLabel';
+  static const String homeStreakLabelZero = 'home.streakLabelZero';
+  static const String homeDailyGoalOf = 'home.dailyGoalOf';
+  static const String homeSetDailyTarget = 'home.setDailyTarget';
+  static const String homeSetDailyTargetSubtitle =
+      'home.setDailyTargetSubtitle';
+  static const String homeMinutesSuffix = 'home.minutesSuffix';
+  static const String homeChangeTargetTitle = 'home.changeTargetTitle';
+  static const String homeChangeTargetBody = 'home.changeTargetBody';
+  static const String homeChangeTargetConfirm = 'home.changeTargetConfirm';
+  static const String homeContinueReadingEmpty = 'home.continueReadingEmpty';
+  static const String homeContinueReadingEmptyCta =
+      'home.continueReadingEmptyCta';
+  static const String homeStreakCalendarTitle = 'home.streakCalendarTitle';
+  static const String homeStreakCalendarCurrentStreak =
+      'home.streakCalendarCurrentStreak';
+  static const String homeStreakCalendarLongestStreak =
+      'home.streakCalendarLongestStreak';
+  static const String homeStreakCalendarTotalDays =
+      'home.streakCalendarTotalDays';
+  static const String homeImportSheetDescLabel = 'home.importSheetDescLabel';
+  static const String homeImportSheetDescHint = 'home.importSheetDescHint';
+  static const String homeImportSheetWordCount = 'home.importSheetWordCount';
+  static const String homeImportSheetSaveToLibrary =
+      'home.importSheetSaveToLibrary';
+  static const String homeImportSheetPickFile = 'home.importSheetPickFile';
+  static const String homeImportSheetPerformanceWarning =
+      'home.importSheetPerformanceWarning';
+  static const String homeImportSheetTitleRequired =
+      'home.importSheetTitleRequired';
+  static const String homeImportSheetContentRequired =
+      'home.importSheetContentRequired';
+  static const String homeImportSheetFileTooLarge =
+      'home.importSheetFileTooLarge';
+  static const String homeImportSheetSavedToLibrary =
+      'home.importSheetSavedToLibrary';
+  static const String homeImportSheetUntitled = 'home.importSheetUntitled';
+
+  // ── Document ──────────────────────────────────────────────────────────────────
+
+  static const String documentSourceTypePdf = 'document.sourceTypePdf';
+  static const String documentSourceTypeTextInput =
+      'document.sourceTypeTextInput';
+  static const String documentSourceTypeTxt = 'document.sourceTypeTxt';
+
 
   // ── Library ───────────────────────────────────────────────────────────────────
 
@@ -80,28 +218,65 @@ class AppStrings {
   static const String libraryActiveDocument = 'library.activeDocument';
   static const String libraryActiveDocuments = 'library.activeDocuments';
   static const String libraryImportPdf = 'library.importPdf';
+  static const String libraryNewReading = 'library.newReading';
   static const String libraryRemoveTitle = 'library.removeTitle';
   static const String libraryRemoveBody = 'library.removeBody';
+  static const String libraryDeleteConfirmTitle = 'library.deleteConfirmTitle';
+  static const String libraryDeleteConfirmBody = 'library.deleteConfirmBody';
   static const String libraryFilterAll = 'library.filterAll';
   static const String libraryFilterReading = 'library.filterReading';
   static const String libraryFilterCompleted = 'library.filterCompleted';
+  static const String libraryFilterNotStarted = 'library.filterNotStarted';
   static const String libraryEmptyAll = 'library.emptyAll';
   static const String libraryEmptyAllBody = 'library.emptyAllBody';
+  static const String libraryEmptyAllCta = 'library.emptyAllCta';
   static const String libraryEmptyReading = 'library.emptyReading';
   static const String libraryEmptyReadingBody = 'library.emptyReadingBody';
   static const String libraryEmptyCompleted = 'library.emptyCompleted';
   static const String libraryEmptyCompletedBody = 'library.emptyCompletedBody';
   static const String libraryNoPreview = 'library.noPreview';
+  static const String libraryEmptyNotStarted = 'library.emptyNotStarted';
+  static const String libraryEmptyNotStartedBody =
+      'library.emptyNotStartedBody';
   static const String libraryPageCount = 'library.pageCount';
   static const String libraryLevelBeginner = 'library.levelBeginner';
   static const String libraryLevelIntermediate = 'library.levelIntermediate';
   static const String libraryLevelAdvanced = 'library.levelAdvanced';
   static const String libraryLevelExpert = 'library.levelExpert';
+  static const String libraryStatusNotStarted = 'library.statusNotStarted';
+  static const String libraryStatusInProgress = 'library.statusInProgress';
+  static const String libraryStatusCompleted = 'library.statusCompleted';
+  static const String librarySearchHint = 'library.searchHint';
+  static const String libraryNoSearchResults = 'library.noSearchResults';
+  static const String libraryFilterTitle = 'library.filterTitle';
+  static const String libraryFilterStatus = 'library.filterStatus';
+  static const String libraryFilterSourceType = 'library.filterSourceType';
+  static const String libraryFilterDateRange = 'library.filterDateRange';
+  static const String libraryFilterToday = 'library.filterToday';
+  static const String libraryFilterThisWeek = 'library.filterThisWeek';
+  static const String libraryFilterThisMonth = 'library.filterThisMonth';
+  static const String libraryFilterAllTime = 'library.filterAllTime';
+  static const String libraryFilterClearAll = 'library.filterClearAll';
+  static const String libraryFilterActiveCount = 'library.filterActiveCount';
+  static const String librarySortLastRead = 'library.sortLastRead';
+  static const String librarySortDateAdded = 'library.sortDateAdded';
+  static const String librarySortTitle = 'library.sortTitle';
+  static const String librarySortProgress = 'library.sortProgress';
+  static const String librarySortWordCount = 'library.sortWordCount';
+  static const String librarySortAscending = 'library.sortAscending';
+  static const String librarySortDescending = 'library.sortDescending';
+  static const String librarySelectedCount = 'library.selectedCount';
+  static const String libraryDeleteAction = 'library.deleteAction';
+  static const String libraryEditDocument = 'library.editDocument';
+  static const String libraryEditDocumentTitle = 'library.editDocumentTitle';
+  static const String librarySaveChanges = 'library.saveChanges';
+  static const String libraryContentChangedWarning =
+      'library.contentChangedWarning';
+  static const String librarySelectMultiple = 'library.selectMultiple';
 
   // ── Reading ───────────────────────────────────────────────────────────────────
 
   static const String readingBack = 'reading.back';
-  static const String readingMoreOptions = 'reading.moreOptions';
   static const String readingLoading = 'reading.loading';
   static const String readingFocusModeActive = 'reading.focusModeActive';
   static const String readingEndSession = 'reading.endSession';
@@ -147,16 +322,56 @@ class AppStrings {
   static const String vocabEmptyBookmarkedBody = 'vocab.emptyBookmarkedBody';
   static const String vocabEmptyAll = 'vocab.emptyAll';
   static const String vocabEmptyAllBody = 'vocab.emptyAllBody';
+  static const String vocabWordCount = 'vocab.wordCount';
+  static const String vocabSearchHint = 'vocab.searchHint';
+  static const String vocabNoSearchResults = 'vocab.noSearchResults';
+  static const String vocabFilterTitle = 'vocab.filterTitle';
+  static const String vocabFilterDifficulty = 'vocab.filterDifficulty';
+  static const String vocabFilterSource = 'vocab.filterSource';
+  static const String vocabFilterDateRange = 'vocab.filterDateRange';
+  static const String vocabFilterToday = 'vocab.filterToday';
+  static const String vocabFilterThisWeek = 'vocab.filterThisWeek';
+  static const String vocabFilterThisMonth = 'vocab.filterThisMonth';
+  static const String vocabFilterAllTime = 'vocab.filterAllTime';
+  static const String vocabFilterClearAll = 'vocab.filterClearAll';
+  static const String vocabFilterActiveCount = 'vocab.filterActiveCount';
+  static const String vocabSortDateAdded = 'vocab.sortDateAdded';
+  static const String vocabSortAlphabetical = 'vocab.sortAlphabetical';
+  static const String vocabSortDifficulty = 'vocab.sortDifficulty';
+  static const String vocabSortAscending = 'vocab.sortAscending';
+  static const String vocabSortDescending = 'vocab.sortDescending';
+  static const String vocabFilterHard = 'vocab.filterHard';
+  static const String vocabFilterMedium = 'vocab.filterMedium';
+  static const String vocabFilterEasy = 'vocab.filterEasy';
 
   // ── Word card ─────────────────────────────────────────────────────────────────
 
   static const String wordCardLongPressDelete = 'wordCard.longPressDelete';
+  static const String wordCardSwipeToDelete = 'wordCard.swipeToDelete';
   static const String wordCardRemoveTitle = 'wordCard.removeTitle';
   static const String wordCardRemoveBody = 'wordCard.removeBody';
   static const String wordCardMarginalia = 'wordCard.marginalia';
   static const String wordCardMasteryMastered = 'wordCard.masteryMastered';
   static const String wordCardMasteryLearning = 'wordCard.masteryLearning';
   static const String wordCardMasteryNew = 'wordCard.masteryNew';
+  static const String wordCardPartOfSpeech = 'wordCard.partOfSpeech';
+  static const String wordCardExample = 'wordCard.example';
+  static const String wordCardDifficultyEasy = 'wordCard.difficultyEasy';
+  static const String wordCardDifficultyMedium = 'wordCard.difficultyMedium';
+  static const String wordCardDifficultyHard = 'wordCard.difficultyHard';
+  static const String wordCardDeleted = 'wordCard.wordDeleted';
+  static const String wordCardRestored = 'wordCard.wordRestored';
+
+  // ── Dictionary popup ─────────────────────────────────────────────────────────
+
+  static const String dictDefinition = 'dictionary.definition';
+  static const String dictNotFound = 'dictionary.notFound';
+  static const String dictNoInternet = 'dictionary.noInternet';
+  static const String dictTimeout = 'dictionary.timeout';
+  static const String dictSaveToVocab = 'dictionary.saveToVocab';
+  static const String dictAlreadySaved = 'dictionary.alreadySaved';
+  static const String dictSavedSnackbar = 'dictionary.savedSnackbar';
+  static const String dictLoading = 'dictionary.loading';
 
   // ── Review session ────────────────────────────────────────────────────────────
 
@@ -228,6 +443,75 @@ class AppStrings {
   static const String analyticsLessThanOneMin = 'analytics.lessThanOneMin';
   static const String analyticsMins = 'analytics.mins';
   static const String analyticsWeekLabel = 'analytics.weekLabel';
+  static const String analyticsStatCurrentStreak =
+      'analytics.statCurrentStreak';
+  static const String analyticsStatCurrentStreakUnit =
+      'analytics.statCurrentStreakUnit';
+  static const String analyticsStatLongestStreak =
+      'analytics.statLongestStreak';
+  static const String analyticsStatLongestStreakUnit =
+      'analytics.statLongestStreakUnit';
+  static const String analyticsStatAvgTime = 'analytics.statAvgTime';
+  static const String analyticsStatAvgTimeUnit = 'analytics.statAvgTimeUnit';
+  static const String analyticsPeriod7d = 'analytics.period7d';
+  static const String analyticsPeriod30d = 'analytics.period30d';
+  static const String analyticsPeriod90d = 'analytics.period90d';
+  static const String analyticsPeriodAll = 'analytics.periodAll';
+  static const String analyticsDailyTargetLine = 'analytics.dailyTargetLine';
+  static const String analyticsWordsOnDate = 'analytics.wordsOnDate';
+  static const String analyticsAvgWordsPerDay = 'analytics.avgWordsPerDay';
+  static const String analyticsWpmOnDate = 'analytics.wpmOnDate';
+  static const String analyticsTrendLine = 'analytics.trendLine';
+  static const String analyticsSpeedIncreased = 'analytics.speedIncreased';
+  static const String analyticsSpeedDecreased = 'analytics.speedDecreased';
+  static const String analyticsSpeedSteady = 'analytics.speedSteady';
+  static const String analyticsSectionDailyProgress =
+      'analytics.sectionDailyProgress';
+  static const String analyticsSectionDailyProgressSubtitle =
+      'analytics.sectionDailyProgressSubtitle';
+  static const String analyticsMinutesReadToday = 'analytics.minutesReadToday';
+  static const String analyticsGoalMetLabel = 'analytics.goalMetLabel';
+  static const String analyticsGoalNotMetLabel = 'analytics.goalNotMetLabel';
+  static const String analyticsSectionCalendar = 'analytics.sectionCalendar';
+  static const String analyticsSectionCalendarSubtitle =
+      'analytics.sectionCalendarSubtitle';
+  static const String analyticsCalendarMinutesRead =
+      'analytics.calendarMinutesRead';
+  static const String analyticsCalendarSessionsCount =
+      'analytics.calendarSessionsCount';
+  static const String analyticsCalendarSessionsCountPlural =
+      'analytics.calendarSessionsCountPlural';
+  static const String analyticsCalendarTargetMet =
+      'analytics.calendarTargetMet';
+  static const String analyticsCalendarTargetNotMet =
+      'analytics.calendarTargetNotMet';
+  static const String analyticsCalendarNoReading =
+      'analytics.calendarNoReading';
+  static const String analyticsSectionActivityFeed =
+      'analytics.sectionActivityFeed';
+  static const String analyticsActivityThisWeek = 'analytics.activityThisWeek';
+  static const String analyticsActivityEarlier = 'analytics.activityEarlier';
+  static const String analyticsActivityWordsRead =
+      'analytics.activityWordsRead';
+  static const String analyticsActivityDuration = 'analytics.activityDuration';
+  static const String analyticsLoadMore = 'analytics.loadMore';
+  static const String analyticsSectionTimeDistribution =
+      'analytics.sectionTimeDistribution';
+  static const String analyticsSectionTimeDistributionSubtitle =
+      'analytics.sectionTimeDistributionSubtitle';
+  static const String analyticsTimeDistributionNoGroups =
+      'analytics.timeDistributionNoGroups';
+  static const String analyticsTimeDistributionCenter =
+      'analytics.timeDistributionCenter';
+  static const String analyticsTimeDistributionTotal =
+      'analytics.timeDistributionTotal';
+  static const String analyticsMilestoneBadge = 'analytics.milestoneBadge';
+  static const String analyticsMilestoneStreakTitle =
+      'analytics.milestoneStreakTitle';
+  static const String analyticsMilestoneDailyTargetTitle =
+      'analytics.milestoneDailyTargetTitle';
+  static const String analyticsMilestoneWordsTitle =
+      'analytics.milestoneWordsTitle';
 
   // ── Streak ────────────────────────────────────────────────────────────────────
 
@@ -239,6 +523,28 @@ class AppStrings {
   static const String streakArchivist = 'streak.archivist';
   static const String streakBuilding = 'streak.building';
   static const String streakImpressive = 'streak.impressive';
+  static const String streakResetBanner = 'streak.resetBanner';
+
+  // ── Celebration ──────────────────────────────────────────────────────────────
+
+  static const String celebrationStreakTitle = 'celebration.streakTitle';
+  static const String celebrationStreakMessage = 'celebration.streakMessage';
+  static const String celebrationDailyTargetTitle =
+      'celebration.dailyTargetTitle';
+  static const String celebrationDailyTargetMessage =
+      'celebration.dailyTargetMessage';
+  static const String celebrationWordsTitle = 'celebration.wordsTitle';
+  static const String celebrationWordsMessage = 'celebration.wordsMessage';
+  static const String celebrationCombinedMessage =
+      'celebration.combinedMessage';
+  static const String celebrationShare = 'celebration.share';
+  static const String celebrationContinue = 'celebration.continue';
+  static const String celebrationKeepReading = 'celebration.keepReading';
+  static const String celebrationTierBronze = 'celebration.tierBronze';
+  static const String celebrationTierSilver = 'celebration.tierSilver';
+  static const String celebrationTierGold = 'celebration.tierGold';
+  static const String celebrationTierPlatinum = 'celebration.tierPlatinum';
+  static const String celebrationTierDiamond = 'celebration.tierDiamond';
 
   // ── Growth insight ────────────────────────────────────────────────────────────
 
@@ -263,6 +569,47 @@ class AppStrings {
   static const String settingsFontSizeLabel = 'settings.fontSizeLabel';
   static const String settingsFocusWindowLabel = 'settings.focusWindowLabel';
   static const String settingsFocusWindowValue = 'settings.focusWindowValue';
+  static const String settingsDailyGoalLabel = 'settings.dailyGoalLabel';
+  static const String settingsDailyGoalValue = 'settings.dailyGoalValue';
+  static const String playerTextAlignment = 'player.textAlignment';
+  static const String playerAlignLeft = 'player.alignLeft';
+  static const String playerAlignCenter = 'player.alignCenter';
+  static const String playerAlignJustified = 'player.alignJustified';
+  static const String playerAutoPlay = 'player.autoPlay';
+  static const String playerBackground = 'player.background';
+  static const String playerBgDefault = 'player.bgDefault';
+  static const String playerBgSepia = 'player.bgSepia';
+  static const String playerBgDark = 'player.bgDark';
+  static const String playerBgBlack = 'player.bgBlack';
+  static const String playerMargin = 'player.margin';
+  static const String playerBrightness = 'player.brightness';
+  static const String playerDim = 'player.dim';
+  static const String playerTabDisplay = 'player.tabDisplay';
+  static const String playerTabSpeed = 'player.tabSpeed';
+  static const String playerTabTheme = 'player.tabTheme';
+  static const String playerFontFamily = 'player.fontFamily';
+  static const String playerFontColor = 'player.fontColor';
+  static const String playerLetterSpacing = 'player.letterSpacing';
+  static const String playerLetterSpacingTight = 'player.letterSpacingTight';
+  static const String playerLetterSpacingNormal = 'player.letterSpacingNormal';
+  static const String playerLetterSpacingWide = 'player.letterSpacingWide';
+  static const String playerSpeedPresetSlow = 'player.speedPresetSlow';
+  static const String playerSpeedPresetNormal = 'player.speedPresetNormal';
+  static const String playerSpeedPresetFast = 'player.speedPresetFast';
+  static const String playerSpeedPresetSpeed = 'player.speedPresetSpeed';
+  static const String playerReadingTheme = 'player.readingTheme';
+  static const String playerReadingThemeLight = 'player.readingThemeLight';
+  static const String playerReadingThemeDark = 'player.readingThemeDark';
+  static const String playerReadingThemeSepia = 'player.readingThemeSepia';
+  static const String playerReadingThemeAmoled = 'player.readingThemeAmoled';
+  static const String playerLineHeightCompact = 'player.lineHeightCompact';
+  static const String playerLineHeightSpacious = 'player.lineHeightSpacious';
+  static const String playerFontSerif = 'player.fontSerif';
+  static const String playerFontSans = 'player.fontSans';
+  static const String playerFontMono = 'player.fontMono';
+  static const String playerFontDyslexic = 'player.fontDyslexic';
+  static const String playerReadingThemeSystem = 'player.readingThemeSystem';
+  static const String playerSettingsTitle = 'player.settingsTitle';
   static const String settingsThemeMode = 'settings.themeMode';
   static const String settingsThemeLight = 'settings.themeLight';
   static const String settingsThemeDark = 'settings.themeDark';
@@ -277,6 +624,18 @@ class AppStrings {
   static const String settingsReadingAnalytics = 'settings.readingAnalytics';
   static const String settingsReadingAnalyticsSubtitle =
       'settings.readingAnalyticsSubtitle';
+  static const String settingsSectionReadingDefaults =
+      'settings.sectionReadingDefaults';
+  static const String settingsSectionReadingDefaultsSubtitle =
+      'settings.sectionReadingDefaultsSubtitle';
+  static const String settingsReadingThemeLabel = 'settings.readingThemeLabel';
+  static const String settingsReadingThemeLight = 'settings.readingThemeLight';
+  static const String settingsReadingThemeDark = 'settings.readingThemeDark';
+  static const String settingsReadingThemeSepia = 'settings.readingThemeSepia';
+  static const String settingsReadingThemeAmoled =
+      'settings.readingThemeAmoled';
+  static const String settingsReadingThemeSystem =
+      'settings.readingThemeSystem';
   static const String settingsResetButton = 'settings.resetButton';
   static const String settingsResetTitle = 'settings.resetTitle';
   static const String settingsResetBody = 'settings.resetBody';
@@ -302,6 +661,97 @@ class AppStrings {
   static const String settingsAboutLinkedIn = 'settings.aboutLinkedIn';
   static const String settingsAboutGitHub = 'settings.aboutGitHub';
   static const String settingsAboutLinkCopied = 'settings.aboutLinkCopied';
+  static const String settingsReadingThemePreview =
+      'settings.readingThemePreview';
+
+  // ── Preferences ─────────────────────────────────────────────────────────────
+
+  static const String settingsSectionPreferences =
+      'settings.sectionPreferences';
+  static const String settingsHapticFeedback = 'settings.hapticFeedback';
+  static const String settingsHapticFeedbackSubtitle =
+      'settings.hapticFeedbackSubtitle';
+  static const String settingsSoundEffects = 'settings.soundEffects';
+  static const String settingsSoundEffectsSubtitle =
+      'settings.soundEffectsSubtitle';
+
+  // ── Support ─────────────────────────────────────────────────────────────────
+
+  static const String settingsSectionSupport = 'settings.sectionSupport';
+  static const String settingsContactSupport = 'settings.supportContactSupport';
+  static const String settingsFaq = 'settings.supportFaq';
+  static const String settingsRateApp = 'settings.supportRateApp';
+  static const String settingsReportBug = 'settings.supportReportBug';
+  static const String settingsSupportMailSubject =
+      'settings.supportMailSubject';
+  static const String settingsSupportMailBody = 'settings.supportMailBody';
+  static const String settingsBugReportSubject = 'settings.bugReportSubject';
+  static const String settingsBugReportBody = 'settings.bugReportBody';
+  static const String settingsFaqTitle = 'settings.supportFaqTitle';
+  static const String settingsFaqQ1 = 'settings.faqQ1';
+  static const String settingsFaqA1 = 'settings.faqA1';
+  static const String settingsFaqQ2 = 'settings.faqQ2';
+  static const String settingsFaqA2 = 'settings.faqA2';
+  static const String settingsFaqQ3 = 'settings.faqQ3';
+  static const String settingsFaqA3 = 'settings.faqA3';
+  static const String settingsFaqQ4 = 'settings.faqQ4';
+  static const String settingsFaqA4 = 'settings.faqA4';
+  static const String settingsFaqQ5 = 'settings.faqQ5';
+  static const String settingsFaqA5 = 'settings.faqA5';
+  static const String settingsFaqQ6 = 'settings.faqQ6';
+  static const String settingsFaqA6 = 'settings.faqA6';
+  static const String settingsFaqQ7 = 'settings.faqQ7';
+  static const String settingsFaqA7 = 'settings.faqA7';
+  static const String settingsFaqQ8 = 'settings.faqQ8';
+  static const String settingsFaqA8 = 'settings.faqA8';
+  static const String settingsFaqQ9 = 'settings.faqQ9';
+  static const String settingsFaqA9 = 'settings.faqA9';
+  static const String settingsFaqQ10 = 'settings.faqQ10';
+  static const String settingsFaqA10 = 'settings.faqA10';
+
+  // ── About (enhanced) ─���──────────────────────────────────────────────────────
+
+  static const String settingsAboutAppName = 'settings.aboutAppName';
+  static const String settingsAboutTagline = 'settings.aboutTagline';
+  static const String settingsAboutVersion = 'settings.aboutVersion';
+  static const String settingsAboutTermsOfService =
+      'settings.aboutTermsOfService';
+  static const String settingsAboutPrivacyPolicy =
+      'settings.aboutPrivacyPolicy';
+  static const String settingsAboutOpenSourceLicenses =
+      'settings.aboutOpenSourceLicenses';
+
+  // ── Data Export & Granular Clear ──────────────────────────────────────────
+
+  static const String settingsExportData = 'settings.exportData';
+  static const String settingsExportDataTitle = 'settings.exportDataTitle';
+  static const String settingsExportDataBody = 'settings.exportDataBody';
+  static const String settingsExportDataConfirm = 'settings.exportDataConfirm';
+  static const String settingsExportDataSuccess = 'settings.exportDataSuccess';
+  static const String settingsExportDataError = 'settings.exportDataError';
+  static const String settingsClearReadingHistory =
+      'settings.clearReadingHistory';
+  static const String settingsClearReadingHistoryTitle =
+      'settings.clearReadingHistoryTitle';
+  static const String settingsClearReadingHistoryBody =
+      'settings.clearReadingHistoryBody';
+  static const String settingsClearReadingHistoryConfirm =
+      'settings.clearReadingHistoryConfirm';
+  static const String settingsClearVocabulary = 'settings.clearVocabulary';
+  static const String settingsClearVocabularyTitle =
+      'settings.clearVocabularyTitle';
+  static const String settingsClearVocabularyBody =
+      'settings.clearVocabularyBody';
+  static const String settingsClearVocabularyConfirm =
+      'settings.clearVocabularyConfirm';
+  static const String settingsClearAllDataDoubleConfirmTitle =
+      'settings.clearAllDataDoubleConfirmTitle';
+  static const String settingsClearAllDataDoubleConfirmBody =
+      'settings.clearAllDataDoubleConfirmBody';
+  static const String settingsClearAllDataDoubleConfirmHint =
+      'settings.clearAllDataDoubleConfirmHint';
+  static const String settingsClearAllDataDoubleConfirmError =
+      'settings.clearAllDataDoubleConfirmError';
 
   // ── Week day abbreviations ─────────────────────────────────────────────────────
 

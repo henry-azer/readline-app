@@ -47,5 +47,6 @@ app.*.map.json
 # Local working documents
 CLAUDE.md
 /docs/
+/readit docs/
 .superpowers/
 /design/
