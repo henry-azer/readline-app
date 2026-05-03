@@ -3,6 +3,7 @@ import 'package:read_it/core/extensions/context_extensions.dart';
 import 'package:read_it/core/localization/app_localization.dart';
 import 'package:read_it/core/localization/app_strings.dart';
 import 'package:read_it/core/theme/app_colors.dart';
+import 'package:read_it/core/theme/app_durations.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
@@ -10,11 +11,13 @@ import 'package:read_it/core/theme/app_typography.dart';
 class LibraryFilterChips extends StatelessWidget {
   final String activeFilter;
   final ValueChanged<String> onFilterChanged;
+  final Map<String, int> counts;
 
   const LibraryFilterChips({
     super.key,
     required this.activeFilter,
     required this.onFilterChanged,
+    this.counts = const {},
   });
 
   @override
@@ -30,6 +33,7 @@ class LibraryFilterChips extends StatelessWidget {
 
     final filters = [
       ('all', AppStrings.libraryFilterAll.tr),
+      ('unread', AppStrings.libraryFilterNotStarted.tr),
       ('reading', AppStrings.libraryFilterReading.tr),
       ('completed', AppStrings.libraryFilterCompleted.tr),
     ];
@@ -44,11 +48,13 @@ class LibraryFilterChips extends StatelessWidget {
         itemBuilder: (context, index) {
           final (value, label) = filters[index];
           final isSelected = activeFilter == value;
+          final count = counts[value] ?? 0;
+          final displayLabel = count > 0 ? '$label · $count' : label;
 
           return GestureDetector(
             onTap: () => onFilterChanged(value),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: AppDurations.short,
               curve: Curves.easeInOut,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -67,7 +73,7 @@ class LibraryFilterChips extends StatelessWidget {
                 ),
               ),
               child: Text(
-                label,
+                displayLabel,
                 style: AppTypography.label.copyWith(
                   color: isSelected
                       ? (isDark

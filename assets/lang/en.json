@@ -256,7 +256,9 @@
     "editDocumentTitle": "Edit Document",
     "saveChanges": "SAVE CHANGES",
     "contentChangedWarning": "Content changed. Existing reading progress will be reset.",
-    "selectMultiple": "Select Multiple"
+    "selectMultiple": "Select Multiple",
+    "progressPercent": "{{n}}%",
+    "emptyAddCta": "Add Your First Reading"
   },
   "reading": {
     "back": "Back",

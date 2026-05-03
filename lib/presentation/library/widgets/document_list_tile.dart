@@ -53,13 +53,14 @@ class DocumentListTile extends StatelessWidget {
         ? AppColors.surfaceContainerHigh
         : AppColors.lightSurfaceContainerHigh;
 
-    final progress = document.totalPages > 0
-        ? (document.currentPage / document.totalPages).clamp(0.0, 1.0)
+    final progress = document.totalWords > 0
+        ? (document.wordsRead / document.totalWords).clamp(0.0, 1.0)
         : 0.0;
     final isCompleted = document.isCompleted;
-    final progressColor = isCompleted
-        ? (isDark ? AppColors.success : AppColors.lightSuccess)
-        : primary;
+    final isUnread = document.isUnread;
+    final successColor = isDark ? AppColors.success : AppColors.lightSuccess;
+    final progressColor = isCompleted ? successColor : primary;
+    final progressPercent = (progress * 100).round();
     final lastReadLabel = _formatLastRead(document.lastReadAt);
 
     final tileContent = TapScale(
@@ -168,9 +169,9 @@ class DocumentListTile extends StatelessWidget {
                       HighlightedText(
                         text: document.description!,
                         query: searchQuery,
-                        style: AppTypography.bodySmall.copyWith(
+                        style: AppTypography.labelSmall.copyWith(
                           color: onSurfaceVariant,
-                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
                         ),
                         highlightColor: primary,
                         maxLines: 1,
@@ -185,34 +186,58 @@ class DocumentListTile extends StatelessWidget {
                         'current': '${document.currentPage}',
                         'total': '${document.totalPages}',
                       }),
-                      style: AppTypography.label.copyWith(
+                      style: AppTypography.labelTiny.copyWith(
                         color: onSurfaceVariant,
-                        fontSize: 10,
                       ),
                     ),
 
                     const SizedBox(height: AppSpacing.xs),
 
-                    // Progress bar
-                    Stack(
+                    // Progress bar + percentage label
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          height: 3,
-                          decoration: BoxDecoration(
-                            color: outlineVariant.withValues(alpha: 0.4),
-                            borderRadius: AppRadius.fullBorder,
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: 3,
+                                decoration: BoxDecoration(
+                                  color: outlineVariant.withValues(alpha: 0.4),
+                                  borderRadius: AppRadius.fullBorder,
+                                ),
+                              ),
+                              FractionallySizedBox(
+                                widthFactor: progress,
+                                child: Container(
+                                  height: 3,
+                                  decoration: BoxDecoration(
+                                    color: progressColor,
+                                    borderRadius: AppRadius.fullBorder,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        FractionallySizedBox(
-                          widthFactor: progress,
-                          child: Container(
-                            height: 3,
-                            decoration: BoxDecoration(
-                              color: progressColor,
-                              borderRadius: AppRadius.fullBorder,
+                        if (isCompleted) ...[
+                          const SizedBox(width: AppSpacing.xs),
+                          Icon(
+                            Icons.check_rounded,
+                            size: 14,
+                            color: successColor,
+                          ),
+                        ] else if (!isUnread) ...[
+                          const SizedBox(width: AppSpacing.xs),
+                          Text(
+                            AppStrings.libraryProgressPercent.trParams({
+                              'n': '$progressPercent',
+                            }),
+                            style: AppTypography.labelTiny.copyWith(
+                              color: onSurfaceVariant,
                             ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
 
@@ -230,9 +255,8 @@ class DocumentListTile extends StatelessWidget {
                           const SizedBox(width: AppSpacing.xxs),
                           Text(
                             lastReadLabel,
-                            style: AppTypography.label.copyWith(
+                            style: AppTypography.labelTiny.copyWith(
                               color: onSurfaceVariant,
-                              fontSize: 10,
                             ),
                           ),
                         ],
@@ -383,7 +407,7 @@ class _ComplexityBadge extends StatelessWidget {
       ),
       child: Text(
         level.toUpperCase(),
-        style: AppTypography.label.copyWith(color: color, fontSize: 9),
+        style: AppTypography.labelMicro.copyWith(color: color),
       ),
     );
   }

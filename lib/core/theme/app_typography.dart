@@ -64,6 +64,30 @@ abstract final class AppTypography {
     letterSpacing: AppTracking.tight,
   );
 
+  /// 11px label — card meta lines, descriptions, last-read date hints.
+  static TextStyle get labelSmall => _sans.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: AppTracking.normal,
+    height: 1,
+  );
+
+  /// 10px label — page count, list-tile meta, percentage chips.
+  static TextStyle get labelTiny => _sans.copyWith(
+    fontSize: 10,
+    fontWeight: FontWeight.w600,
+    letterSpacing: AppTracking.normal,
+    height: 1,
+  );
+
+  /// 9px label — status pills, complexity badges, dense card hints.
+  static TextStyle get labelMicro => _sans.copyWith(
+    fontSize: 9,
+    fontWeight: FontWeight.w600,
+    letterSpacing: AppTracking.normal,
+    height: 1,
+  );
+
   // ── Button (Inter — bold, wide tracking) ──
   static TextStyle get button => _sans.copyWith(
     fontSize: 14,
@@ -102,16 +126,33 @@ abstract final class AppTypography {
     height: 1.6,
   );
 
-  /// Resolve reading font by family name
+  /// Resolve reading font by family name.
+  /// Supports all reading-appropriate Google Fonts.
   static TextStyle readingFont(String family, {double fontSize = 18}) {
-    switch (family) {
-      case 'literata':
-        return _literata.copyWith(fontSize: fontSize, height: 1.6);
-      case 'newsreader':
-        return _serif.copyWith(fontSize: fontSize, height: 1.6);
-      case 'inter':
-      default:
-        return _sans.copyWith(fontSize: fontSize, height: 1.6);
-    }
+    final style = switch (family) {
+      'newsreader' => _serif,
+      'literata' => _literata,
+      'inter' => _sans,
+      'merriweather' => GoogleFonts.merriweather(),
+      'lora' => GoogleFonts.lora(),
+      'playfairDisplay' => GoogleFonts.playfairDisplay(),
+      'sourceSerif4' => GoogleFonts.sourceSerif4(),
+      'ebGaramond' => GoogleFonts.ebGaramond(),
+      'crimsonText' => GoogleFonts.crimsonText(),
+      'vollkorn' => GoogleFonts.vollkorn(),
+      'notoSerif' => GoogleFonts.notoSerif(),
+      'robotoSlab' => GoogleFonts.robotoSlab(),
+      'openSans' => GoogleFonts.openSans(),
+      'roboto' => GoogleFonts.roboto(),
+      'nunito' => GoogleFonts.nunito(),
+      'poppins' => GoogleFonts.poppins(),
+      'dmSans' => GoogleFonts.dmSans(),
+      'ibmPlexSerif' => GoogleFonts.ibmPlexSerif(),
+      'ibmPlexSans' => GoogleFonts.ibmPlexSans(),
+      'jetBrainsMono' => GoogleFonts.jetBrainsMono(),
+      'firaMono' => GoogleFonts.firaCode(),
+      _ => _serif,
+    };
+    return style.copyWith(fontSize: fontSize, height: 1.6);
   }
 }

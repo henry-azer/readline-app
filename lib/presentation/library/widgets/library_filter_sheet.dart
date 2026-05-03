@@ -92,9 +92,7 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
     final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
 
     final hasActive =
-        _statuses.isNotEmpty ||
-        _sourceTypes.isNotEmpty ||
-        _dateRange != null;
+        _statuses.isNotEmpty || _sourceTypes.isNotEmpty || _dateRange != null;
 
     return Container(
       decoration: BoxDecoration(

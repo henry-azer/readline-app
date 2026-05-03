@@ -1,13 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:read_it/core/di/injection.dart';
 import 'package:read_it/core/theme/app_durations.dart';
-import 'package:read_it/core/localization/app_localization.dart';
-import 'package:read_it/core/localization/app_strings.dart';
-import 'package:read_it/core/services/pdf_processing_service.dart';
 import 'package:read_it/data/contracts/document_repository.dart';
 import 'package:read_it/data/contracts/preferences_repository.dart';
 import 'package:read_it/data/contracts/session_repository.dart';
@@ -33,7 +28,6 @@ class LibraryViewModel {
   final PreferencesRepository _prefsRepo;
   final SessionRepository _sessionRepo;
   final VocabularyRepository _vocabRepo;
-  final PdfProcessingService _pdfService;
 
   final BehaviorSubject<List<DocumentModel>> allDocuments$ =
       BehaviorSubject.seeded(const []);
@@ -44,7 +38,6 @@ class LibraryViewModel {
     ViewMode.grid,
   );
   final BehaviorSubject<bool> isLoading$ = BehaviorSubject.seeded(false);
-  final BehaviorSubject<String?> importError$ = BehaviorSubject.seeded(null);
   final BehaviorSubject<String> searchQuery$ = BehaviorSubject.seeded('');
   final BehaviorSubject<String> sortField$ = BehaviorSubject.seeded('lastRead');
   final BehaviorSubject<bool> sortAscending$ = BehaviorSubject.seeded(false);
@@ -67,6 +60,20 @@ class LibraryViewModel {
 
   Timer? _searchDebounce;
 
+  /// Reactive count of active advanced filters — drives the app-bar badge.
+  late final Stream<int> activeFilterCount$ = Rx.combineLatest3(
+    filterStatuses$,
+    filterSourceTypes$,
+    filterDateRange$,
+    (Set<String> statuses, Set<String> sources, String? range) {
+      var count = 0;
+      if (statuses.isNotEmpty) count++;
+      if (sources.isNotEmpty) count++;
+      if (range != null) count++;
+      return count;
+    },
+  );
+
   /// Combined stream for the library body UI — replaces nested StreamBuilders.
   late final Stream<LibraryBodyState> bodyState$ = Rx.combineLatest7(
     documents$,
@@ -76,23 +83,16 @@ class LibraryViewModel {
     isMultiSelectMode$,
     sortField$,
     sortAscending$,
-    (
-      docs,
-      filter,
-      viewMode,
-      selectedIds,
-      isMultiSelect,
-      sortField,
-      sortAsc,
-    ) => (
-      docs: docs,
-      filter: filter,
-      viewMode: viewMode,
-      selectedIds: selectedIds,
-      isMultiSelect: isMultiSelect,
-      sortField: sortField,
-      sortAsc: sortAsc,
-    ),
+    (docs, filter, viewMode, selectedIds, isMultiSelect, sortField, sortAsc) =>
+        (
+          docs: docs,
+          filter: filter,
+          viewMode: viewMode,
+          selectedIds: selectedIds,
+          isMultiSelect: isMultiSelect,
+          sortField: sortField,
+          sortAsc: sortAsc,
+        ),
   );
 
   LibraryViewModel({
@@ -100,12 +100,10 @@ class LibraryViewModel {
     PreferencesRepository? prefsRepo,
     SessionRepository? sessionRepo,
     VocabularyRepository? vocabRepo,
-    PdfProcessingService? pdfService,
   }) : _docRepo = docRepo ?? getIt<DocumentRepository>(),
        _prefsRepo = prefsRepo ?? getIt<PreferencesRepository>(),
        _sessionRepo = sessionRepo ?? getIt<SessionRepository>(),
-       _vocabRepo = vocabRepo ?? getIt<VocabularyRepository>(),
-       _pdfService = pdfService ?? getIt<PdfProcessingService>();
+       _vocabRepo = vocabRepo ?? getIt<VocabularyRepository>();
 
   String get currentFilter => activeFilter$.value;
   ViewMode get currentViewMode => viewMode$.value;
@@ -315,27 +313,6 @@ class LibraryViewModel {
     exitMultiSelect();
   }
 
-  Future<bool> importDocument() async {
-    importError$.add(null);
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf'],
-      );
-      if (result == null || result.files.isEmpty) return false;
-      final path = result.files.single.path;
-      if (path == null) return false;
-
-      final doc = await _pdfService.processFile(File(path));
-      await _docRepo.save(doc);
-      await refresh();
-      return true;
-    } catch (_) {
-      importError$.add(AppStrings.errorImportPdf.tr);
-      return false;
-    }
-  }
-
   // ── Filter engine ─────────────────────────────────────────────────────────
 
   void _applyAllFilters() {
@@ -436,7 +413,6 @@ class LibraryViewModel {
     activeFilter$.close();
     viewMode$.close();
     isLoading$.close();
-    importError$.close();
     searchQuery$.close();
     sortField$.close();
     sortAscending$.close();

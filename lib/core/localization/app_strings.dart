@@ -210,7 +210,6 @@ class AppStrings {
       'document.sourceTypeTextInput';
   static const String documentSourceTypeTxt = 'document.sourceTypeTxt';
 
-
   // ── Library ───────────────────────────────────────────────────────────────────
 
   static const String libraryTitle = 'library.title';
@@ -273,6 +272,8 @@ class AppStrings {
   static const String libraryContentChangedWarning =
       'library.contentChangedWarning';
   static const String librarySelectMultiple = 'library.selectMultiple';
+  static const String libraryProgressPercent = 'library.progressPercent';
+  static const String libraryEmptyAddCta = 'library.emptyAddCta';
 
   // ── Reading ───────────────────────────────────────────────────────────────────
 

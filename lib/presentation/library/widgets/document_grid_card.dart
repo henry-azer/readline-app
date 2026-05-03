@@ -6,6 +6,7 @@ import 'package:read_it/core/theme/app_colors.dart';
 import 'package:read_it/core/theme/app_radius.dart';
 import 'package:read_it/core/theme/app_spacing.dart';
 import 'package:read_it/core/theme/app_typography.dart';
+import 'package:read_it/core/utils/date_formatter.dart';
 import 'package:read_it/data/models/document_model.dart';
 import 'package:read_it/presentation/library/widgets/highlighted_text.dart';
 import 'package:read_it/presentation/library/widgets/source_type_icon.dart';
@@ -50,13 +51,15 @@ class DocumentGridCard extends StatelessWidget {
         ? AppColors.outlineVariant
         : AppColors.lightOutlineVariant;
 
-    final progress = document.totalPages > 0
-        ? (document.currentPage / document.totalPages).clamp(0.0, 1.0)
+    final progress = document.totalWords > 0
+        ? (document.wordsRead / document.totalWords).clamp(0.0, 1.0)
         : 0.0;
     final isCompleted = document.isCompleted;
-    final progressColor = isCompleted
-        ? (isDark ? AppColors.success : AppColors.lightSuccess)
-        : primary;
+    final isUnread = document.isUnread;
+    final successColor = isDark ? AppColors.success : AppColors.lightSuccess;
+    final progressColor = isCompleted ? successColor : primary;
+    final progressPercent = (progress * 100).round();
+    final lastReadAt = document.lastReadAt;
 
     return GestureDetector(
       onLongPress: onLongPress,
@@ -121,9 +124,8 @@ class DocumentGridCard extends StatelessWidget {
                       HighlightedText(
                         text: document.description!,
                         query: searchQuery,
-                        style: AppTypography.label.copyWith(
+                        style: AppTypography.labelMicro.copyWith(
                           color: onSurfaceVariant,
-                          fontSize: 9,
                           fontWeight: FontWeight.w400,
                         ),
                         highlightColor: primary,
@@ -148,9 +150,8 @@ class DocumentGridCard extends StatelessWidget {
                               'current': '${document.currentPage}',
                               'total': '${document.totalPages}',
                             }),
-                            style: AppTypography.label.copyWith(
+                            style: AppTypography.labelTiny.copyWith(
                               color: onSurfaceVariant,
-                              fontSize: 10,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -159,28 +160,66 @@ class DocumentGridCard extends StatelessWidget {
                       ],
                     ),
 
+                    // Last read meta line
+                    if (lastReadAt != null) ...[
+                      const SizedBox(height: AppSpacing.micro),
+                      Text(
+                        DateFormatter.relative(lastReadAt),
+                        style: AppTypography.labelTiny.copyWith(
+                          color: onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+
                     const SizedBox(height: AppSpacing.xs),
 
-                    // Progress bar
-                    Stack(
+                    // Progress bar + percentage label
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          height: 3,
-                          decoration: BoxDecoration(
-                            color: outlineVariant.withValues(alpha: 0.4),
-                            borderRadius: AppRadius.fullBorder,
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: 3,
+                                decoration: BoxDecoration(
+                                  color: outlineVariant.withValues(alpha: 0.4),
+                                  borderRadius: AppRadius.fullBorder,
+                                ),
+                              ),
+                              FractionallySizedBox(
+                                widthFactor: progress,
+                                child: Container(
+                                  height: 3,
+                                  decoration: BoxDecoration(
+                                    color: progressColor,
+                                    borderRadius: AppRadius.fullBorder,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        FractionallySizedBox(
-                          widthFactor: progress,
-                          child: Container(
-                            height: 3,
-                            decoration: BoxDecoration(
-                              color: progressColor,
-                              borderRadius: AppRadius.fullBorder,
+                        if (isCompleted) ...[
+                          const SizedBox(width: AppSpacing.micro),
+                          Icon(
+                            Icons.check_rounded,
+                            size: 12,
+                            color: successColor,
+                          ),
+                        ] else if (!isUnread) ...[
+                          const SizedBox(width: AppSpacing.micro),
+                          Text(
+                            AppStrings.libraryProgressPercent.trParams({
+                              'n': '$progressPercent',
+                            }),
+                            style: AppTypography.labelMicro.copyWith(
+                              color: onSurfaceVariant,
                             ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
 
@@ -249,9 +288,8 @@ class _CoverArea extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     AppStrings.libraryNoPreview.tr,
-                    style: AppTypography.label.copyWith(
+                    style: AppTypography.labelMicro.copyWith(
                       color: onSurfaceVariant.withValues(alpha: 0.5),
-                      fontSize: 9,
                     ),
                   ),
                 ],
@@ -283,7 +321,6 @@ class _CoverArea extends StatelessWidget {
                     : null,
               ),
             ),
-
         ],
       ),
     );
