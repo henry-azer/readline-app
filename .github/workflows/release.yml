@@ -1,0 +1,101 @@
+name: Release Notes
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get previous tag
+        id: prev_tag
+        env:
+          CURRENT_TAG: ${{ github.ref_name }}
+        run: |
+          PREV=$(git tag --sort=-version:refname | grep '^v' | while read -r t; do
+            [ "$t" != "$CURRENT_TAG" ] && echo "$t" && break
+          done)
+          if [ -z "$PREV" ]; then
+            PREV=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "tag=$PREV" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release notes
+        id: notes
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+          PREV_TAG: ${{ steps.prev_tag.outputs.tag }}
+        run: |
+          echo "Generating notes from $PREV_TAG to $TAG_NAME"
+
+          FEATURES=""
+          FIXES=""
+          REFACTORS=""
+          OTHER=""
+
+          while IFS= read -r line; do
+            MSG=$(echo "$line" | sed 's/^[a-f0-9]* //')
+
+            if echo "$MSG" | grep -qE '^feat(\(.*\))?:'; then
+              CLEAN=$(echo "$MSG" | sed 's/^feat\(([^)]*)\)\?: //')
+              FEATURES="$FEATURES- $CLEAN\n"
+            elif echo "$MSG" | grep -qE '^fix(\(.*\))?:'; then
+              CLEAN=$(echo "$MSG" | sed 's/^fix\(([^)]*)\)\?: //')
+              FIXES="$FIXES- $CLEAN\n"
+            elif echo "$MSG" | grep -qE '^refactor(\(.*\))?:'; then
+              CLEAN=$(echo "$MSG" | sed 's/^refactor\(([^)]*)\)\?: //')
+              REFACTORS="$REFACTORS- $CLEAN\n"
+            elif echo "$MSG" | grep -qE '^(build|chore|style|perf)(\(.*\))?:'; then
+              CLEAN=$(echo "$MSG" | sed 's/^[a-z]*\(([^)]*)\)\?: //')
+              OTHER="$OTHER- $CLEAN\n"
+            fi
+          done <<< "$(git log --oneline "$PREV_TAG".."$TAG_NAME" --no-merges)"
+
+          COMMIT_COUNT=$(git rev-list --count "$PREV_TAG".."$TAG_NAME" --no-merges)
+          CONTRIBUTORS=$(git log "$PREV_TAG".."$TAG_NAME" --format='%aN' | sort -u | paste -sd ', ')
+
+          {
+            echo "notes<<NOTES_EOF"
+            echo "## $TAG_NAME"
+            echo ""
+
+            if [ -n "$FEATURES" ]; then
+              echo "### New Features"
+              echo -e "$FEATURES"
+            fi
+
+            if [ -n "$FIXES" ]; then
+              echo "### Bug Fixes"
+              echo -e "$FIXES"
+            fi
+
+            if [ -n "$REFACTORS" ]; then
+              echo "### Improvements"
+              echo -e "$REFACTORS"
+            fi
+
+            if [ -n "$OTHER" ]; then
+              echo "### Other Changes"
+              echo -e "$OTHER"
+            fi
+
+            echo "---"
+            echo "*${COMMIT_COUNT} commits by ${CONTRIBUTORS}*"
+            echo "NOTES_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body: ${{ steps.notes.outputs.notes }}
+          generate_release_notes: false
