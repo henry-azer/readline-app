@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
-import 'package:read_it/core/constants/app_constants.dart';
-import 'package:read_it/data/entities/reading_state.dart';
+import 'package:readline_app/core/constants/app_constants.dart';
+import 'package:readline_app/data/entities/reading_state.dart';
 
 class ReadingEngineService {
   final BehaviorSubject<ReadingState> state$ = BehaviorSubject.seeded(
@@ -15,6 +15,22 @@ class ReadingEngineService {
   int _focusWindowWords = 15; // ~3 lines of focus text
   int _pauseCount = 0;
   DateTime? _sessionStart;
+  bool _isPlaying = false;
+  bool _externalScrollControl = false;
+
+  /// Expose the word list for smooth-scroll display.
+  List<String> get words => _words;
+
+  /// Enable/disable external scroll control (smooth scroll mode).
+  /// When enabled, [play] does not start the internal timer —
+  /// the display drives scrolling and reports progress via [updateProgress].
+  void setExternalScrollControl(bool enabled) {
+    _externalScrollControl = enabled;
+    if (enabled) {
+      _scrollTimer?.cancel();
+      _scrollTimer = null;
+    }
+  }
 
   void loadContent(
     String text, {
@@ -29,6 +45,7 @@ class ReadingEngineService {
     _focusWindowWords = focusLines * 5; // ~5 words per line
     _pauseCount = 0;
     _sessionStart = null;
+    _isPlaying = false;
     _emitState();
   }
 
@@ -39,19 +56,39 @@ class ReadingEngineService {
 
   void play() {
     if (_words.isEmpty) return;
+    // Already at the last word — nothing to play. Reconcile completion
+    // (in case a prior emit still has `isComplete: false`) and bail out
+    // before signalling `isPlaying: true`. This prevents the player from
+    // entering a "playing but frozen" state on resume-at-end.
+    if (_isAtEnd) {
+      _isPlaying = false;
+      state$.add(
+        state$.value.copyWith(
+          currentWordIndex: _currentIndex,
+          totalWords: _words.length,
+          isPlaying: false,
+          isComplete: true,
+          currentWpm: _wpm,
+        ),
+      );
+      return;
+    }
     _sessionStart ??= DateTime.now();
+    _isPlaying = true;
 
-    final msPerWord = (60000 / _wpm).round();
-    _scrollTimer?.cancel();
-    _scrollTimer = Timer.periodic(Duration(milliseconds: msPerWord), (_) {
-      if (_currentIndex >= _words.length - 1) {
-        stop();
-        state$.add(state$.value.copyWith(isComplete: true));
-        return;
-      }
-      _currentIndex++;
-      _emitState();
-    });
+    if (!_externalScrollControl) {
+      final msPerWord = (60000 / _wpm).round();
+      _scrollTimer?.cancel();
+      _scrollTimer = Timer.periodic(Duration(milliseconds: msPerWord), (_) {
+        if (_currentIndex >= _words.length - 1) {
+          stop();
+          state$.add(state$.value.copyWith(isComplete: true));
+          return;
+        }
+        _currentIndex++;
+        _emitState();
+      });
+    }
 
     state$.add(state$.value.copyWith(isPlaying: true));
   }
@@ -59,6 +96,7 @@ class ReadingEngineService {
   void pause() {
     _scrollTimer?.cancel();
     _scrollTimer = null;
+    _isPlaying = false;
     _pauseCount++;
     state$.add(state$.value.copyWith(isPlaying: false));
   }
@@ -66,13 +104,15 @@ class ReadingEngineService {
   void stop() {
     _scrollTimer?.cancel();
     _scrollTimer = null;
+    _isPlaying = false;
     state$.add(state$.value.copyWith(isPlaying: false));
   }
 
   void setSpeed(int wpm) {
     _wpm = wpm;
     state$.add(state$.value.copyWith(currentWpm: wpm));
-    if (state$.value.isPlaying) {
+    // In timer mode, restart the timer with the new speed
+    if (!_externalScrollControl && _isPlaying) {
       pause();
       play();
     }
@@ -86,6 +126,41 @@ class ReadingEngineService {
   void jumpToWord(int index) {
     _currentIndex = index.clamp(0, _words.length - 1);
     _emitState();
+  }
+
+  /// Lightweight progress update driven by the smooth-scroll display.
+  /// Avoids expensive text-splitting of [_emitState].
+  void updateProgress(int wordIndex) {
+    final clamped = wordIndex.clamp(0, _words.length - 1);
+    final atEnd = _words.isNotEmpty && clamped >= _words.length - 1;
+    // Skip only when nothing observable would change. If the index is
+    // unchanged but `isComplete` doesn't yet reflect end-of-content, fall
+    // through and emit — this is what reconciles a stuck-at-end state.
+    if (clamped == _currentIndex && state$.value.isComplete == atEnd) return;
+    _currentIndex = clamped;
+
+    if (atEnd) {
+      _isPlaying = false;
+      state$.add(
+        state$.value.copyWith(
+          currentWordIndex: _currentIndex,
+          totalWords: _words.length,
+          isPlaying: false,
+          isComplete: true,
+          currentWpm: _wpm,
+        ),
+      );
+      return;
+    }
+
+    state$.add(
+      state$.value.copyWith(
+        currentWordIndex: _currentIndex,
+        totalWords: _words.length,
+        isComplete: false,
+        currentWpm: _wpm,
+      ),
+    );
   }
 
   void highlightWord(String? word) {
@@ -113,6 +188,13 @@ class ReadingEngineService {
     return _words[index];
   }
 
+  /// True when the current word index has reached the last word of the
+  /// loaded content. Used to drive the `isComplete` flag through every
+  /// emit path so resume / jump / smooth-scroll all reconcile to a
+  /// consistent terminal state.
+  bool get _isAtEnd =>
+      _words.isNotEmpty && _currentIndex >= _words.length - 1;
+
   void _emitState() {
     // focusStart: beginning of the focus window (the actively highlighted zone)
     final focusStart = (_currentIndex - _focusWindowWords).clamp(
@@ -133,6 +215,7 @@ class ReadingEngineService {
         )
         .join(' ');
 
+    final atEnd = _isAtEnd;
     state$.add(
       ReadingState(
         pastText: pastText,
@@ -140,7 +223,8 @@ class ReadingEngineService {
         upcomingText: upcomingText,
         currentWordIndex: _currentIndex,
         totalWords: _words.length,
-        isPlaying: _scrollTimer != null,
+        isPlaying: _isPlaying && !atEnd,
+        isComplete: atEnd,
         currentWpm: _wpm,
         highlightedWord: state$.value.highlightedWord,
       ),

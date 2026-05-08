@@ -1,4 +1,4 @@
-import 'package:read_it/data/models/document_model.dart';
+import 'package:readline_app/data/models/document_model.dart';
 
 abstract class DocumentRepository {
   Future<List<DocumentModel>> getAll();

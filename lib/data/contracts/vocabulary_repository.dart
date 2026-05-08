@@ -1,4 +1,4 @@
-import 'package:read_it/data/models/vocabulary_word_model.dart';
+import 'package:readline_app/data/models/vocabulary_word_model.dart';
 
 abstract class VocabularyRepository {
   Future<void> save(VocabularyWordModel word);
@@ -8,4 +8,5 @@ abstract class VocabularyRepository {
   Future<List<VocabularyWordModel>> getByDocumentId(String documentId);
   Future<List<VocabularyWordModel>> getDueForReview();
   Future<void> updateMastery(String id, String level);
+  Future<void> clearSourceDocument(String documentId);
 }

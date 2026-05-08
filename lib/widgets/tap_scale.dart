@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:read_it/core/theme/app_durations.dart';
+import 'package:readline_app/core/theme/app_durations.dart';
 
 class TapScale extends StatefulWidget {
   final Widget child;
@@ -43,7 +43,7 @@ class _TapScaleState extends State<TapScale> {
       child: reduceMotion
           ? AnimatedOpacity(
               opacity: _pressed ? 0.7 : 1.0,
-              duration: const Duration(milliseconds: 60),
+              duration: AppDurations.instant,
               child: widget.child,
             )
           : AnimatedScale(

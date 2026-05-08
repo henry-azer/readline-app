@@ -1,4 +1,4 @@
-import 'package:read_it/data/models/user_preferences_model.dart';
+import 'package:readline_app/data/models/user_preferences_model.dart';
 
 abstract class PreferencesRepository {
   Future<UserPreferencesModel> get();

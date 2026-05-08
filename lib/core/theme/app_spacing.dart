@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_breakpoints.dart';
 
 abstract final class AppSpacing {
+  static const double micro = 2;
   static const double xxs = 4;
   static const double sxs = 6;
   static const double xs = 8;
@@ -24,6 +25,9 @@ abstract final class AppSpacing {
 
   // Layout constants
   static const EdgeInsets screenPadding = EdgeInsets.fromLTRB(xl, xs, xl, xxxl);
+
+  /// Bottom padding to clear the persistent navigation bar.
+  static const double bottomNavClearance = xxxxl + xxl; // 80
 
   /// Responsive scale factor based on screen width.
   static double scaleFactor(BuildContext context) {

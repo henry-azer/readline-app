@@ -1,17 +1,24 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:read_it/core/router/app_page_transitions.dart';
-import 'package:read_it/core/di/injection.dart';
-import 'package:read_it/data/contracts/preferences_repository.dart';
-import 'package:read_it/presentation/shell/app_shell.dart';
-import 'package:read_it/presentation/home/screens/home_screen.dart';
-import 'package:read_it/presentation/library/screens/library_screen.dart';
-import 'package:read_it/presentation/vocabulary/screens/vocabulary_screen.dart';
-import 'package:read_it/presentation/analytics/screens/analytics_screen.dart';
-import 'package:read_it/presentation/onboarding/screens/onboarding_screen.dart';
-import 'package:read_it/presentation/reading/screens/reading_screen.dart';
-import 'package:read_it/presentation/settings/screens/settings_screen.dart';
-import 'package:read_it/presentation/splash/screens/splash_screen.dart';
-import 'package:read_it/presentation/vocabulary/screens/review_session_screen.dart';
+import 'package:readline_app/core/router/app_page_transitions.dart';
+import 'package:readline_app/core/di/injection.dart';
+import 'package:readline_app/data/contracts/preferences_repository.dart';
+import 'package:readline_app/features/shell/app_shell.dart';
+import 'package:readline_app/features/home/screens/home_screen.dart';
+import 'package:readline_app/features/library/screens/library_screen.dart';
+import 'package:readline_app/features/vocabulary/screens/vocabulary_screen.dart';
+import 'package:readline_app/features/analytics/screens/analytics_screen.dart';
+import 'package:readline_app/features/onboarding/screens/onboarding_screen.dart';
+import 'package:readline_app/features/reading/screens/reading_screen.dart';
+import 'package:readline_app/features/settings/screens/settings_screen.dart';
+import 'package:readline_app/features/splash/screens/splash_screen.dart';
+import 'package:readline_app/features/vocabulary/screens/review_session_screen.dart';
+import 'package:readline_app/features/about/screens/about_screen.dart';
+import 'package:readline_app/features/about/screens/privacy_policy_screen.dart';
+import 'package:readline_app/features/about/screens/terms_of_service_screen.dart';
+import 'package:readline_app/features/support/screens/bug_report_screen.dart';
+import 'package:readline_app/features/support/screens/help_support_screen.dart';
+import 'package:readline_app/features/support/screens/rate_app_screen.dart';
 
 abstract final class AppRoutes {
   static const splash = '/';
@@ -23,7 +30,24 @@ abstract final class AppRoutes {
   static const reading = '/reading';
   static const settings = '/settings';
   static const review = '/review';
+  static const about = '/about';
+  static const privacyPolicy = '/privacy-policy';
+  static const termsOfService = '/terms-of-service';
+  static const helpSupport = '/help-support';
+  static const bugReport = '/bug-report';
+  static const rateApp = '/rate-app';
 }
+
+/// Per-branch navigator keys for the persistent shell. Exposed so the
+/// shell's center "+" button can push modal routes on the *active branch's*
+/// navigator (keeping the bottom nav bar visible) instead of the root
+/// navigator (which covers the whole screen).
+final List<GlobalKey<NavigatorState>> shellBranchNavigatorKeys = [
+  GlobalKey<NavigatorState>(debugLabel: 'home_branch_nav'),
+  GlobalKey<NavigatorState>(debugLabel: 'library_branch_nav'),
+  GlobalKey<NavigatorState>(debugLabel: 'vocab_branch_nav'),
+  GlobalKey<NavigatorState>(debugLabel: 'settings_branch_nav'),
+];
 
 /// Cached onboarding completion state to avoid hitting the repository
 /// on every navigation event.
@@ -77,6 +101,7 @@ final appRouter = GoRouter(
       },
       branches: [
         StatefulShellBranch(
+          navigatorKey: shellBranchNavigatorKeys[0],
           routes: [
             GoRoute(
               path: AppRoutes.home,
@@ -85,6 +110,7 @@ final appRouter = GoRouter(
           ],
         ),
         StatefulShellBranch(
+          navigatorKey: shellBranchNavigatorKeys[1],
           routes: [
             GoRoute(
               path: AppRoutes.library,
@@ -93,14 +119,16 @@ final appRouter = GoRouter(
           ],
         ),
         StatefulShellBranch(
+          navigatorKey: shellBranchNavigatorKeys[2],
           routes: [
             GoRoute(
-              path: AppRoutes.analytics,
-              builder: (ctx, st) => const AnalyticsScreen(),
+              path: AppRoutes.vocabulary,
+              builder: (ctx, st) => const VocabularyScreen(),
             ),
           ],
         ),
         StatefulShellBranch(
+          navigatorKey: shellBranchNavigatorKeys[3],
           routes: [
             GoRoute(
               path: AppRoutes.settings,
@@ -123,14 +151,44 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(
-      path: AppRoutes.vocabulary,
+      path: AppRoutes.analytics,
       pageBuilder: (ctx, state) =>
-          slideUpFadePage(state: state, child: const VocabularyScreen()),
+          slideUpFadePage(state: state, child: const AnalyticsScreen()),
     ),
     GoRoute(
       path: AppRoutes.review,
       pageBuilder: (ctx, state) =>
           slideUpFadePage(state: state, child: const ReviewSessionScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.about,
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const AboutScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.privacyPolicy,
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const PrivacyPolicyScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.termsOfService,
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const TermsOfServiceScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.helpSupport,
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const HelpSupportScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.bugReport,
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const BugReportScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.rateApp,
+      pageBuilder: (ctx, state) =>
+          slideUpFadePage(state: state, child: const RateAppScreen()),
     ),
   ],
 );

@@ -1,29 +1,28 @@
 import 'package:get_it/get_it.dart';
-import 'package:read_it/core/services/celebration_service.dart';
-import 'package:read_it/core/services/dictionary_service.dart';
-import 'package:read_it/core/services/haptic_service.dart';
-import 'package:read_it/core/services/sound_service.dart';
-import 'package:read_it/core/services/pdf_processing_service.dart';
-import 'package:read_it/core/services/share_card_service.dart';
-import 'package:read_it/core/services/reading_engine_service.dart';
-import 'package:read_it/core/services/streak_service.dart';
-import 'package:read_it/core/services/tts_service.dart';
-import 'package:read_it/core/services/vocabulary_service.dart';
-import 'package:read_it/data/contracts/document_repository.dart';
-import 'package:read_it/data/contracts/preferences_repository.dart';
-import 'package:read_it/data/contracts/session_repository.dart';
-import 'package:read_it/data/contracts/vocabulary_repository.dart';
-import 'package:read_it/data/datasources/local/hive_definition_cache_source.dart';
-import 'package:read_it/data/datasources/local/hive_milestone_source.dart';
-import 'package:read_it/data/datasources/local/hive_document_source.dart';
-import 'package:read_it/data/datasources/local/hive_preferences_source.dart';
-import 'package:read_it/data/datasources/local/hive_session_source.dart';
-import 'package:read_it/data/datasources/local/hive_streak_source.dart';
-import 'package:read_it/data/datasources/local/hive_vocabulary_source.dart';
-import 'package:read_it/data/repositories/document_repository_impl.dart';
-import 'package:read_it/data/repositories/preferences_repository_impl.dart';
-import 'package:read_it/data/repositories/session_repository_impl.dart';
-import 'package:read_it/data/repositories/vocabulary_repository_impl.dart';
+import 'package:readline_app/core/services/celebration_service.dart';
+import 'package:readline_app/core/services/dictionary_service.dart';
+import 'package:readline_app/core/services/haptic_service.dart';
+import 'package:readline_app/core/services/pdf_processing_service.dart';
+import 'package:readline_app/core/services/share_card_service.dart';
+import 'package:readline_app/core/services/reading_engine_service.dart';
+import 'package:readline_app/core/services/streak_service.dart';
+import 'package:readline_app/core/services/tts_service.dart';
+import 'package:readline_app/core/services/vocabulary_service.dart';
+import 'package:readline_app/data/contracts/document_repository.dart';
+import 'package:readline_app/data/contracts/preferences_repository.dart';
+import 'package:readline_app/data/contracts/session_repository.dart';
+import 'package:readline_app/data/contracts/vocabulary_repository.dart';
+import 'package:readline_app/data/datasources/local/hive_definition_cache_source.dart';
+import 'package:readline_app/data/datasources/local/hive_milestone_source.dart';
+import 'package:readline_app/data/datasources/local/hive_document_source.dart';
+import 'package:readline_app/data/datasources/local/hive_preferences_source.dart';
+import 'package:readline_app/data/datasources/local/hive_session_source.dart';
+import 'package:readline_app/data/datasources/local/hive_streak_source.dart';
+import 'package:readline_app/data/datasources/local/hive_vocabulary_source.dart';
+import 'package:readline_app/data/repositories/document_repository_impl.dart';
+import 'package:readline_app/data/repositories/preferences_repository_impl.dart';
+import 'package:readline_app/data/repositories/session_repository_impl.dart';
+import 'package:readline_app/data/repositories/vocabulary_repository_impl.dart';
 
 final getIt = GetIt.instance;
 
@@ -76,8 +75,5 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton(() => TtsService());
   getIt.registerLazySingleton(
     () => HapticService(prefsRepo: getIt<PreferencesRepository>()),
-  );
-  getIt.registerLazySingleton(
-    () => SoundService(prefsRepo: getIt<PreferencesRepository>()),
   );
 }

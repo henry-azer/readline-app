@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
-import 'package:read_it/core/services/streak_service.dart';
-import 'package:read_it/data/contracts/preferences_repository.dart';
-import 'package:read_it/data/contracts/session_repository.dart';
-import 'package:read_it/data/datasources/local/hive_milestone_source.dart';
-import 'package:read_it/data/models/celebration_data.dart';
-import 'package:read_it/data/models/milestone_model.dart';
-import 'package:read_it/data/models/streak_model.dart';
+import 'package:readline_app/core/services/streak_service.dart';
+import 'package:readline_app/data/contracts/preferences_repository.dart';
+import 'package:readline_app/data/contracts/session_repository.dart';
+import 'package:readline_app/data/datasources/local/hive_milestone_source.dart';
+import 'package:readline_app/data/models/celebration_data.dart';
+import 'package:readline_app/data/models/milestone_model.dart';
+import 'package:readline_app/data/models/streak_model.dart';
 
 class CelebrationService {
   final StreakService _streakService;

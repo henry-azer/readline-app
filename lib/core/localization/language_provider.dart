@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:read_it/data/contracts/preferences_repository.dart';
+import 'package:readline_app/data/contracts/preferences_repository.dart';
 import 'app_localization.dart';
 import 'language_option.dart';
 

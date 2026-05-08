@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:read_it/data/models/user_preferences_model.dart';
+import 'package:readline_app/data/models/user_preferences_model.dart';
 
 class HivePreferencesSource {
   static const _boxName = 'preferences';

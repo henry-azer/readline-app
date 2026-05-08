@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:read_it/data/models/vocabulary_word_model.dart';
+import 'package:readline_app/data/models/vocabulary_word_model.dart';
 
 class HiveVocabularySource {
   static const _boxName = 'vocabulary';

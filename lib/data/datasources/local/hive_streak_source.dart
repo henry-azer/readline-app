@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:read_it/data/models/streak_model.dart';
+import 'package:readline_app/data/models/streak_model.dart';
 
 class HiveStreakSource {
   static const _boxName = 'streaks';

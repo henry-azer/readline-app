@@ -11,12 +11,14 @@ abstract final class AppConstants {
   static const int fontSizeStep = 2;
 
   // Line spacing
-  static const double minLineSpacing = 1.0;
-  static const double maxLineSpacing = 2.5;
+  static const double minLineSpacing = 0.8;
+  static const double maxLineSpacing = 3.0;
   static const double lineSpacingStep = 0.1;
 
-  // Focus window
-  static const int maxFocusLines = 7;
+  // Page margin (left/right inset for the reading text, in logical px)
+  static const double minMargin = 0;
+  static const double maxMargin = 80;
+  static const double marginStep = 4;
 
   // Spaced repetition
   static const List<int> spacedRepetitionIntervals = [1, 3, 7, 14, 30];

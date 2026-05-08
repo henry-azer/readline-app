@@ -1,4 +1,4 @@
-/// Centralized localization key constants for Read-It.
+/// Centralized localization key constants for Readline.
 ///
 /// Usage: AppStrings.someKey.tr
 /// All keys follow dot-separated domain notation: 'domain.key'
@@ -46,7 +46,6 @@ class AppStrings {
   static const String navHome = 'nav.home';
   static const String navLibrary = 'nav.library';
   static const String navVocab = 'nav.vocab';
-  static const String navAnalytics = 'nav.analytics';
   static const String navSettings = 'nav.settings';
 
   // ── Home ─────────────────────────────────────────────────────────────────────
@@ -60,8 +59,6 @@ class AppStrings {
   static const String homeReadAgainLabel = 'home.readAgainLabel';
   static const String homeResume = 'home.resume';
   static const String homeStart = 'home.start';
-  static const String homeReadAgain = 'home.readAgain';
-  static const String homeReadAgainBody = 'home.readAgainBody';
   static const String homeRecentActivity = 'home.recentActivity';
   static const String homeMinSession = 'home.minSession';
   static const String homeSessionWpm = 'home.sessionWpm';
@@ -154,6 +151,8 @@ class AppStrings {
   static const String homeGoalComplete = 'home.goalComplete';
   static const String homeDailyTarget = 'home.dailyTarget';
   static const String homeYourLibrary = 'home.yourLibrary';
+  static const String homeShelfStatusContinue = 'home.shelfStatusContinue';
+  static const String homeShelfStatusCompleted = 'home.shelfStatusCompleted';
   static const String homeAddText = 'home.addText';
   static const String homeImportFile = 'home.importFile';
   static const String homeImportSheetTitle = 'home.importSheetTitle';
@@ -168,6 +167,7 @@ class AppStrings {
   static const String homeStreakLabel = 'home.streakLabel';
   static const String homeStreakLabelZero = 'home.streakLabelZero';
   static const String homeDailyGoalOf = 'home.dailyGoalOf';
+  static const String homeMinReadToday = 'home.minReadToday';
   static const String homeSetDailyTarget = 'home.setDailyTarget';
   static const String homeSetDailyTargetSubtitle =
       'home.setDailyTargetSubtitle';
@@ -273,7 +273,6 @@ class AppStrings {
       'library.contentChangedWarning';
   static const String librarySelectMultiple = 'library.selectMultiple';
   static const String libraryProgressPercent = 'library.progressPercent';
-  static const String libraryEmptyAddCta = 'library.emptyAddCta';
 
   // ── Reading ───────────────────────────────────────────────────────────────────
 
@@ -295,10 +294,9 @@ class AppStrings {
 
   // ── Vocabulary highlight bar ──────────────────────────────────────────────────
 
-  static const String vocabCurrentContext = 'vocab.currentContext';
   static const String vocabSave = 'vocab.save';
+  static const String vocabSaved = 'vocab.saved';
   static const String vocabDismiss = 'vocab.dismiss';
-  static const String vocabSavedSnackbar = 'vocab.savedSnackbar';
 
   // ── Vocabulary screen ─────────────────────────────────────────────────────────
 
@@ -370,8 +368,7 @@ class AppStrings {
   static const String dictNoInternet = 'dictionary.noInternet';
   static const String dictTimeout = 'dictionary.timeout';
   static const String dictSaveToVocab = 'dictionary.saveToVocab';
-  static const String dictAlreadySaved = 'dictionary.alreadySaved';
-  static const String dictSavedSnackbar = 'dictionary.savedSnackbar';
+  static const String dictSavedLabel = 'dictionary.savedLabel';
   static const String dictLoading = 'dictionary.loading';
 
   // ── Review session ────────────────────────────────────────────────────────────
@@ -488,6 +485,7 @@ class AppStrings {
       'analytics.calendarTargetNotMet';
   static const String analyticsCalendarNoReading =
       'analytics.calendarNoReading';
+  static const String analyticsSectionOverview = 'analytics.sectionOverview';
   static const String analyticsSectionActivityFeed =
       'analytics.sectionActivityFeed';
   static const String analyticsActivityThisWeek = 'analytics.activityThisWeek';
@@ -552,10 +550,30 @@ class AppStrings {
   static const String growthInsightLabel = 'growthInsight.label';
   static const String growthInsightNoSessions = 'growthInsight.noSessions';
   static const String growthInsightAlmostRecord = 'growthInsight.almostRecord';
+  static const String growthInsightAlmostRecord2 =
+      'growthInsight.almostRecord2';
   static const String growthInsightSpeedUp = 'growthInsight.speedUp';
+  static const String growthInsightSpeedUp2 = 'growthInsight.speedUp2';
+  static const String growthInsightSpeedUp3 = 'growthInsight.speedUp3';
   static const String growthInsightFocus = 'growthInsight.focus';
+  static const String growthInsightFocus2 = 'growthInsight.focus2';
+  static const String growthInsightFocus3 = 'growthInsight.focus3';
   static const String growthInsightStreak = 'growthInsight.streak';
+  static const String growthInsightStreak2 = 'growthInsight.streak2';
+  static const String growthInsightStreak3 = 'growthInsight.streak3';
   static const String growthInsightConsistent = 'growthInsight.consistent';
+  static const String growthInsightDepth = 'growthInsight.depth';
+  static const String growthInsightRhythm = 'growthInsight.rhythm';
+  static const String growthInsightVocab = 'growthInsight.vocab';
+  static const String growthInsightShort = 'growthInsight.short';
+  static const String growthInsightMorning = 'growthInsight.morning';
+  static const String growthInsightEvening = 'growthInsight.evening';
+  static const String growthInsightDifficulty = 'growthInsight.difficulty';
+  static const String growthInsightVariety = 'growthInsight.variety';
+  static const String growthInsightCompound = 'growthInsight.compound';
+  static const String growthInsightSilence = 'growthInsight.silence';
+  static const String growthInsightReturn = 'growthInsight.returnRead';
+  static const String growthInsightCuriosity = 'growthInsight.curiosity';
 
   // ── Settings ──────────────────────────────────────────────────────────────────
 
@@ -565,6 +583,9 @@ class AppStrings {
   static const String settingsSectionAdvanced = 'settings.sectionAdvanced';
   static const String settingsSectionLivePreview =
       'settings.sectionLivePreview';
+  static const String settingsSectionInsights = 'settings.sectionInsights';
+  static const String settingsAnalyticsTitle = 'settings.analyticsTitle';
+  static const String settingsAnalyticsSubtitle = 'settings.analyticsSubtitle';
   static const String settingsSpeedLabel = 'settings.speedLabel';
   static const String settingsLineSpacingLabel = 'settings.lineSpacingLabel';
   static const String settingsFontSizeLabel = 'settings.fontSizeLabel';
@@ -575,7 +596,9 @@ class AppStrings {
   static const String playerTextAlignment = 'player.textAlignment';
   static const String playerAlignLeft = 'player.alignLeft';
   static const String playerAlignCenter = 'player.alignCenter';
+  static const String playerAlignRight = 'player.alignRight';
   static const String playerAlignJustified = 'player.alignJustified';
+  static const String playerTextStyle = 'player.textStyle';
   static const String playerAutoPlay = 'player.autoPlay';
   static const String playerBackground = 'player.background';
   static const String playerBgDefault = 'player.bgDefault';
@@ -672,9 +695,7 @@ class AppStrings {
   static const String settingsHapticFeedback = 'settings.hapticFeedback';
   static const String settingsHapticFeedbackSubtitle =
       'settings.hapticFeedbackSubtitle';
-  static const String settingsSoundEffects = 'settings.soundEffects';
-  static const String settingsSoundEffectsSubtitle =
-      'settings.soundEffectsSubtitle';
+  static const String settingsVersionLabel = 'settings.versionLabel';
 
   // ── Support ─────────────────────────────────────────────────────────────────
 
@@ -781,7 +802,6 @@ class AppStrings {
 
   // ── Splash ──────────────────────────────────────────────────────────────────
 
-  static const String splashBrand = 'splash.brand';
   static const String splashTagline = 'splash.tagline';
 
   // ── Onboarding ────────────────────────────────────────────────────────────────
@@ -841,4 +861,78 @@ class AppStrings {
   static const String onboardingLevelExpertRange =
       'onboarding.levelExpertRange';
   static const String onboardingLevelExpertDesc = 'onboarding.levelExpertDesc';
+
+  // ── Settings (padlock-style sections) ────────────────────────────────────────
+
+  static const String settingsTheme = 'settings.theme';
+  static const String settingsExperience = 'settings.experience';
+  static const String settingsLanguage = 'settings.language';
+  static const String settingsSystemDefault = 'settings.systemDefault';
+
+  // ── Support & Information ───────────────────────────────────────────────────
+
+  static const String supportInformation = 'support.information';
+  static const String supportHelpSupport = 'support.helpSupport';
+  static const String supportHelpSupportDescription =
+      'support.helpSupportDescription';
+  static const String supportHelpSupportSubtitle =
+      'support.helpSupportSubtitle';
+  static const String supportBugReport = 'support.bugReport';
+  static const String supportBugReportDescription =
+      'support.bugReportDescription';
+  static const String supportBugReportSubtitle = 'support.bugReportSubtitle';
+  static const String supportRateApp = 'support.rateApp';
+  static const String supportRateAppDescription = 'support.rateAppDescription';
+  static const String supportRateAppSubtitle = 'support.rateAppSubtitle';
+  static const String supportYourName = 'support.yourName';
+  static const String supportEnterYourName = 'support.enterYourName';
+  static const String supportNameRequired = 'support.nameRequired';
+  static const String supportSubject = 'support.subject';
+  static const String supportEnterSubject = 'support.enterSubject';
+  static const String supportSubjectRequired = 'support.subjectRequired';
+  static const String supportDescription = 'support.descriptionLabel';
+  static const String supportEnterDescription = 'support.enterDescription';
+  static const String supportDescriptionRequired =
+      'support.descriptionRequired';
+  static const String supportSubmit = 'support.submit';
+  static const String supportSubmitSuccess = 'support.submitSuccess';
+  static const String supportSubmitError = 'support.submitError';
+  static const String supportSelectRating = 'support.selectRating';
+  static const String supportThankYouFeedback = 'support.thankYouFeedback';
+  static const String supportRatingLabel = 'support.ratingLabel';
+  static const String supportHowWouldYouRate = 'support.howWouldYouRate';
+
+  // ── About & Legal ───────────────────────────────────────────────────────────
+
+  static const String aboutLegal = 'about.legal';
+  static const String aboutTitle = 'about.title';
+  static const String aboutPrivacyPolicy = 'about.privacyPolicy';
+  static const String aboutTermsOfService = 'about.termsOfService';
+  static const String aboutPrivacyPolicyContent = 'about.privacyPolicyContent';
+  static const String aboutTermsOfServiceContent =
+      'about.termsOfServiceContent';
+  static const String aboutAppName = 'about.appName';
+  static const String aboutAppDescription = 'about.appDescription';
+  static const String aboutVersion = 'about.version';
+  static const String aboutKeyFeatures = 'about.keyFeatures';
+  static const String aboutFeatureFocusedTitle = 'about.featureFocusedTitle';
+  static const String aboutFeatureFocusedDescription =
+      'about.featureFocusedDescription';
+  static const String aboutFeatureVocabTitle = 'about.featureVocabTitle';
+  static const String aboutFeatureVocabDescription =
+      'about.featureVocabDescription';
+  static const String aboutFeaturePrivacyTitle = 'about.featurePrivacyTitle';
+  static const String aboutFeaturePrivacyDescription =
+      'about.featurePrivacyDescription';
+  static const String aboutDeveloperInfo = 'about.developerInfo';
+  static const String aboutDevelopedBy = 'about.developedBy';
+  static const String aboutLinkedin = 'about.linkedin';
+  static const String aboutGithub = 'about.github';
+  static const String aboutEmail = 'about.email';
+  static const String aboutCopyright = 'about.copyright';
+  static const String aboutErrorLaunchingUrl = 'about.errorLaunchingUrl';
+
+  // ── Footer ──────────────────────────────────────────────────────────────────
+
+  static const String footerMadeForReaders = 'footer.madeForReaders';
 }

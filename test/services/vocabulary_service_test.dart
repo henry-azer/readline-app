@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:read_it/core/services/pdf_processing_service.dart';
-import 'package:read_it/core/services/vocabulary_service.dart';
-import 'package:read_it/core/constants/app_constants.dart';
-import 'package:read_it/data/datasources/local/hive_vocabulary_source.dart';
-import 'package:read_it/data/repositories/vocabulary_repository_impl.dart';
+import 'package:readline_app/core/services/pdf_processing_service.dart';
+import 'package:readline_app/core/services/vocabulary_service.dart';
+import 'package:readline_app/core/constants/app_constants.dart';
+import 'package:readline_app/data/datasources/local/hive_vocabulary_source.dart';
+import 'package:readline_app/data/repositories/vocabulary_repository_impl.dart';
 
 void main() {
   late Directory tempDir;

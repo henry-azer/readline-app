@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:read_it/core/services/pdf_processing_service.dart';
-import 'package:read_it/core/constants/app_constants.dart';
+import 'package:readline_app/core/services/pdf_processing_service.dart';
+import 'package:readline_app/core/constants/app_constants.dart';
 
 void main() {
   late PdfProcessingService service;
@@ -13,7 +13,7 @@ void main() {
   // processSampleText — exercises _calculateComplexity indirectly
   // ---------------------------------------------------------------------------
   group('processSampleText', () {
-    test('returns valid PdfDocumentModel with correct word count', () async {
+    test('returns valid DocumentModel with correct word count', () async {
       const text = 'The cat sat on the mat';
       final model = await service.processSampleText(text);
       expect(model.title, 'Sample Text');

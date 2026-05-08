@@ -12,9 +12,12 @@ abstract final class AppGradients {
     end: const Alignment(0.7071, 0.7071),
   );
 
-  /// Streak card gradient (warm orange/coral)
-  static const LinearGradient streakLight = LinearGradient(
-    colors: [AppColors.streakGradientStart, AppColors.streakGradientEnd],
+  /// Streak card gradient (uses the app primary palette)
+  static LinearGradient streak(bool isDark) => LinearGradient(
+    colors: [
+      isDark ? AppColors.primary : AppColors.lightPrimary,
+      isDark ? AppColors.primaryContainer : AppColors.lightPrimaryContainer,
+    ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

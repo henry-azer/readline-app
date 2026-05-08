@@ -1,5 +1,5 @@
-import 'package:read_it/core/localization/app_localization.dart';
-import 'package:read_it/core/localization/app_strings.dart';
+import 'package:readline_app/core/localization/app_localization.dart';
+import 'package:readline_app/core/localization/app_strings.dart';
 
 abstract final class DateFormatter {
   /// Formats a DateTime as 'YYYY-MM-DD' for Hive storage keys.

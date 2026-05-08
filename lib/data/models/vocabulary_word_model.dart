@@ -13,6 +13,10 @@ class VocabularyWordModel {
   final bool isAutoCollected;
   final bool isBookmarked;
   final String? usageNote;
+  final String difficulty;
+  final String? phonetic;
+  final String? partOfSpeech;
+  final String? exampleSentence;
 
   const VocabularyWordModel({
     required this.id,
@@ -29,6 +33,10 @@ class VocabularyWordModel {
     this.isAutoCollected = false,
     this.isBookmarked = false,
     this.usageNote,
+    this.difficulty = 'medium',
+    this.phonetic,
+    this.partOfSpeech,
+    this.exampleSentence,
   });
 
   Map<String, dynamic> toMap() => {
@@ -46,6 +54,10 @@ class VocabularyWordModel {
     'isAutoCollected': isAutoCollected,
     'isBookmarked': isBookmarked,
     'usageNote': usageNote,
+    'difficulty': difficulty,
+    'phonetic': phonetic,
+    'partOfSpeech': partOfSpeech,
+    'exampleSentence': exampleSentence,
   };
 
   factory VocabularyWordModel.fromMap(Map<dynamic, dynamic> map) {
@@ -68,24 +80,37 @@ class VocabularyWordModel {
       isAutoCollected: map['isAutoCollected'] as bool? ?? false,
       isBookmarked: map['isBookmarked'] as bool? ?? false,
       usageNote: map['usageNote'] as String?,
+      difficulty: map['difficulty'] as String? ?? 'medium',
+      phonetic: map['phonetic'] as String?,
+      partOfSpeech: map['partOfSpeech'] as String?,
+      exampleSentence: map['exampleSentence'] as String?,
     );
   }
+
+  static const _sentinel = Object();
 
   VocabularyWordModel copyWith({
     String? definition,
     String? masteryLevel,
+    Object? sourceDocumentId = _sentinel,
     DateTime? lastReviewedAt,
     int? reviewCount,
     DateTime? nextReviewAt,
     bool? isBookmarked,
     String? usageNote,
+    String? difficulty,
+    String? phonetic,
+    String? partOfSpeech,
+    String? exampleSentence,
   }) {
     return VocabularyWordModel(
       id: id,
       word: word,
       definition: definition ?? this.definition,
       contextSentence: contextSentence,
-      sourceDocumentId: sourceDocumentId,
+      sourceDocumentId: sourceDocumentId == _sentinel
+          ? this.sourceDocumentId
+          : (sourceDocumentId as String?) ?? '',
       sourceDocumentTitle: sourceDocumentTitle,
       masteryLevel: masteryLevel ?? this.masteryLevel,
       addedAt: addedAt,
@@ -95,6 +120,10 @@ class VocabularyWordModel {
       isAutoCollected: isAutoCollected,
       isBookmarked: isBookmarked ?? this.isBookmarked,
       usageNote: usageNote ?? this.usageNote,
+      difficulty: difficulty ?? this.difficulty,
+      phonetic: phonetic ?? this.phonetic,
+      partOfSpeech: partOfSpeech ?? this.partOfSpeech,
+      exampleSentence: exampleSentence ?? this.exampleSentence,
     );
   }
 }

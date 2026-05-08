@@ -1,6 +1,6 @@
-import 'package:read_it/data/contracts/session_repository.dart';
-import 'package:read_it/data/datasources/local/hive_session_source.dart';
-import 'package:read_it/data/models/reading_session_model.dart';
+import 'package:readline_app/data/contracts/session_repository.dart';
+import 'package:readline_app/data/datasources/local/hive_session_source.dart';
+import 'package:readline_app/data/models/reading_session_model.dart';
 
 class SessionRepositoryImpl implements SessionRepository {
   final HiveSessionSource _source;
@@ -32,5 +32,13 @@ class SessionRepositoryImpl implements SessionRepository {
     return all
         .where((s) => !s.startedAt.isBefore(start) && s.startedAt.isBefore(end))
         .toList();
+  }
+
+  @override
+  Future<void> deleteByDocumentId(String documentId) async {
+    final sessions = await getByDocumentId(documentId);
+    for (final session in sessions) {
+      await _source.delete(session.id);
+    }
   }
 }

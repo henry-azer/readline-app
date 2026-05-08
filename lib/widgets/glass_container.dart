@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:read_it/core/extensions/context_extensions.dart';
-import 'package:read_it/core/theme/app_colors.dart';
-import 'package:read_it/core/theme/app_radius.dart';
+import 'package:readline_app/core/extensions/context_extensions.dart';
+import 'package:readline_app/core/theme/app_colors.dart';
+import 'package:readline_app/core/theme/app_radius.dart';
 
 class GlassContainer extends StatelessWidget {
   final Widget child;

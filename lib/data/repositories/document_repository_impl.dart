@@ -1,6 +1,6 @@
-import 'package:read_it/data/contracts/document_repository.dart';
-import 'package:read_it/data/datasources/local/hive_document_source.dart';
-import 'package:read_it/data/models/document_model.dart';
+import 'package:readline_app/data/contracts/document_repository.dart';
+import 'package:readline_app/data/datasources/local/hive_document_source.dart';
+import 'package:readline_app/data/models/document_model.dart';
 
 class DocumentRepositoryImpl implements DocumentRepository {
   final HiveDocumentSource _source;

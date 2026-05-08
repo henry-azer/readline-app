@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:read_it/core/services/reading_engine_service.dart';
+import 'package:readline_app/core/services/reading_engine_service.dart';
 
 void main() {
   late ReadingEngineService service;
@@ -199,6 +199,92 @@ void main() {
       service.jumpToWord(3);
       expect(service.wordsRead, service.currentWordIndex);
       expect(service.wordsRead, 3);
+    });
+  });
+
+  group('completion at end of content', () {
+    test('loadContent resets isComplete to false', () {
+      service.loadContent('a b c');
+      service.jumpToWord(2);
+      expect(service.state$.value.isComplete, isTrue);
+      service.loadContent('x y z w');
+      expect(service.state$.value.isComplete, isFalse);
+    });
+
+    test('resumeFromPosition at last word emits isComplete: true', () {
+      service.loadContent('a b c d e f g h i j');
+      service.resumeFromPosition(9);
+      expect(service.currentWordIndex, 9);
+      expect(service.state$.value.isComplete, isTrue);
+    });
+
+    test('resumeFromPosition before last word emits isComplete: false', () {
+      service.loadContent('a b c d e f g h i j');
+      service.resumeFromPosition(5);
+      expect(service.state$.value.isComplete, isFalse);
+    });
+
+    test('jumpToWord to last word emits isComplete: true', () {
+      service.loadContent('a b c d e f g h i j');
+      service.jumpToWord(9);
+      expect(service.state$.value.isComplete, isTrue);
+    });
+
+    test('jumpToWord clamped to last word emits isComplete: true', () {
+      service.loadContent('a b c d e f g h i j');
+      service.jumpToWord(9999);
+      expect(service.currentWordIndex, 9);
+      expect(service.state$.value.isComplete, isTrue);
+    });
+
+    test(
+      'updateProgress reconciles isComplete when already at last word',
+      () {
+        service.loadContent('a b c d e f g h i j');
+        service.setExternalScrollControl(true);
+        // Simulate the resume case: position is already at last word but
+        // isComplete somehow is false (this is the pre-fix engine state).
+        // After fix, jumpToWord above already set isComplete=true, but a
+        // redundant updateProgress(9) must still produce a state with
+        // isComplete=true (idempotent).
+        service.jumpToWord(9);
+        expect(service.state$.value.isComplete, isTrue);
+
+        service.updateProgress(9);
+        expect(service.state$.value.isComplete, isTrue);
+        expect(service.currentWordIndex, 9);
+      },
+    );
+
+    test(
+      'updateProgress crossing last word boundary emits isComplete: true',
+      () {
+        service.loadContent('a b c d e f g h i j');
+        service.setExternalScrollControl(true);
+        service.updateProgress(8);
+        expect(service.state$.value.isComplete, isFalse);
+        service.updateProgress(9);
+        expect(service.state$.value.isComplete, isTrue);
+        expect(service.state$.value.isPlaying, isFalse);
+      },
+    );
+
+    test('play() when already at end does not start playback', () {
+      service.loadContent('a b c d e f g h i j');
+      service.jumpToWord(9);
+      service.play();
+      // Engine must not signal isPlaying — there is nothing to play.
+      expect(service.state$.value.isPlaying, isFalse);
+      expect(service.state$.value.isComplete, isTrue);
+    });
+
+    test('play() before end starts playback normally', () {
+      service.loadContent('a b c d e f g h i j');
+      service.resumeFromPosition(3);
+      service.play();
+      expect(service.state$.value.isPlaying, isTrue);
+      expect(service.state$.value.isComplete, isFalse);
+      service.stop();
     });
   });
 }

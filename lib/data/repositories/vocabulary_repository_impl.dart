@@ -1,6 +1,6 @@
-import 'package:read_it/data/contracts/vocabulary_repository.dart';
-import 'package:read_it/data/datasources/local/hive_vocabulary_source.dart';
-import 'package:read_it/data/models/vocabulary_word_model.dart';
+import 'package:readline_app/data/contracts/vocabulary_repository.dart';
+import 'package:readline_app/data/datasources/local/hive_vocabulary_source.dart';
+import 'package:readline_app/data/models/vocabulary_word_model.dart';
 
 class VocabularyRepositoryImpl implements VocabularyRepository {
   final HiveVocabularySource _source;
@@ -47,5 +47,13 @@ class VocabularyRepositoryImpl implements VocabularyRepository {
     final matches = all.where((w) => w.id == id);
     if (matches.isEmpty) return;
     await _source.save(matches.first.copyWith(masteryLevel: level));
+  }
+
+  @override
+  Future<void> clearSourceDocument(String documentId) async {
+    final words = await getByDocumentId(documentId);
+    for (final word in words) {
+      await _source.save(word.copyWith(sourceDocumentId: null));
+    }
   }
 }

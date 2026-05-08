@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:read_it/core/theme/app_curves.dart';
-import 'package:read_it/core/theme/app_durations.dart';
+import 'package:readline_app/core/theme/app_colors.dart';
+import 'package:readline_app/core/theme/app_curves.dart';
+import 'package:readline_app/core/theme/app_durations.dart';
 
 /// Slide-up + fade page transition for full-screen routes.
-///
-/// Enter: slides up 30px while fading in (350ms, easeOutCubic).
-/// Pop: slides down 30px while fading out (350ms, easeInCubic).
 CustomTransitionPage<void> slideUpFadePage({
   required Widget child,
   required GoRouterState state,
@@ -32,6 +30,45 @@ CustomTransitionPage<void> slideUpFadePage({
           ).animate(curvedAnimation),
           child: child,
         ),
+      );
+    },
+  );
+}
+
+/// Immersive fade-through-black transition for the reading screen.
+/// 0–40%: fade to black. 40–100%: fade in the new screen from black.
+CustomTransitionPage<void> immersiveFadePage({
+  required Widget child,
+  required GoRouterState state,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 600),
+    reverseTransitionDuration: const Duration(milliseconds: 400),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return Stack(
+        children: [
+          // Black curtain — fully opaque during the middle of the transition
+          FadeTransition(
+            opacity: TweenSequence<double>([
+              TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 40),
+              TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 60),
+            ]).animate(animation),
+            child: const ColoredBox(
+              color: AppColors.black,
+              child: SizedBox.expand(),
+            ),
+          ),
+          // Child fades in during the second half
+          FadeTransition(
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: const Interval(0.35, 1.0, curve: Curves.easeOut),
+            ),
+            child: child,
+          ),
+        ],
       );
     },
   );

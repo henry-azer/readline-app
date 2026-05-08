@@ -1,34 +1,34 @@
 import 'package:hive/hive.dart';
-import 'package:read_it/data/models/pdf_document_model.dart';
+import 'package:readline_app/data/models/document_model.dart';
 
 class HiveDocumentSource {
   static const _boxName = 'documents';
 
   Future<Box<dynamic>> _openBox() => Hive.openBox(_boxName);
 
-  Future<List<PdfDocumentModel>> getAll() async {
+  Future<List<DocumentModel>> getAll() async {
     try {
       final box = await _openBox();
       return box.values
-          .map((e) => PdfDocumentModel.fromMap(e as Map<dynamic, dynamic>))
+          .map((e) => DocumentModel.fromMap(e as Map<dynamic, dynamic>))
           .toList();
     } catch (_) {
       return [];
     }
   }
 
-  Future<PdfDocumentModel?> getById(String id) async {
+  Future<DocumentModel?> getById(String id) async {
     try {
       final box = await _openBox();
       final data = box.get(id);
       if (data == null) return null;
-      return PdfDocumentModel.fromMap(data as Map<dynamic, dynamic>);
+      return DocumentModel.fromMap(data as Map<dynamic, dynamic>);
     } catch (_) {
       return null;
     }
   }
 
-  Future<void> save(PdfDocumentModel doc) async {
+  Future<void> save(DocumentModel doc) async {
     try {
       final box = await _openBox();
       await box.put(doc.id, doc.toMap());

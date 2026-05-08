@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:uuid/uuid.dart';
-import 'package:read_it/core/constants/app_constants.dart';
-import 'package:read_it/data/models/pdf_document_model.dart';
+import 'package:readline_app/core/constants/app_constants.dart';
+import 'package:readline_app/data/models/document_model.dart';
 
 class PdfProcessingService {
   static const _uuid = Uuid();
@@ -118,14 +118,14 @@ class PdfProcessingService {
     'is',
   };
 
-  Future<PdfDocumentModel> processFile(File file) async {
+  Future<DocumentModel> processFile(File file) async {
     final bytes = await file.readAsBytes();
     final result = await compute(_extractPdf, bytes);
 
     final fileName = file.path.split('/').last;
     final title = fileName.replaceAll('.pdf', '');
 
-    return PdfDocumentModel(
+    return DocumentModel(
       id: _uuid.v4(),
       title: title,
       filePath: file.path,
@@ -135,6 +135,7 @@ class PdfProcessingService {
       complexityScore: result.complexity,
       complexityLevel: _complexityLevel(result.complexity),
       extractedText: result.text,
+      sourceType: 'pdf',
       importedAt: DateTime.now(),
     );
   }
@@ -150,15 +151,16 @@ class PdfProcessingService {
         .where((w) => w.isNotEmpty)
         .toList();
 
-    final avgLength =
-        words.isEmpty ? 0.0 : words.fold<int>(0, (sum, w) => sum + w.length) / words.length;
+    final avgLength = words.isEmpty
+        ? 0.0
+        : words.fold<int>(0, (sum, w) => sum + w.length) / words.length;
     final uncommonRatio = words.isEmpty
         ? 0.0
         : words.where((w) => !_commonWords.contains(w.toLowerCase())).length /
-            words.length;
+              words.length;
     final complexity = (avgLength * 10 + uncommonRatio * 50).clamp(0.0, 100.0);
 
-    return _PdfExtractResult(
+    return (
       text: text,
       pageCount: pageCount,
       wordCount: words.length,
@@ -196,38 +198,31 @@ class PdfProcessingService {
         .toList();
   }
 
-  Future<PdfDocumentModel> processSampleText(String text) async {
+  Future<DocumentModel> processSampleText(String text) async {
     final words = text
         .split(RegExp(r'\s+'))
         .where((w) => w.isNotEmpty)
         .toList();
     final complexity = _calculateComplexity(words);
 
-    return PdfDocumentModel(
+    return DocumentModel(
       id: _uuid.v4(),
       title: 'Sample Text',
-      filePath: '',
       fileName: 'sample_text.txt',
       totalPages: 1,
       totalWords: words.length,
       complexityScore: complexity,
       complexityLevel: _complexityLevel(complexity),
       extractedText: text,
+      sourceType: 'text_input',
       importedAt: DateTime.now(),
     );
   }
 }
 
-class _PdfExtractResult {
-  final String text;
-  final int pageCount;
-  final int wordCount;
-  final double complexity;
-
-  const _PdfExtractResult({
-    required this.text,
-    required this.pageCount,
-    required this.wordCount,
-    required this.complexity,
-  });
-}
+typedef _PdfExtractResult = ({
+  String text,
+  int pageCount,
+  int wordCount,
+  double complexity,
+});

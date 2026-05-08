@@ -1,4 +1,4 @@
-import 'package:read_it/data/models/reading_session_model.dart';
+import 'package:readline_app/data/models/reading_session_model.dart';
 
 abstract class SessionRepository {
   Future<void> save(ReadingSessionModel session);
@@ -8,4 +8,5 @@ abstract class SessionRepository {
     DateTime start,
     DateTime end,
   );
+  Future<void> deleteByDocumentId(String documentId);
 }

@@ -1,3 +1,31 @@
+class StreakHistoryEntry {
+  final DateTime startDate;
+  final DateTime endDate;
+  final int length;
+
+  const StreakHistoryEntry({
+    required this.startDate,
+    required this.endDate,
+    required this.length,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'startDate': startDate.millisecondsSinceEpoch,
+    'endDate': endDate.millisecondsSinceEpoch,
+    'length': length,
+  };
+
+  factory StreakHistoryEntry.fromMap(Map<dynamic, dynamic> map) {
+    return StreakHistoryEntry(
+      startDate: DateTime.fromMillisecondsSinceEpoch(
+        map['startDate'] as int? ?? 0,
+      ),
+      endDate: DateTime.fromMillisecondsSinceEpoch(map['endDate'] as int? ?? 0),
+      length: map['length'] as int? ?? 0,
+    );
+  }
+}
+
 class StreakModel {
   final int currentStreak;
   final int longestStreak;
@@ -5,6 +33,8 @@ class StreakModel {
   final List<bool> weeklyActivity;
   final int totalReadingDays;
   final String? milestoneLabel;
+  final List<StreakHistoryEntry> streakHistory;
+  final bool streakJustBroke;
 
   const StreakModel({
     this.currentStreak = 0,
@@ -21,6 +51,8 @@ class StreakModel {
     ],
     this.totalReadingDays = 0,
     this.milestoneLabel,
+    this.streakHistory = const [],
+    this.streakJustBroke = false,
   });
 
   Map<String, dynamic> toMap() => {
@@ -30,6 +62,8 @@ class StreakModel {
     'weeklyActivity': weeklyActivity,
     'totalReadingDays': totalReadingDays,
     'milestoneLabel': milestoneLabel,
+    'streakHistory': streakHistory.map((e) => e.toMap()).toList(),
+    'streakJustBroke': streakJustBroke,
   };
 
   factory StreakModel.fromMap(Map<dynamic, dynamic> map) {
@@ -46,6 +80,14 @@ class StreakModel {
           const [false, false, false, false, false, false, false],
       totalReadingDays: map['totalReadingDays'] as int? ?? 0,
       milestoneLabel: map['milestoneLabel'] as String?,
+      streakHistory:
+          (map['streakHistory'] as List<dynamic>?)
+              ?.map(
+                (e) => StreakHistoryEntry.fromMap(e as Map<dynamic, dynamic>),
+              )
+              .toList() ??
+          const [],
+      streakJustBroke: map['streakJustBroke'] as bool? ?? false,
     );
   }
 
@@ -56,6 +98,8 @@ class StreakModel {
     List<bool>? weeklyActivity,
     int? totalReadingDays,
     Object? milestoneLabel = _sentinel,
+    List<StreakHistoryEntry>? streakHistory,
+    bool? streakJustBroke,
   }) {
     return StreakModel(
       currentStreak: currentStreak ?? this.currentStreak,
@@ -66,6 +110,8 @@ class StreakModel {
       milestoneLabel: milestoneLabel == _sentinel
           ? this.milestoneLabel
           : milestoneLabel as String?,
+      streakHistory: streakHistory ?? this.streakHistory,
+      streakJustBroke: streakJustBroke ?? this.streakJustBroke,
     );
   }
 }

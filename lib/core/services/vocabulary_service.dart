@@ -1,8 +1,8 @@
 import 'package:uuid/uuid.dart';
-import 'package:read_it/core/constants/app_constants.dart';
-import 'package:read_it/data/contracts/vocabulary_repository.dart';
-import 'package:read_it/data/models/vocabulary_word_model.dart';
-import 'package:read_it/core/services/pdf_processing_service.dart';
+import 'package:readline_app/core/constants/app_constants.dart';
+import 'package:readline_app/data/contracts/vocabulary_repository.dart';
+import 'package:readline_app/data/models/vocabulary_word_model.dart';
+import 'package:readline_app/core/services/pdf_processing_service.dart';
 
 class VocabularyService {
   final VocabularyRepository _repo;
@@ -12,7 +12,36 @@ class VocabularyService {
   /// Spaced repetition intervals in days
   static const _intervals = AppConstants.spacedRepetitionIntervals;
 
+  /// In-memory cache of saved words for O(1) lookup.
+  Set<String>? _savedWordsCache;
+
   VocabularyService(this._repo, this._pdfService);
+
+  /// Populate the in-memory word cache from the repository.
+  Future<void> _ensureCache() async {
+    if (_savedWordsCache != null) return;
+    final all = await _repo.getAll();
+    _savedWordsCache = all.map((w) => w.word).toSet();
+  }
+
+  /// Check if a word is already saved in vocabulary.
+  Future<bool> isWordSaved(String word) async {
+    await _ensureCache();
+    final normalized = word.toLowerCase().trim();
+    return _savedWordsCache!.contains(normalized);
+  }
+
+  /// Remove a saved word from the vocabulary by its raw text. No-op if the
+  /// word is not in the library. Keeps the in-memory cache in sync.
+  Future<void> removeSavedWord(String word) async {
+    await _ensureCache();
+    final normalized = word.toLowerCase().trim();
+    final all = await _repo.getAll();
+    final matches = all.where((w) => w.word == normalized);
+    if (matches.isEmpty) return;
+    await _repo.delete(matches.first.id);
+    _savedWordsCache?.remove(normalized);
+  }
 
   Future<void> saveWord({
     required String word,
@@ -34,6 +63,7 @@ class VocabularyService {
       isAutoCollected: isAutoCollected,
     );
     await _repo.save(model);
+    _savedWordsCache?.add(model.word);
   }
 
   Future<void> autoCollectFromText(

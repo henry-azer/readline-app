@@ -1,6 +1,6 @@
-import 'package:read_it/data/contracts/preferences_repository.dart';
-import 'package:read_it/data/datasources/local/hive_preferences_source.dart';
-import 'package:read_it/data/models/user_preferences_model.dart';
+import 'package:readline_app/data/contracts/preferences_repository.dart';
+import 'package:readline_app/data/datasources/local/hive_preferences_source.dart';
+import 'package:readline_app/data/models/user_preferences_model.dart';
 
 class PreferencesRepositoryImpl implements PreferencesRepository {
   final HivePreferencesSource _source;

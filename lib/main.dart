@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'app.dart';
 import 'core/di/injection.dart';
@@ -10,7 +11,12 @@ late final LanguageProvider languageProvider;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+    overlays: SystemUiOverlay.values,
+  );
   await Hive.initFlutter();
+  await Hive.openBox('definitions_cache');
   await configureDependencies();
 
   final prefsRepo = getIt<PreferencesRepository>();
@@ -23,5 +29,5 @@ void main() async {
   );
   await languageProvider.initialize();
 
-  runApp(const ReadItApp());
+  runApp(const ReadlineApp());
 }

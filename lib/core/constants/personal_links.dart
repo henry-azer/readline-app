@@ -6,6 +6,8 @@ class PersonalLink {
 }
 
 class PersonalLinks {
+  static const String developerName = 'Henry Azer';
+
   static const List<PersonalLink> links = [
     PersonalLink(name: 'mail', link: 'mailto:henry.azer@outlook.com'),
     PersonalLink(

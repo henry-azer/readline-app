@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:read_it/core/services/streak_service.dart';
-import 'package:read_it/data/datasources/local/hive_streak_source.dart';
-import 'package:read_it/data/models/streak_model.dart';
+import 'package:readline_app/core/services/streak_service.dart';
+import 'package:readline_app/data/datasources/local/hive_streak_source.dart';
+import 'package:readline_app/data/models/streak_model.dart';
 
 void main() {
   late Directory tempDir;

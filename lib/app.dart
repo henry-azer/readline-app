@@ -9,8 +9,18 @@ import 'main.dart' show languageProvider;
 /// Global theme mode notifier. 'system' | 'light' | 'dark'
 final themeModeNotifier = ValueNotifier<String>('system');
 
-class ReadItApp extends StatelessWidget {
-  const ReadItApp({super.key});
+/// Bumped whenever library data changes (import, delete, edit).
+/// Tab screens listen to this to refresh stale data.
+final libraryChangeNotifier = ValueNotifier<int>(0);
+
+/// Bumped whenever a reading session is saved or vocabulary changes —
+/// signals analytics-facing surfaces (insights screen, growth card, charts)
+/// to recompute. Increment from any code path that writes a session,
+/// updates the streak, or mutates the vocabulary collection.
+final sessionChangeNotifier = ValueNotifier<int>(0);
+
+class ReadlineApp extends StatelessWidget {
+  const ReadlineApp({super.key});
 
   @override
   Widget build(BuildContext context) {

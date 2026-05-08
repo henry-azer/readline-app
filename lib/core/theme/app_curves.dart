@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Animation curve tokens for the Read-It editorial personality.
+/// Animation curve tokens for the Readline editorial personality.
 abstract final class AppCurves {
   /// Elements appearing: slide-up, fade-in
   static const Curve enter = Curves.easeOutCubic;
