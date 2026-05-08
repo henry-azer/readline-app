@@ -1,5 +1,4 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+platform :ios, '13.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -39,5 +38,17 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    if target.name == 'share_plus'
+      target.build_configurations.each do |config|
+        config.build_settings['GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS'] = 'NO'
+      end
+    end
+    target.build_configurations.each do |config|
+      config.build_settings['LIBRARY_SEARCH_PATHS'] = config.build_settings.fetch('LIBRARY_SEARCH_PATHS', []).reject { |path| path.include?('MetalToolchain') }
+      config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+      # Enforce minimum iOS deployment target across all targets, including resource bundles
+      # (some plugin privacy bundles default to iOS 9 which is below the supported range).
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+    end
   end
 end
