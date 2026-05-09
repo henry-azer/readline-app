@@ -114,6 +114,17 @@ abstract final class AppTypography {
     height: 1.2,
   );
 
+  /// Cover title for the document grid card — bundled Newsreader italic
+  /// 700, line height 1.15. Resolved via the bundled asset (declared in
+  /// `pubspec.yaml`) so it renders on first paint without google_fonts
+  /// fetching, mirroring [splashBrand].
+  static TextStyle get coverTitle => const TextStyle(
+    fontFamily: 'Newsreader',
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.w700,
+    height: 1.15,
+  );
+
   static TextStyle get splashTagline => const TextStyle(
     fontFamily: 'Inter',
     fontWeight: FontWeight.w600,

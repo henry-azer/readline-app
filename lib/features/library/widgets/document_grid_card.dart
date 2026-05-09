@@ -277,21 +277,18 @@ class _CoverArea extends StatelessWidget {
                 text: document.title,
                 query: searchQuery,
                 maxLines: 3,
-                style: TextStyle(
-                  fontFamily: 'Newsreader',
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w700,
+                style: AppTypography.coverTitle.copyWith(
                   fontSize: CoverPalette.titleFontSize(document.title),
-                  height: 1.15,
                   color: titleColor,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 0,
-                      offset: const Offset(0, 1),
-                      color: (isDark ? Colors.black : Colors.white)
-                          .withValues(alpha: 0.4),
-                    ),
-                  ],
+                  shadows: isDark
+                      ? null
+                      : [
+                          Shadow(
+                            blurRadius: 0,
+                            offset: const Offset(0, 1),
+                            color: Colors.white.withValues(alpha: 0.4),
+                          ),
+                        ],
                 ),
                 highlightColor: highlightColor,
               ),
