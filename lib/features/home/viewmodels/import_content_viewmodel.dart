@@ -14,7 +14,7 @@ import 'package:readline_app/data/contracts/document_repository.dart';
 import 'package:readline_app/data/models/document_model.dart';
 
 class ImportContentViewModel {
-  static const int maxTitleLength = 30;
+  static const int maxTitleLength = 60;
   static const int performanceWarningThreshold = 100000;
   static const int _maxPdfSizeMb = 50;
   static const int _maxTxtSizeMb = 10;
