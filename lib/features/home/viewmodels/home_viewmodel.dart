@@ -1,8 +1,6 @@
-import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/services/celebration_service.dart';
-import 'package:readline_app/core/services/share_card_service.dart';
 import 'package:readline_app/core/services/streak_service.dart';
 import 'package:readline_app/data/contracts/document_repository.dart';
 import 'package:readline_app/data/contracts/session_repository.dart';
@@ -57,7 +55,6 @@ class HomeViewModel {
   final PreferencesRepository _prefsRepo;
   final StreakService _streakService;
   final CelebrationService _celebrationService;
-  final ShareCardService _shareCardService;
   bool _celebrationStartupChecked = false;
 
   final BehaviorSubject<List<DocumentModel>> documents$ =
@@ -82,14 +79,12 @@ class HomeViewModel {
     PreferencesRepository? prefsRepo,
     StreakService? streakService,
     CelebrationService? celebrationService,
-    ShareCardService? shareCardService,
   }) : _docRepo = docRepo ?? getIt<DocumentRepository>(),
        _sessionRepo = sessionRepo ?? getIt<SessionRepository>(),
        _prefsRepo = prefsRepo ?? getIt<PreferencesRepository>(),
        _streakService = streakService ?? getIt<StreakService>(),
        _celebrationService =
-           celebrationService ?? getIt<CelebrationService>(),
-       _shareCardService = shareCardService ?? getIt<ShareCardService>();
+           celebrationService ?? getIt<CelebrationService>();
 
   Stream<CelebrationData?> get pendingCelebration$ =>
       _celebrationService.pendingCelebration$;
@@ -108,9 +103,6 @@ class HomeViewModel {
   }
 
   void clearPendingCelebration() => _celebrationService.clearPending();
-
-  Future<void> shareCelebration(GlobalKey shareKey) =>
-      _shareCardService.captureAndShare(shareKey);
 
   Future<void> refresh() async {
     isLoading$.add(true);

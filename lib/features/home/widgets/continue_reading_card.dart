@@ -73,13 +73,22 @@ class ContinueReadingCard extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.menu_book_rounded,
-                            size: 14,
-                            color: onSurface.withValues(alpha: 0.4),
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: primaryColor.withValues(alpha: 0.08),
+                              borderRadius: AppRadius.smdBorder,
+                            ),
+                            child: Icon(
+                              Icons.menu_book_rounded,
+                              size: 16,
+                              color: primaryColor,
+                            ),
                           ),
-                          const SizedBox(width: AppSpacing.xxs),
+                          const SizedBox(width: AppSpacing.smd),
                           Expanded(
                             child: Text(
                               document.title.isNotEmpty

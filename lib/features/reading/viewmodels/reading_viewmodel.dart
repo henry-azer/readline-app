@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
-import 'package:readline_app/app.dart' show sessionChangeNotifier;
+import 'package:readline_app/app.dart'
+    show sessionChangeNotifier, vocabChangeNotifier;
 import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/localization/app_localization.dart';
 import 'package:readline_app/core/localization/app_strings.dart';
-import 'package:flutter/widgets.dart';
 import 'package:readline_app/core/services/celebration_service.dart';
 import 'package:readline_app/core/services/reading_engine_service.dart';
-import 'package:readline_app/core/services/share_card_service.dart';
 import 'package:readline_app/core/services/streak_service.dart';
 import 'package:readline_app/core/services/vocabulary_service.dart';
 import 'package:readline_app/data/models/celebration_data.dart';
@@ -40,7 +39,6 @@ class ReadingViewModel {
   final ReadingEngineService _engine;
   final VocabularyService _vocabService;
   final CelebrationService _celebrationService;
-  final ShareCardService _shareCardService;
 
   final BehaviorSubject<DocumentModel?> document$ = BehaviorSubject.seeded(
     null,
@@ -433,12 +431,6 @@ class ReadingViewModel {
     _updatePref((p) => p.copyWith(textAlignment: alignment));
   }
 
-  void toggleAutoPlay() {
-    final current = preferences$.valueOrNull;
-    if (current == null) return;
-    _updatePref((p) => p.copyWith(autoPlayOnOpen: !p.autoPlayOnOpen));
-  }
-
   void updateReadingBackground(String bg) {
     _updatePref((p) => p.copyWith(readingBackground: bg));
   }
@@ -666,6 +658,7 @@ class ReadingViewModel {
         wordsCollected$.add(wordsCollected$.value - 1);
       }
       sessionChangeNotifier.value++;
+      vocabChangeNotifier.value++;
     } catch (_) {
       // Best-effort
     }
@@ -688,6 +681,7 @@ class ReadingViewModel {
       wordsCollected$.add(wordsCollected$.value + 1);
       highlightWord(null); // Clear highlight after saving
       sessionChangeNotifier.value++;
+      vocabChangeNotifier.value++;
     } catch (_) {
       // Ignore — best-effort vocabulary save
     }

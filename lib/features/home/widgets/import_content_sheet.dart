@@ -15,6 +15,7 @@ import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/home/viewmodels/import_content_viewmodel.dart';
 import 'package:readline_app/features/home/widgets/import_content_actions.dart';
+import 'package:readline_app/widgets/app_snackbar.dart';
 import 'package:readline_app/widgets/readline_button.dart';
 
 class ImportContentSheet extends StatefulWidget {
@@ -103,13 +104,9 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
 
     _viewModel.fileTooLargeMb$.listen((maxMb) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppStrings.homeImportSheetFileTooLarge.trParams({'n': '$maxMb'}),
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
+      AppSnackbar.error(
+        context,
+        AppStrings.homeImportSheetFileTooLarge.trParams({'n': '$maxMb'}),
       );
     });
 
@@ -148,22 +145,12 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
     );
     if (!mounted) return;
     if (doc == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppStrings.errorSomethingWrong.tr),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      AppSnackbar.error(context, AppStrings.errorSomethingWrong.tr);
       return;
     }
     widget.onContentAdded?.call();
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppStrings.homeImportSheetSavedToLibrary.tr),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    AppSnackbar.success(context, AppStrings.homeImportSheetSavedToLibrary.tr);
   }
 
   Future<void> _handleSaveChanges() async {
@@ -173,12 +160,7 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
     );
     if (!mounted) return;
     if (doc == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppStrings.errorSomethingWrong.tr),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      AppSnackbar.error(context, AppStrings.errorSomethingWrong.tr);
       return;
     }
     widget.onContentAdded?.call();

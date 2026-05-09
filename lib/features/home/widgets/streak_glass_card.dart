@@ -28,15 +28,10 @@ class StreakGlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = context.isDark;
     final isZero = streak.currentStreak == 0;
-    final isActive = !isZero && todayTargetMet;
-    final accent = isDark ? AppColors.primary : AppColors.lightPrimary;
+    final primaryColor = isDark ? AppColors.primary : AppColors.lightPrimary;
     final streakColor = isZero
-        ? (isDark
-              ? AppColors.onSurfaceVariant
-              : AppColors.lightOnSurfaceVariant)
-        : isActive
-        ? accent
-        : accent.withValues(alpha: 0.9);
+        ? primaryColor.withValues(alpha: 0.55)
+        : primaryColor;
 
     return TapScale(
       onTap: onTap,
@@ -52,68 +47,76 @@ class StreakGlassCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.glassBackground(isDark),
               borderRadius: AppRadius.lgBorder,
-              border: Border.all(color: streakColor.withValues(alpha: 0.10)),
+              border: Border.all(color: primaryColor.withValues(alpha: 0.08)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TweenAnimationBuilder<int>(
-                  tween: IntTween(begin: 0, end: streak.currentStreak),
-                  duration: AppDurations.reveal,
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, _) {
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.local_fire_department_rounded,
-                          size: 16,
-                          color: streakColor,
-                        ),
-                        const SizedBox(width: AppSpacing.micro),
-                        Text(
-                          '$value',
-                          style: AppTypography.homeStatNumber.copyWith(
-                            color: streakColor,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                SizedBox(
+                  height: 52,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TweenAnimationBuilder<int>(
+                        tween: IntTween(begin: 0, end: streak.currentStreak),
+                        duration: AppDurations.reveal,
+                        curve: Curves.easeOutCubic,
+                        builder: (context, value, _) {
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.local_fire_department_rounded,
+                                size: 16,
+                                color: streakColor,
+                              ),
+                              const SizedBox(width: AppSpacing.micro),
+                              Text(
+                                '$value',
+                                style: AppTypography.homeStatNumber.copyWith(
+                                  color: streakColor,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(7, (i) {
+                          final active =
+                              i < streak.weeklyActivity.length &&
+                                  streak.weeklyActivity[i];
+                          return Padding(
+                            padding: EdgeInsets.only(left: i > 0 ? 3.0 : 0),
+                            child: Container(
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: active
+                                    ? streakColor
+                                    : streakColor.withValues(alpha: 0.15),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.xxs),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   isZero
                       ? AppStrings.homeStreakLabelZero.tr
                       : AppStrings.homeStreakLabel.tr,
                   style: AppTypography.homeProgressMicroLabel.copyWith(
-                    color: streakColor.withValues(alpha: 0.6),
+                    color: primaryColor.withValues(alpha: 0.5),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(7, (i) {
-                    final active =
-                        i < streak.weeklyActivity.length &&
-                        streak.weeklyActivity[i];
-                    return Padding(
-                      padding: EdgeInsets.only(left: i > 0 ? 3.0 : 0),
-                      child: Container(
-                        width: 5,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: active
-                              ? streakColor
-                              : streakColor.withValues(alpha: 0.15),
-                        ),
-                      ),
-                    );
-                  }),
                 ),
               ],
             ),

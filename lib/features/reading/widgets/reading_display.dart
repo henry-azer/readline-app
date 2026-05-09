@@ -46,6 +46,10 @@ class _ReadingDisplayState extends State<ReadingDisplay>
   int _lastWpm = 0;
   bool _isSyncing = false;
   bool _isPlaying = false;
+  // Fractional word index used by the time-based fallback path, which
+  // kicks in when content fits on a single screen and there's no scroll
+  // extent to drive progress.
+  double _wordCursor = 0;
 
   @override
   void initState() {
@@ -138,6 +142,7 @@ class _ReadingDisplayState extends State<ReadingDisplay>
     _isPlaying = true;
     _recalculateSpeed();
     _lastTickTime = Duration.zero;
+    _wordCursor = widget.engine.currentWordIndex.toDouble();
     _ticker?.dispose();
     _ticker = createTicker(_onTick)..start();
     if (mounted) setState(() {});
@@ -163,7 +168,15 @@ class _ReadingDisplayState extends State<ReadingDisplay>
 
     if (!_scrollController.hasClients) return;
     final maxExtent = _scrollController.position.maxScrollExtent;
-    if (maxExtent <= 0) return;
+
+    // Content fits on a single screen — there's no scroll runway for the
+    // pixel-based loop to drive progress with. Fall back to a time × WPM
+    // word counter so short documents (one or two lines) still play and
+    // reach the completion summary.
+    if (maxExtent <= 0) {
+      _advanceByTime(dt);
+      return;
+    }
 
     final newOffset = (_scrollController.offset + _pixelsPerSecond * dt).clamp(
       0.0,
@@ -185,6 +198,37 @@ class _ReadingDisplayState extends State<ReadingDisplay>
     }
 
     _syncProgress(newOffset, maxExtent);
+  }
+
+  /// Time-based fallback for content that doesn't fill a screen. Advances
+  /// [_wordCursor] by `dt × wpm/60` and reports the floored index to the
+  /// engine. Mirrors the engine's internal timer so the user sees the
+  /// session progress + completion summary just like a long document.
+  void _advanceByTime(double dt) {
+    final totalWords = widget.engine.totalWords;
+    if (totalWords <= 0) return;
+
+    final wpm = widget.engine.currentWpm;
+    _wordCursor += dt * (wpm / 60.0);
+
+    final lastWord = totalWords - 1;
+    final newIndex = _wordCursor.floor().clamp(0, lastWord);
+
+    if (newIndex >= lastWord) {
+      _stopSmooth();
+      _lastSyncedWordIndex = lastWord;
+      _isSyncing = true;
+      widget.engine.updateProgress(lastWord);
+      _isSyncing = false;
+      return;
+    }
+
+    if (newIndex != _lastSyncedWordIndex) {
+      _lastSyncedWordIndex = newIndex;
+      _isSyncing = true;
+      widget.engine.updateProgress(newIndex);
+      _isSyncing = false;
+    }
   }
 
   void _syncProgress(double offset, double maxExtent) {

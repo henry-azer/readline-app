@@ -48,13 +48,11 @@ double popupBottomReserve(BuildContext context) =>
 
 class ReadingScreen extends StatefulWidget {
   final String documentId;
-  final bool autoPlay;
   final bool restart;
 
   const ReadingScreen({
     super.key,
     required this.documentId,
-    this.autoPlay = false,
     this.restart = false,
   });
 
@@ -93,15 +91,8 @@ class _ReadingScreenState extends State<ReadingScreen>
     _viewModel.startCelebrationListening();
     _viewModel.init().then((_) async {
       if (!mounted) return;
-      // Only auto-play when the caller asked for it (e.g. onboarding /
-      // continue-reading deep-link) or the user has it on as a global
-      // preference. Otherwise leave the engine paused — opening a doc to
-      // glance at it must not accumulate active reading time or trigger
-      // the streak.
-      final prefs = _viewModel.preferences$.valueOrNull;
-      final shouldAutoPlay =
-          widget.autoPlay || (prefs?.autoPlayOnOpen ?? false);
-      if (!shouldAutoPlay) return;
+      // Auto-play unconditionally on entry — every path into the player
+      // (document tap, resume, deep-link) starts reading immediately.
       await Future<void>.delayed(AppDurations.slow);
       if (!mounted) return;
       if (!_viewModel.currentReadingState.isPlaying) {
@@ -351,7 +342,6 @@ class _ReadingScreenState extends State<ReadingScreen>
           onFontFamilyChanged: (v) => _viewModel.updateFontFamily(v),
           onVocabToggled: () => _viewModel.toggleVocabCollection(),
           onTextAlignmentChanged: (v) => _viewModel.updateTextAlignment(v),
-          onAutoPlayToggled: () => _viewModel.toggleAutoPlay(),
           onBackgroundChanged: (v) => _viewModel.updateReadingBackground(v),
           onMarginChanged: (v) => _viewModel.updateReadingMargin(v),
           onBrightnessChanged: (v) => _viewModel.updateBrightnessLevel(v),

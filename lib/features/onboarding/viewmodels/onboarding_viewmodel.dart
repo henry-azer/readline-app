@@ -209,7 +209,7 @@ class OnboardingViewModel {
       markOnboardingCompleted();
 
       if (context.mounted) {
-        context.go('${AppRoutes.reading}/${doc.id}?autoPlay=true');
+        context.go('${AppRoutes.reading}/${doc.id}');
       }
     } catch (_) {
       errorMessage$.add(AppStrings.errorSampleText.tr);

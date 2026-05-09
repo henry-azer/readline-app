@@ -99,7 +99,7 @@ class FirstImportScreen extends StatelessWidget {
                       bottom: AppSpacing.xs,
                       right: AppSpacing.xs,
                       child: FormatBadge(
-                        label: AppStrings.onboardingFormatEpub.tr,
+                        label: AppStrings.onboardingFormatDocx.tr,
                         color: primary.withValues(alpha: 0.5),
                         onColor: badgeOnColor,
                       ),

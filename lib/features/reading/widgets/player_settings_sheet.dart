@@ -18,7 +18,6 @@ class PlayerSettingsSheet extends StatefulWidget {
   final ValueChanged<String> onFontFamilyChanged;
   final VoidCallback onVocabToggled;
   final ValueChanged<String> onTextAlignmentChanged;
-  final VoidCallback onAutoPlayToggled;
   final ValueChanged<String> onBackgroundChanged;
   final ValueChanged<double> onMarginChanged;
   final ValueChanged<double> onBrightnessChanged;
@@ -40,7 +39,6 @@ class PlayerSettingsSheet extends StatefulWidget {
     required this.onFontFamilyChanged,
     required this.onVocabToggled,
     required this.onTextAlignmentChanged,
-    required this.onAutoPlayToggled,
     required this.onBackgroundChanged,
     required this.onMarginChanged,
     required this.onBrightnessChanged,

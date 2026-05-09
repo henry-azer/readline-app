@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+import 'package:readline_app/app.dart' show vocabChangeNotifier;
 import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/services/dictionary_service.dart';
 import 'package:readline_app/core/services/tts_service.dart';
@@ -86,17 +87,24 @@ class WordDefinitionViewModel {
     if (wasSaved) {
       await _vocabService.removeSavedWord(word);
       if (!isWordSaved$.isClosed) isWordSaved$.add(false);
+      vocabChangeNotifier.value++;
       return false;
     }
     final def = uiState$.value.definition;
+    final pos = def?.partOfSpeech;
+    final phonetic = def?.phonetic;
     await _vocabService.saveWord(
       word: word,
       definition: def?.definition,
+      partOfSpeech: (pos == null || pos.isEmpty) ? null : pos,
+      phonetic: (phonetic == null || phonetic.isEmpty) ? null : phonetic,
+      exampleSentence: def?.exampleSentence,
       contextSentence: contextSentence,
       sourceDocumentId: sourceDocumentId,
       sourceDocumentTitle: sourceDocumentTitle,
     );
     if (!isWordSaved$.isClosed) isWordSaved$.add(true);
+    vocabChangeNotifier.value++;
     return true;
   }
 
