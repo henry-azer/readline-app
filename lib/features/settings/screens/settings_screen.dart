@@ -94,7 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             children: [
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.xxs),
 
               // ── INSIGHTS ────────────────────────────────────────────────
               SectionLabel(text: AppStrings.settingsSectionInsights.tr),
