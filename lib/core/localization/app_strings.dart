@@ -276,6 +276,7 @@ class AppStrings {
       'library.contentChangedWarning';
   static const String librarySelectMultiple = 'library.selectMultiple';
   static const String libraryProgressPercent = 'library.progressPercent';
+  static const String libraryWordCount = 'library.wordCount';
 
   // ── Reading ───────────────────────────────────────────────────────────────────
 
