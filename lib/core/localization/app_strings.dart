@@ -236,7 +236,6 @@ class AppStrings {
   static const String libraryEmptyReadingBody = 'library.emptyReadingBody';
   static const String libraryEmptyCompleted = 'library.emptyCompleted';
   static const String libraryEmptyCompletedBody = 'library.emptyCompletedBody';
-  static const String libraryNoPreview = 'library.noPreview';
   static const String libraryEmptyNotStarted = 'library.emptyNotStarted';
   static const String libraryEmptyNotStartedBody =
       'library.emptyNotStartedBody';
