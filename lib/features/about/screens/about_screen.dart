@@ -15,6 +15,7 @@ import 'package:readline_app/features/about/widgets/feature_card.dart';
 import 'package:readline_app/features/about/widgets/social_chip.dart';
 import 'package:readline_app/features/settings/widgets/section_label.dart';
 import 'package:readline_app/features/support/widgets/support_header.dart';
+import 'package:readline_app/widgets/app_snackbar.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -33,9 +34,7 @@ class _AboutScreenState extends State<AboutScreen> {
     _vm = AboutViewModel();
     _urlFailSub = _vm.urlLaunchFailed$.listen((failed) {
       if (failed && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.aboutErrorLaunchingUrl.tr)),
-        );
+        AppSnackbar.error(context, AppStrings.aboutErrorLaunchingUrl.tr);
       }
     });
   }

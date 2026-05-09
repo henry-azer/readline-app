@@ -13,7 +13,7 @@ import 'package:readline_app/main.dart' as app_main;
 
 void main() {
   setUp(() async {
-    final tempDir = await Directory.systemTemp.createTemp('read_it_test');
+    final tempDir = await Directory.systemTemp.createTemp('readline_test');
     Hive.init(tempDir.path);
     await configureDependencies();
 

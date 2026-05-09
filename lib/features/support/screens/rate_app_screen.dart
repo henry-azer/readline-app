@@ -10,6 +10,7 @@ import 'package:readline_app/features/support/viewmodels/rate_app_viewmodel.dart
 import 'package:readline_app/features/support/widgets/support_form_field.dart';
 import 'package:readline_app/features/support/widgets/support_header.dart';
 import 'package:readline_app/features/support/widgets/support_submit_button.dart';
+import 'package:readline_app/widgets/app_snackbar.dart';
 
 class RateAppScreen extends StatefulWidget {
   const RateAppScreen({super.key});
@@ -48,16 +49,15 @@ class _RateAppScreenState extends State<RateAppScreen> {
 
     if (!mounted) return;
 
-    final messageKey = switch (outcome) {
-      RateSubmitOutcome.success => AppStrings.supportThankYouFeedback,
-      RateSubmitOutcome.missingRating => AppStrings.supportSelectRating,
-      RateSubmitOutcome.alreadySubmitting => AppStrings.supportSubmitError,
-      RateSubmitOutcome.networkError => AppStrings.supportSubmitError,
-    };
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(messageKey.tr)),
-    );
+    switch (outcome) {
+      case RateSubmitOutcome.success:
+        AppSnackbar.success(context, AppStrings.supportThankYouFeedback.tr);
+      case RateSubmitOutcome.missingRating:
+        AppSnackbar.error(context, AppStrings.supportSelectRating.tr);
+      case RateSubmitOutcome.alreadySubmitting:
+      case RateSubmitOutcome.networkError:
+        AppSnackbar.error(context, AppStrings.supportSubmitError.tr);
+    }
 
     if (outcome == RateSubmitOutcome.success) {
       await Future.delayed(const Duration(seconds: 1));

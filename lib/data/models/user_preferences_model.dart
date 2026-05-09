@@ -12,7 +12,6 @@ class UserPreferencesModel {
   final String languageCode;
   final int dailyGoalMinutes;
   final String textAlignment;
-  final bool autoPlayOnOpen;
   final String readingBackground;
   final double readingMargin;
   final double brightnessOverlay;
@@ -30,6 +29,11 @@ class UserPreferencesModel {
   final String librarySortField;
   final bool librarySortAscending;
   final bool hapticsEnabled;
+  /// One-shot flag set after the vocabulary difficulty backfill runs against
+  /// the user's existing words (which used to all default to "medium"). Once
+  /// true, the backfill never runs again, so any subsequent
+  /// [VocabularyViewModel.cycleDifficulty] choices stay sticky.
+  final bool vocabDifficultyBackfilled;
 
   const UserPreferencesModel({
     this.readingSpeedWpm = 200,
@@ -45,7 +49,6 @@ class UserPreferencesModel {
     this.languageCode = 'en',
     this.dailyGoalMinutes = 20,
     this.textAlignment = 'left',
-    this.autoPlayOnOpen = false,
     this.readingBackground = 'default',
     this.readingMargin = 24,
     this.brightnessOverlay = 0,
@@ -63,6 +66,7 @@ class UserPreferencesModel {
     this.librarySortField = 'lastRead',
     this.librarySortAscending = false,
     this.hapticsEnabled = true,
+    this.vocabDifficultyBackfilled = false,
   });
 
   Map<String, dynamic> toMap() => {
@@ -79,7 +83,6 @@ class UserPreferencesModel {
     'languageCode': languageCode,
     'dailyGoalMinutes': dailyGoalMinutes,
     'textAlignment': textAlignment,
-    'autoPlayOnOpen': autoPlayOnOpen,
     'readingBackground': readingBackground,
     'readingMargin': readingMargin,
     'brightnessOverlay': brightnessOverlay,
@@ -97,6 +100,7 @@ class UserPreferencesModel {
     'librarySortField': librarySortField,
     'librarySortAscending': librarySortAscending,
     'hapticsEnabled': hapticsEnabled,
+    'vocabDifficultyBackfilled': vocabDifficultyBackfilled,
   };
 
   factory UserPreferencesModel.fromMap(Map<dynamic, dynamic> map) {
@@ -114,7 +118,6 @@ class UserPreferencesModel {
       languageCode: map['languageCode'] as String? ?? 'en',
       dailyGoalMinutes: map['dailyGoalMinutes'] as int? ?? 20,
       textAlignment: map['textAlignment'] as String? ?? 'left',
-      autoPlayOnOpen: map['autoPlayOnOpen'] as bool? ?? false,
       readingBackground: map['readingBackground'] as String? ?? 'default',
       readingMargin: (map['readingMargin'] as num?)?.toDouble() ?? 24,
       brightnessOverlay: (map['brightnessOverlay'] as num?)?.toDouble() ?? 0,
@@ -134,6 +137,8 @@ class UserPreferencesModel {
       librarySortField: map['librarySortField'] as String? ?? 'lastRead',
       librarySortAscending: map['librarySortAscending'] as bool? ?? false,
       hapticsEnabled: map['hapticsEnabled'] as bool? ?? true,
+      vocabDifficultyBackfilled:
+          map['vocabDifficultyBackfilled'] as bool? ?? false,
     );
   }
 
@@ -151,7 +156,6 @@ class UserPreferencesModel {
     String? languageCode,
     int? dailyGoalMinutes,
     String? textAlignment,
-    bool? autoPlayOnOpen,
     String? readingBackground,
     double? readingMargin,
     double? brightnessOverlay,
@@ -169,6 +173,7 @@ class UserPreferencesModel {
     String? librarySortField,
     bool? librarySortAscending,
     bool? hapticsEnabled,
+    bool? vocabDifficultyBackfilled,
   }) {
     return UserPreferencesModel(
       readingSpeedWpm: readingSpeedWpm ?? this.readingSpeedWpm,
@@ -185,7 +190,6 @@ class UserPreferencesModel {
       languageCode: languageCode ?? this.languageCode,
       dailyGoalMinutes: dailyGoalMinutes ?? this.dailyGoalMinutes,
       textAlignment: textAlignment ?? this.textAlignment,
-      autoPlayOnOpen: autoPlayOnOpen ?? this.autoPlayOnOpen,
       readingBackground: readingBackground ?? this.readingBackground,
       readingMargin: readingMargin ?? this.readingMargin,
       brightnessOverlay: brightnessOverlay ?? this.brightnessOverlay,
@@ -203,6 +207,8 @@ class UserPreferencesModel {
       librarySortField: librarySortField ?? this.librarySortField,
       librarySortAscending: librarySortAscending ?? this.librarySortAscending,
       hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+      vocabDifficultyBackfilled:
+          vocabDifficultyBackfilled ?? this.vocabDifficultyBackfilled,
     );
   }
 }

@@ -8,6 +8,6 @@ abstract final class AppTracking {
   /// Section headers, button text
   static const double wide = 2.0;
 
-  /// READ-IT branding text
+  /// Readline branding text
   static const double editorial = 4.0;
 }

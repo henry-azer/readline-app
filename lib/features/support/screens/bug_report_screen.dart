@@ -9,6 +9,7 @@ import 'package:readline_app/features/support/viewmodels/support_viewmodel.dart'
 import 'package:readline_app/features/support/widgets/support_form_field.dart';
 import 'package:readline_app/features/support/widgets/support_header.dart';
 import 'package:readline_app/features/support/widgets/support_submit_button.dart';
+import 'package:readline_app/widgets/app_snackbar.dart';
 
 class BugReportScreen extends StatefulWidget {
   const BugReportScreen({super.key});
@@ -50,15 +51,11 @@ class _BugReportScreenState extends State<BugReportScreen> {
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          result.success
-              ? AppStrings.supportSubmitSuccess.tr
-              : AppStrings.supportSubmitError.tr,
-        ),
-      ),
-    );
+    if (result.success) {
+      AppSnackbar.success(context, AppStrings.supportSubmitSuccess.tr);
+    } else {
+      AppSnackbar.error(context, AppStrings.supportSubmitError.tr);
+    }
 
     if (result.success) {
       await Future.delayed(const Duration(seconds: 1));

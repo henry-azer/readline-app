@@ -19,6 +19,25 @@ abstract final class DateFormatter {
     return compact(date);
   }
 
+  /// Uppercase relative date: "TODAY", "1 DAY AGO", "5 DAYS AGO",
+  /// "1 MONTH AGO", "3 MOS AGO", "LONG AGO" — used by vocabulary metadata
+  /// and other dense card meta lines.
+  static String relativeUpper(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) return AppStrings.todayUpper.tr;
+    if (diff.inDays == 1) return AppStrings.oneDayAgo.tr;
+    if (diff.inDays < 30) {
+      return AppStrings.daysAgoUpper.trParams({'n': '${diff.inDays}'});
+    }
+    if (diff.inDays < 365) {
+      final months = (diff.inDays / 30).round();
+      return months > 1
+          ? AppStrings.monthsAgoUpper.trParams({'n': '$months'})
+          : AppStrings.monthAgo.trParams({'n': '$months'});
+    }
+    return AppStrings.longAgo.tr;
+  }
+
   /// "5 min", "1h 23m"
   static String duration(double minutes) {
     if (minutes < 1) return AppStrings.generalLessThanMinute.tr;

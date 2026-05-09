@@ -82,10 +82,6 @@ class ReadingViewModel {
   /// Clears the currently-pending celebration after the user dismisses it.
   void clearPendingCelebration() => _celebrationService.clearPending();
 
-  /// Captures and shares the celebration's RepaintBoundary as an image.
-  Future<void> shareCelebration(GlobalKey shareKey) =>
-      _shareCardService.captureAndShare(shareKey);
-
   /// Whether [word] is already saved in the user's vocabulary.
   Future<bool> isWordSaved(String word) => _vocabService.isWordSaved(word);
 
@@ -141,7 +137,6 @@ class ReadingViewModel {
     ReadingEngineService? engine,
     VocabularyService? vocabService,
     CelebrationService? celebrationService,
-    ShareCardService? shareCardService,
   }) : _docRepo = docRepo ?? getIt<DocumentRepository>(),
        _prefsRepo = prefsRepo ?? getIt<PreferencesRepository>(),
        _sessionRepo = sessionRepo ?? getIt<SessionRepository>(),
@@ -149,8 +144,7 @@ class ReadingViewModel {
        _engine = engine ?? getIt<ReadingEngineService>(),
        _vocabService = vocabService ?? getIt<VocabularyService>(),
        _celebrationService =
-           celebrationService ?? getIt<CelebrationService>(),
-       _shareCardService = shareCardService ?? getIt<ShareCardService>() {
+           celebrationService ?? getIt<CelebrationService>() {
     // Track engine play/pause transitions to keep active reading time
     // accurate to the millisecond.
     _playingSub = _engine.state$.stream

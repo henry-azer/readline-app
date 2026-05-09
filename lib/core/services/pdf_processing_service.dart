@@ -185,6 +185,18 @@ class PdfProcessingService {
     return 'expert';
   }
 
+  /// Classify a single word into easy / medium / hard for the vocabulary
+  /// difficulty pill. Heuristic: common-list membership and length only —
+  /// no per-word frequency table is shipped, so this is intentionally
+  /// approximate. The user can always cycle to override.
+  String classifyDifficulty(String word) {
+    final w = word.toLowerCase().trim();
+    if (w.isEmpty) return 'medium';
+    if (_commonWords.contains(w) || w.length <= 5) return 'easy';
+    if (w.length >= 10) return 'hard';
+    return 'medium';
+  }
+
   /// Detect complex words for auto-vocabulary collection
   List<String> detectComplexWords(String text) {
     final words = text

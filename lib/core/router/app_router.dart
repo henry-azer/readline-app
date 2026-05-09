@@ -145,7 +145,6 @@ final appRouter = GoRouter(
         state: state,
         child: ReadingScreen(
           documentId: state.pathParameters['documentId']!,
-          autoPlay: state.uri.queryParameters['autoPlay'] == 'true',
           restart: state.uri.queryParameters['restart'] == 'true',
         ),
       ),

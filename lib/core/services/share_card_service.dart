@@ -21,7 +21,7 @@ class ShareCardService {
 
       final tempDir = await getTemporaryDirectory();
       final file = File(
-        '${tempDir.path}/readit_achievement_${DateTime.now().millisecondsSinceEpoch}.png',
+        '${tempDir.path}/readline_achievement_${DateTime.now().millisecondsSinceEpoch}.png',
       );
       await file.writeAsBytes(byteData.buffer.asUint8List());
 

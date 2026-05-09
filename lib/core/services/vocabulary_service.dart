@@ -46,21 +46,29 @@ class VocabularyService {
   Future<void> saveWord({
     required String word,
     String? definition,
+    String? partOfSpeech,
+    String? phonetic,
+    String? exampleSentence,
     required String contextSentence,
     required String sourceDocumentId,
     required String sourceDocumentTitle,
     bool isAutoCollected = false,
   }) async {
+    final normalized = word.toLowerCase().trim();
     final model = VocabularyWordModel(
       id: _uuid.v4(),
-      word: word.toLowerCase().trim(),
+      word: normalized,
       definition: definition,
+      partOfSpeech: partOfSpeech,
+      phonetic: phonetic,
+      exampleSentence: exampleSentence,
       contextSentence: contextSentence,
       sourceDocumentId: sourceDocumentId,
       sourceDocumentTitle: sourceDocumentTitle,
       addedAt: DateTime.now(),
       nextReviewAt: DateTime.now().add(const Duration(days: 1)),
       isAutoCollected: isAutoCollected,
+      difficulty: _pdfService.classifyDifficulty(normalized),
     );
     await _repo.save(model);
     _savedWordsCache?.add(model.word);
