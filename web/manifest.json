@@ -1,6 +1,6 @@
 {
-    "name": "read_it",
-    "short_name": "read_it",
+    "name": "readline",
+    "short_name": "readline",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

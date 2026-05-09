@@ -1,46 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Launch splash content (light) — designed to match SplashScreen widget exactly.
-  Coords are @2x of logical pts (so a 480×368 PNG = 240×184 logical points).
-  Layout mirrors lib/features/splash/screens/splash_screen.dart:
-    - SplashBookMark (Icon size 80) — book mark, primary gradient
+  Launch splash content (light) — must mirror SplashScreen exactly.
+  Canvas is 480×368 px = 240×184 logical points (@2x).
+  Layout matches lib/features/splash/screens/splash_screen.dart:
+    - SplashBookMark (Icon size 80) — Icons.auto_stories_rounded, primary gradient
     - SizedBox(AppSpacing.xl = 24)
-    - SplashBrandTitle "READ-IT" — Newsreader italic 800, 40pt, letter-spacing 4 (editorial), height 1.2, color = lightPrimary
+    - SplashBrandTitle "Readline" — Newsreader italic 700, 40pt, height 1.2, color = lightPrimary
     - SizedBox(AppSpacing.xs = 8)
-    - SplashTagline "READ AT YOUR PACE" — Inter 600, 12pt, letter-spacing 2 (wide), color = lightOnSurfaceVariant
-  Background is transparent; LaunchBackground colorset paints the surface.
+    - SplashTagline "Focus. Read. Grow." — Inter 600, 12pt, letter-spacing 2 (wide),
+      color = lightOnSurfaceVariant
+  Background is transparent; the storyboard's LaunchBackground colorset paints the surface.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 368" width="480" height="368">
   <defs>
+    <!-- AppGradients.primary(light): lightPrimary → lightPrimaryContainer at 135° -->
     <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#00464A"/>
       <stop offset="100%" stop-color="#006064"/>
     </linearGradient>
   </defs>
 
-  <!-- Book mark: 160×160 (= 80pt logical), centered, top at y=20 -->
-  <svg x="160" y="20" width="160" height="160" viewBox="0 0 512 512">
-    <g transform="translate(0,512) scale(1,-1)">
-      <path fill="url(#ink)" d="M387 483 302 398C300 396 299 393 299 390V216C299 207 310 202 316 208L402 285C404 287 405 290 405 293V476C405 485 394 490 387 483ZM479 401C469 406 459 410 448 414V157C424 166 399 171 373 171C333 171 293 159 256 137V395C221 415 182 427 139 427C100 427 64 417 33 401C26 398 21 390 21 382V125C21 108 39 98 53 106C79 119 108 128 139 128C183 128 224 111 256 85C288 111 329 128 373 128C404 128 433 119 459 106C473 98 491 108 491 124V382C491 390 486 398 479 401Z"/>
-    </g>
+  <!-- Book mark: 160×160 px (= 80pt logical), centered horizontally, top at y=20.
+       Based on the Material Symbols Rounded `auto_stories` glyph but with
+       the left-page outline subpath dropped so both pages render solid
+       (viewBox 0 -960 960 960, the modern Material Symbols coordinate system). -->
+  <svg x="160" y="20" width="160" height="160" viewBox="0 -960 960 960">
+    <path fill="url(#ink)" d="M458.5-181q-10.5-3-19.5-8-41-25-86-38t-93-13q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740v484q51-32 107-48t113-16q36 0 70.5 6t69.5 18v-480q15 5 29.5 10.5T898-752q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-48 0-93 13t-86 38q-9 5-19.5 8t-21.5 3q-11 0-21.5-3ZM593-390q-10 9-21.5 3.5T560-405v-327q0-4 1.5-7.5t4.5-6.5l160-160q10-10 22-5t12 19v343q0 5-2 8.5t-5 6.5L593-390Z"/>
   </svg>
 
-  <!-- Wordmark "READ-IT": Newsreader italic 800, 80px (= 40pt logical), letter-spacing 8 (= 4pt logical) -->
+  <!-- Wordmark "Readline": Newsreader italic 700, 80px (= 40pt logical), no extra tracking -->
   <text x="240" y="296"
         text-anchor="middle"
-        font-family="'Newsreader', 'Charter', 'Georgia', 'Times New Roman', serif"
+        font-family="'Newsreader 16pt', 'Newsreader', 'Charter', 'Georgia', 'Times New Roman', serif"
         font-style="italic"
-        font-weight="800"
+        font-weight="700"
         font-size="80"
-        letter-spacing="8"
-        fill="#00464A">READ-IT</text>
+        fill="#00464A">Readline</text>
 
-  <!-- Tagline "READ AT YOUR PACE": Inter 600, 24px (= 12pt logical), letter-spacing 4 (= 2pt logical) -->
+  <!-- Tagline "Focus. Read. Grow.": Inter 600, 24px (= 12pt logical), letter-spacing 4 (= 2pt logical) -->
   <text x="240" y="354"
         text-anchor="middle"
         font-family="'Inter', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
         font-weight="600"
         font-size="24"
         letter-spacing="4"
-        fill="#49454F">READ AT YOUR PACE</text>
+        fill="#49454F">Focus. Read. Grow.</text>
 </svg>

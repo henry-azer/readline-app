@@ -1,5 +1,5 @@
 name: readline_app
-description: "Readline — PDF English Reading Practice"
+description: "Readline: Digital Reader"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -35,6 +35,7 @@ dependencies:
   fl_chart: ^0.70.2
   # UI
   google_fonts: ^8.0.2
+  flutter_svg: ^2.2.1
   # Celebrations
   confetti: ^0.7.0
   # Sharing
@@ -67,3 +68,18 @@ flutter:
   assets:
     - assets/lang/
     - assets/sample/
+    - assets/branding/
+  # Bundled locally so the splash hero renders in real Newsreader / Inter on
+  # the very first cold launch, before google_fonts has fetched + cached them.
+  # Declared at the splash's exact weights (700 italic / 600) so Flutter uses
+  # the variable-font axis directly instead of synthesizing faux bold.
+  fonts:
+    - family: Newsreader
+      fonts:
+        - asset: assets/fonts/Newsreader-Italic-VF.ttf
+          style: italic
+          weight: 700
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-VF.ttf
+          weight: 600

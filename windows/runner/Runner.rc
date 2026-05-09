@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.readit" "\0"
-            VALUE "FileDescription", "read_it" "\0"
+            VALUE "CompanyName", "Divinentra" "\0"
+            VALUE "FileDescription", "readline_app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "read_it" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.readit. All rights reserved." "\0"
-            VALUE "OriginalFilename", "read_it.exe" "\0"
-            VALUE "ProductName", "read_it" "\0"
+            VALUE "InternalName", "readline_app" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Divinentra. All rights reserved." "\0"
+            VALUE "OriginalFilename", "readline_app.exe" "\0"
+            VALUE "ProductName", "readline_app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

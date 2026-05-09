@@ -1,4 +1,4 @@
-package com.readit.read_it
+package com.divinentra.henry.readline
 
 import android.os.Bundle
 import androidx.core.view.WindowCompat

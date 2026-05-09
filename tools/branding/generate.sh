@@ -63,12 +63,32 @@ done
 # ─── iOS Launch Splash ───────────────────────────────────────────────
 # Logical size 240×184; rendered at @2x (480×368) and @3x (720×552).
 # The SVG content matches SplashScreen widget proportions exactly.
+#
+# Pixel match with the Dart splash requires the wordmark to render in the
+# same Newsreader Italic 700 axis that Flutter draws via its bundled VF.
+# rsvg-convert / system pango won't drive variable-font axes from CSS
+# `font-variation-settings`, so the source SVG's <text> elements would
+# silently fall back to whatever Core Text resolves "Newsreader Italic"
+# to (typically Charter at default axis).
+#
+# Side-step the renderer: outline_splash.py shells out to hb-view with
+# the bundled VFs and explicit wght variations, then splices the glyph
+# paths back into the SVG. The result is text-free SVG that renders
+# identically anywhere — no fontconfig, no font matching, no surprises.
 mkdir -p "$IOS_SPLASH_DIR"
 echo "→ iOS launch splash"
-render_w "$SCRIPT_DIR/splash-light.svg" 480 368 "$IOS_SPLASH_DIR/launch_splash_light@2x.png"
-render_w "$SCRIPT_DIR/splash-light.svg" 720 552 "$IOS_SPLASH_DIR/launch_splash_light@3x.png"
-render_w "$SCRIPT_DIR/splash-dark.svg"  480 368 "$IOS_SPLASH_DIR/launch_splash_dark@2x.png"
-render_w "$SCRIPT_DIR/splash-dark.svg"  720 552 "$IOS_SPLASH_DIR/launch_splash_dark@3x.png"
+
+OUTLINE_TMP="$(mktemp -d -t splash-outline.XXXXXX)"
+trap 'rm -rf "$OUTLINE_TMP"' EXIT
+python3 "$SCRIPT_DIR/outline_splash.py" \
+  "$SCRIPT_DIR/splash-light.svg" "$OUTLINE_TMP/splash-light.svg"
+python3 "$SCRIPT_DIR/outline_splash.py" \
+  "$SCRIPT_DIR/splash-dark.svg"  "$OUTLINE_TMP/splash-dark.svg"
+
+render_w "$OUTLINE_TMP/splash-light.svg" 480 368 "$IOS_SPLASH_DIR/launch_splash_light@2x.png"
+render_w "$OUTLINE_TMP/splash-light.svg" 720 552 "$IOS_SPLASH_DIR/launch_splash_light@3x.png"
+render_w "$OUTLINE_TMP/splash-dark.svg"  480 368 "$IOS_SPLASH_DIR/launch_splash_dark@2x.png"
+render_w "$OUTLINE_TMP/splash-dark.svg"  720 552 "$IOS_SPLASH_DIR/launch_splash_dark@3x.png"
 
 # ─── Android Icons ───────────────────────────────────────────────────
 # (dpi:legacy_px:adaptive_px) — adaptive layers are 1.5× legacy
