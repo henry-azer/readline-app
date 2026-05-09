@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 /// Stable per-title gradient palettes for the document grid card cover.
 ///
-/// `title.hashCode % 8` selects one of 8 palettes; each palette has a
-/// light-mode and dark-mode variant. Same title always yields the same
-/// gradient, giving every document a unique-but-stable visual identity.
+/// An FNV-1a hash over [title]'s UTF-16 code units selects one of 8 palettes;
+/// each palette has a light-mode and dark-mode variant. Same title always
+/// yields the same gradient across platforms, giving every document a
+/// unique-but-stable visual identity.
 abstract final class CoverPalette {
   static const int _count = 8;
 
