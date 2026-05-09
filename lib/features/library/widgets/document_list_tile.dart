@@ -8,6 +8,8 @@ import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/library/utils/document_meta.dart';
+import 'package:readline_app/features/library/widgets/document_complexity_badge.dart';
+import 'package:readline_app/features/library/widgets/document_status_badge.dart';
 import 'package:readline_app/features/library/widgets/highlighted_text.dart';
 import 'package:readline_app/features/library/widgets/source_type_icon.dart';
 import 'package:readline_app/widgets/tap_scale.dart';
@@ -130,7 +132,7 @@ class DocumentListTile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: AppSpacing.xs),
-                        _StatusBadge(
+                        DocumentStatusBadge(
                           status: document.isCompleted
                               ? 'completed'
                               : (document.isInProgress ? 'reading' : 'unread'),
@@ -252,7 +254,7 @@ class DocumentListTile extends StatelessWidget {
                           ),
                         ],
                         const Spacer(),
-                        _ComplexityBadge(level: document.complexityLevel),
+                        DocumentComplexityBadge(level: document.complexityLevel),
                       ],
                     ),
                   ],
@@ -349,91 +351,5 @@ class DocumentListTile extends StatelessWidget {
     return AppStrings.monthsAgoUpper.trParams({
       'n': '${(diff.inDays / 30).floor()}',
     });
-  }
-}
-
-class _StatusBadge extends StatelessWidget {
-  final String status;
-  final bool isDark;
-
-  const _StatusBadge({required this.status, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    final (label, color, icon) = switch (status) {
-      'completed' => (
-        AppStrings.libraryStatusCompleted.tr,
-        isDark ? AppColors.success : AppColors.lightSuccess,
-        Icons.check_rounded,
-      ),
-      'reading' => (
-        AppStrings.libraryStatusInProgress.tr,
-        isDark ? AppColors.primary : AppColors.lightPrimary,
-        null,
-      ),
-      _ => (
-        AppStrings.libraryStatusNotStarted.tr,
-        isDark ? AppColors.onSurfaceVariant : AppColors.lightOnSurfaceVariant,
-        null,
-      ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: AppRadius.fullBorder,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 10, color: color),
-            const SizedBox(width: AppSpacing.micro),
-          ],
-          Text(
-            label,
-            style: AppTypography.label.copyWith(color: color, fontSize: 8),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ComplexityBadge extends StatelessWidget {
-  final String level;
-
-  const _ComplexityBadge({required this.level});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _color(level);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: AppRadius.fullBorder,
-      ),
-      child: Text(
-        level.toUpperCase(),
-        style: AppTypography.labelMicro.copyWith(color: color),
-      ),
-    );
-  }
-
-  Color _color(String level) {
-    switch (level) {
-      case 'beginner':
-        return AppColors.complexityBeginner;
-      case 'intermediate':
-        return AppColors.complexityIntermediate;
-      case 'advanced':
-        return AppColors.complexityAdvanced;
-      case 'expert':
-        return AppColors.complexityExpert;
-      default:
-        return AppColors.onSurfaceVariant;
-    }
   }
 }

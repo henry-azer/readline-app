@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+import 'package:readline_app/app.dart' show libraryChangeNotifier;
 import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/theme/app_durations.dart';
 import 'package:readline_app/data/contracts/document_repository.dart';
@@ -113,14 +114,6 @@ class LibraryViewModel {
     };
   }
 
-  int get activeFilterCount {
-    int count = 0;
-    if (filterStatuses$.value.isNotEmpty) count++;
-    if (filterSourceTypes$.value.isNotEmpty) count++;
-    if (filterDateRange$.value != null) count++;
-    return count;
-  }
-
   Future<void> init() async {
     await refresh();
   }
@@ -231,6 +224,7 @@ class LibraryViewModel {
     final updated = allDocuments$.value.where((d) => d.id != id).toList();
     allDocuments$.add(updated);
     _applyAllFilters();
+    libraryChangeNotifier.value++;
   }
 
   Future<void> undoDelete(DocumentModel document) async {
@@ -263,6 +257,7 @@ class LibraryViewModel {
     ];
     allDocuments$.add(updated);
     _applyAllFilters();
+    libraryChangeNotifier.value++;
   }
 
   // ── Filter engine ─────────────────────────────────────────────────────────

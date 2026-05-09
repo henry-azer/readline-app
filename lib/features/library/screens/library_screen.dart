@@ -85,17 +85,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Future<void> _handleDelete(DocumentModel document) async {
     await _viewModel.deleteDocument(document.id);
-    libraryChangeNotifier.value++;
 
     if (!mounted) return;
     AppSnackbar.info(
       context,
       AppStrings.libraryRemoveBody.trParams({'title': document.title}),
       actionLabel: AppStrings.undo.tr,
-      onAction: () {
-        _viewModel.undoDelete(document);
-        libraryChangeNotifier.value++;
-      },
+      onAction: () => _viewModel.undoDelete(document),
     );
   }
 

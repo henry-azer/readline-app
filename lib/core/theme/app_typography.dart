@@ -88,6 +88,14 @@ abstract final class AppTypography {
     height: 1,
   );
 
+  /// 8px label — tightest cards (status badge in list tiles, cover footers).
+  static TextStyle get labelNano => _sans.copyWith(
+    fontSize: 8,
+    fontWeight: FontWeight.w600,
+    letterSpacing: AppTracking.normal,
+    height: 1,
+  );
+
   // ── Button (Inter — bold, wide tracking) ──
   static TextStyle get button => _sans.copyWith(
     fontSize: 14,

@@ -56,6 +56,13 @@ abstract final class AppColors {
   static const Color readingBgDark = Color(0xFF1A1A1E);
   static const Color readingBgAmoled = Color(0xFF000000);
 
+  // ── Library cover palette ──
+  /// Cover title color over the title-derived gradient — off-white in dark
+  /// mode, near-black in light mode. Tuned for the muted earth-tone gradients
+  /// produced by `CoverPalette.forTitle`.
+  static const Color coverTitleDark = Color(0xFFF5F1E6);
+  static const Color coverTitleLight = Color(0xFF1A1310);
+
   // ── Shared ──
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);

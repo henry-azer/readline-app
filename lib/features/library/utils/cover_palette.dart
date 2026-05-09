@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:readline_app/core/theme/app_colors.dart';
 
 /// Stable per-title gradient palettes for the document grid card cover.
 ///
@@ -27,7 +28,7 @@ abstract final class CoverPalette {
   /// Returns the title text color appropriate for the gradient
   /// brightness — near-black on light gradients, off-white on dark.
   static Color titleColor({required bool isDark}) =>
-      isDark ? const Color(0xFFF5F1E6) : const Color(0xFF1A1310);
+      isDark ? AppColors.coverTitleDark : AppColors.coverTitleLight;
 
   /// Tiered font size for the cover title — shrinks as the title gets longer
   /// so it fits within the cover's 2–3 line budget.

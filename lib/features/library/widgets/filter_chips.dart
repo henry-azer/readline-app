@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:readline_app/core/extensions/context_extensions.dart';
 import 'package:readline_app/core/localization/app_localization.dart';
 import 'package:readline_app/core/localization/app_strings.dart';
-import 'package:readline_app/core/theme/app_colors.dart';
-import 'package:readline_app/core/theme/app_durations.dart';
-import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
-import 'package:readline_app/core/theme/app_typography.dart';
+import 'package:readline_app/features/library/widgets/library_filter_chip.dart';
 
 class LibraryFilterChips extends StatelessWidget {
   final String activeFilter;
@@ -43,7 +40,7 @@ class LibraryFilterChips extends StatelessWidget {
           final (key, label, count) = f;
           return Padding(
             padding: const EdgeInsets.only(right: AppSpacing.xs),
-            child: _Chip(
+            child: LibraryFilterChip(
               label: label,
               count: count,
               isSelected: activeFilter == key,
@@ -52,57 +49,6 @@ class LibraryFilterChips extends StatelessWidget {
             ),
           );
         }).toList(),
-      ),
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  final String label;
-  final int count;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final bool isDark;
-
-  const _Chip({
-    required this.label,
-    required this.count,
-    required this.isSelected,
-    required this.onTap,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
-    final surfaceHigh = isDark
-        ? AppColors.surfaceContainerHigh
-        : AppColors.lightSurfaceContainerHigh;
-    final onSurfaceVariant = isDark
-        ? AppColors.onSurfaceVariant
-        : AppColors.lightOnSurfaceVariant;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDurations.short,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.msl,
-          vertical: AppSpacing.sxs,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? primary : surfaceHigh,
-          borderRadius: AppRadius.fullBorder,
-        ),
-        child: Text(
-          count > 0 ? '$label ($count)' : label,
-          style: AppTypography.labelMedium.copyWith(
-            color: isSelected
-                ? (isDark ? AppColors.onPrimary : AppColors.lightOnPrimary)
-                : onSurfaceVariant,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
       ),
     );
   }

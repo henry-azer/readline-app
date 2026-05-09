@@ -3,10 +3,11 @@ import 'package:readline_app/core/extensions/context_extensions.dart';
 import 'package:readline_app/core/localization/app_localization.dart';
 import 'package:readline_app/core/localization/app_strings.dart';
 import 'package:readline_app/core/theme/app_colors.dart';
-import 'package:readline_app/core/theme/app_durations.dart';
 import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
+import 'package:readline_app/features/library/widgets/library_filter_section_label.dart';
+import 'package:readline_app/features/library/widgets/library_filter_sheet_chip.dart';
 
 class LibraryFilterSheet extends StatefulWidget {
   final Set<String> selectedStatuses;
@@ -152,7 +153,7 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
               const SizedBox(height: AppSpacing.xl),
 
               // Status section
-              _SectionLabel(
+              LibraryFilterSectionLabel(
                 label: AppStrings.libraryFilterStatus.tr,
                 isDark: isDark,
               ),
@@ -161,19 +162,19 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
                 spacing: AppSpacing.xs,
                 runSpacing: AppSpacing.xs,
                 children: [
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.libraryFilterNotStarted.tr,
                     isSelected: _statuses.contains('unread'),
                     onTap: () => _toggleStatus('unread'),
                     isDark: isDark,
                   ),
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.libraryFilterReading.tr,
                     isSelected: _statuses.contains('reading'),
                     onTap: () => _toggleStatus('reading'),
                     isDark: isDark,
                   ),
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.libraryFilterCompleted.tr,
                     isSelected: _statuses.contains('completed'),
                     onTap: () => _toggleStatus('completed'),
@@ -184,7 +185,7 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
               const SizedBox(height: AppSpacing.lg),
 
               // Source type section
-              _SectionLabel(
+              LibraryFilterSectionLabel(
                 label: AppStrings.libraryFilterSourceType.tr,
                 isDark: isDark,
               ),
@@ -193,19 +194,19 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
                 spacing: AppSpacing.xs,
                 runSpacing: AppSpacing.xs,
                 children: [
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.documentSourceTypeTextInput.tr,
                     isSelected: _sourceTypes.contains('text_input'),
                     onTap: () => _toggleSourceType('text_input'),
                     isDark: isDark,
                   ),
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.documentSourceTypePdf.tr,
                     isSelected: _sourceTypes.contains('pdf'),
                     onTap: () => _toggleSourceType('pdf'),
                     isDark: isDark,
                   ),
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.documentSourceTypeTxt.tr,
                     isSelected: _sourceTypes.contains('txt'),
                     onTap: () => _toggleSourceType('txt'),
@@ -216,7 +217,7 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
               const SizedBox(height: AppSpacing.lg),
 
               // Date range section
-              _SectionLabel(
+              LibraryFilterSectionLabel(
                 label: AppStrings.libraryFilterDateRange.tr,
                 isDark: isDark,
               ),
@@ -225,25 +226,25 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
                 spacing: AppSpacing.xs,
                 runSpacing: AppSpacing.xs,
                 children: [
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.libraryFilterToday.tr,
                     isSelected: _dateRange == 'today',
                     onTap: () => _setDateRange('today'),
                     isDark: isDark,
                   ),
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.libraryFilterThisWeek.tr,
                     isSelected: _dateRange == 'thisWeek',
                     onTap: () => _setDateRange('thisWeek'),
                     isDark: isDark,
                   ),
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.libraryFilterThisMonth.tr,
                     isSelected: _dateRange == 'thisMonth',
                     onTap: () => _setDateRange('thisMonth'),
                     isDark: isDark,
                   ),
-                  _FilterChip(
+                  LibraryFilterSheetChip(
                     label: AppStrings.libraryFilterAllTime.tr,
                     isSelected: _dateRange == null,
                     onTap: () => _setDateRange(null),
@@ -259,82 +260,3 @@ class _LibraryFilterSheetState extends State<LibraryFilterSheet> {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  final String label;
-  final bool isDark;
-
-  const _SectionLabel({required this.label, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: AppTypography.label.copyWith(
-        color: isDark
-            ? AppColors.onSurfaceVariant
-            : AppColors.lightOnSurfaceVariant,
-        letterSpacing: 1.5,
-      ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final bool isDark;
-
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
-    final surface = isDark
-        ? AppColors.surfaceContainerLow
-        : AppColors.lightSurfaceContainerLow;
-    final onSurfaceVariant = isDark
-        ? AppColors.onSurfaceVariant
-        : AppColors.lightOnSurfaceVariant;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDurations.short,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.sxs,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? primary : surface,
-          borderRadius: AppRadius.fullBorder,
-          border: Border.all(
-            color: isSelected
-                ? primary
-                : (isDark
-                      ? AppColors.outlineVariant
-                      : AppColors.lightOutlineVariant),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: AppTypography.labelMedium.copyWith(
-                color: isSelected
-                    ? (isDark ? AppColors.onPrimary : AppColors.lightOnPrimary)
-                    : onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
