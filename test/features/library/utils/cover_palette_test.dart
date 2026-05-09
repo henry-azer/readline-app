@@ -77,4 +77,27 @@ void main() {
       expect(sum(light), lessThan(sum(dark)));
     });
   });
+
+  group('CoverPalette.titleFontSize', () {
+    test('returns 24 for titles ≤ 18 chars', () {
+      expect(CoverPalette.titleFontSize(''), 24);
+      expect(CoverPalette.titleFontSize('a'), 24);
+      expect(CoverPalette.titleFontSize('123456789012345678'), 24); // 18
+    });
+
+    test('returns 20 for titles 19–34 chars', () {
+      expect(CoverPalette.titleFontSize('1234567890123456789'), 20); // 19
+      expect(CoverPalette.titleFontSize('a' * 34), 20);
+    });
+
+    test('returns 17 for titles 35–55 chars', () {
+      expect(CoverPalette.titleFontSize('a' * 35), 17);
+      expect(CoverPalette.titleFontSize('a' * 55), 17);
+    });
+
+    test('returns 14 for titles > 55 chars', () {
+      expect(CoverPalette.titleFontSize('a' * 56), 14);
+      expect(CoverPalette.titleFontSize('a' * 200), 14);
+    });
+  });
 }

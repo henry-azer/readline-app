@@ -12,15 +12,6 @@ import 'package:readline_app/features/library/utils/document_meta.dart';
 import 'package:readline_app/features/library/widgets/highlighted_text.dart';
 import 'package:readline_app/widgets/tap_scale.dart';
 
-/// Tiered font size for the cover title — shrinks as the title gets longer
-/// so it fits within the cover's 2–3 line budget.
-double coverTitleFontSize(String title) {
-  final len = title.length;
-  if (len <= 18) return 24;
-  if (len <= 34) return 20;
-  if (len <= 55) return 17;
-  return 14;
-}
 
 class DocumentGridCard extends StatelessWidget {
   final DocumentModel document;
@@ -96,6 +87,7 @@ class DocumentGridCard extends StatelessWidget {
                 isDark: isDark,
                 onEdit: onEdit,
                 onDelete: onDelete,
+                searchQuery: searchQuery,
               ),
             ),
 
@@ -235,12 +227,14 @@ class _CoverArea extends StatelessWidget {
   final bool isDark;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final String? searchQuery;
 
   const _CoverArea({
     required this.document,
     required this.isDark,
     this.onEdit,
     this.onDelete,
+    this.searchQuery,
   });
 
   @override
@@ -250,6 +244,9 @@ class _CoverArea extends StatelessWidget {
       isDark: isDark,
     );
     final titleColor = CoverPalette.titleColor(isDark: isDark);
+    final highlightColor = isDark
+        ? AppColors.primary
+        : AppColors.lightPrimary;
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
@@ -269,23 +266,22 @@ class _CoverArea extends StatelessWidget {
             ),
           ),
 
-          // Centered editorial title.
+          // Centered editorial title with search highlighting.
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md,
               vertical: AppSpacing.xl,
             ),
             child: Center(
-              child: Text(
-                document.title,
-                textAlign: TextAlign.center,
+              child: HighlightedText(
+                text: document.title,
+                query: searchQuery,
                 maxLines: 3,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: 'Newsreader',
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.w700,
-                  fontSize: coverTitleFontSize(document.title),
+                  fontSize: CoverPalette.titleFontSize(document.title),
                   height: 1.15,
                   color: titleColor,
                   shadows: [
@@ -297,6 +293,7 @@ class _CoverArea extends StatelessWidget {
                     ),
                   ],
                 ),
+                highlightColor: highlightColor,
               ),
             ),
           ),

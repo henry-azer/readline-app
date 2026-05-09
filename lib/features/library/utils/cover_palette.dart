@@ -33,6 +33,16 @@ abstract final class CoverPalette {
   static Color titleColor({required bool isDark}) =>
       isDark ? const Color(0xFFF5F1E6) : const Color(0xFF1A1310);
 
+  /// Tiered font size for the cover title — shrinks as the title gets longer
+  /// so it fits within the cover's 2–3 line budget.
+  static double titleFontSize(String title) {
+    final len = title.length;
+    if (len <= 18) return 24;
+    if (len <= 34) return 20;
+    if (len <= 55) return 17;
+    return 14;
+  }
+
   // ── Palettes ──────────────────────────────────────────────────────────────
 
   static const List<List<Color>> _lightPalettes = [
