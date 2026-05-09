@@ -43,6 +43,7 @@ class LibraryGridView extends StatelessWidget {
         return DocumentGridCard(
           document: doc,
           searchQuery: searchQuery,
+          wpm: viewModel.currentWpm,
           onTap: () => openDocumentForReading(context, doc),
           onEdit: () => onEditDocument(doc),
           onDelete: () => onDeleteDocument(doc),
