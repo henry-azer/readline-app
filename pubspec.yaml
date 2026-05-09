@@ -29,7 +29,6 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^29.1.38
   # File handling
   file_picker: ^8.1.6
-  path_provider: ^2.1.5
   permission_handler: ^11.4.0
   # Charts
   fl_chart: ^0.70.2
@@ -38,8 +37,6 @@ dependencies:
   flutter_svg: ^2.2.1
   # Celebrations
   confetti: ^0.7.0
-  # Sharing
-  share_plus: ^10.1.4
   # Networking
   http: ^1.2.2
   # Text-to-Speech

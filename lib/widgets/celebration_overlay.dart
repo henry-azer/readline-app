@@ -149,7 +149,7 @@ class _CelebrationOverlayState extends State<CelebrationOverlay>
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                child: const ColoredBox(color: Color(0x14000000)),
+                child: const ColoredBox(color: AppColors.scrim08),
               ),
             ),
 

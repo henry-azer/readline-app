@@ -62,6 +62,9 @@ abstract final class AppColors {
   static const Color transparent = Color(0x00000000);
   /// 20% black scrim — used as a backdrop for floating UI (e.g. vocab bar).
   static const Color scrim20 = Color(0x33000000);
+  /// 8% black scrim — used behind blurred celebration / dialog backdrops
+  /// where the underlying screen should still read clearly.
+  static const Color scrim08 = Color(0x14000000);
 
   // ── Semantic: Success / Completion ──
   static const Color lightSuccess = Color(0xFF1E7E34);
