@@ -7,9 +7,20 @@ import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/data/models/document_model.dart';
+import 'package:readline_app/features/library/utils/cover_palette.dart';
 import 'package:readline_app/features/library/utils/document_meta.dart';
 import 'package:readline_app/features/library/widgets/highlighted_text.dart';
 import 'package:readline_app/widgets/tap_scale.dart';
+
+/// Tiered font size for the cover title — shrinks as the title gets longer
+/// so it fits within the cover's 2–3 line budget.
+double coverTitleFontSize(String title) {
+  final len = title.length;
+  if (len <= 18) return 24;
+  if (len <= 34) return 20;
+  if (len <= 55) return 17;
+  return 14;
+}
 
 class DocumentGridCard extends StatelessWidget {
   final DocumentModel document;
@@ -170,7 +181,7 @@ class DocumentGridCard extends StatelessWidget {
                         child: Stack(
                           children: [
                             Container(
-                              height: 3,
+                              height: 5,
                               decoration: BoxDecoration(
                                 color: outlineVariant.withValues(alpha: 0.4),
                                 borderRadius: AppRadius.fullBorder,
@@ -179,7 +190,7 @@ class DocumentGridCard extends StatelessWidget {
                             FractionallySizedBox(
                               widthFactor: progress,
                               child: Container(
-                                height: 3,
+                                height: 5,
                                 decoration: BoxDecoration(
                                   color: progressColor,
                                   borderRadius: AppRadius.fullBorder,
@@ -234,12 +245,11 @@ class _CoverArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final surfaceHigh = isDark
-        ? AppColors.surfaceContainerHigh
-        : AppColors.lightSurfaceContainerHigh;
-    final onSurfaceVariant = isDark
-        ? AppColors.onSurfaceVariant
-        : AppColors.lightOnSurfaceVariant;
+    final gradientColors = CoverPalette.forTitle(
+      document.title,
+      isDark: isDark,
+    );
+    final titleColor = CoverPalette.titleColor(isDark: isDark);
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
@@ -248,26 +258,45 @@ class _CoverArea extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Background placeholder
+          // Gradient background — title-derived, stable per document.
           Container(
-            color: surfaceHigh,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: gradientColors,
+              ),
+            ),
+          ),
+
+          // Centered editorial title.
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xl,
+            ),
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.menu_book_rounded,
-                    size: 36,
-                    color: onSurfaceVariant.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: AppSpacing.xxs),
-                  Text(
-                    AppStrings.libraryNoPreview.tr,
-                    style: AppTypography.labelMicro.copyWith(
-                      color: onSurfaceVariant.withValues(alpha: 0.5),
+              child: Text(
+                document.title,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'Newsreader',
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w700,
+                  fontSize: coverTitleFontSize(document.title),
+                  height: 1.15,
+                  color: titleColor,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 0,
+                      offset: const Offset(0, 1),
+                      color: (isDark ? Colors.black : Colors.white)
+                          .withValues(alpha: 0.4),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
