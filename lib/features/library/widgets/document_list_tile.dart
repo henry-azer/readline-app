@@ -7,6 +7,7 @@ import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/data/models/document_model.dart';
+import 'package:readline_app/features/library/utils/document_meta.dart';
 import 'package:readline_app/features/library/widgets/highlighted_text.dart';
 import 'package:readline_app/features/library/widgets/source_type_icon.dart';
 import 'package:readline_app/widgets/tap_scale.dart';
@@ -56,7 +57,10 @@ class DocumentListTile extends StatelessWidget {
     final progressColor = isCompleted ? successColor : primary;
     final progressPercent = (progress * 100).round();
     final lastReadLabel = _formatLastRead(document.lastReadAt);
-    final minutesLabel = _estimatedMinutes();
+    final minutesLabel = DocumentMeta.estimatedTime(document, wpm);
+    final wordCountLabel = AppStrings.libraryWordCount.trParams({
+      'n': DocumentMeta.wordCount(document.totalWords),
+    });
 
     final tileContent = TapScale(
       onTap: onTap,
@@ -176,10 +180,32 @@ class DocumentListTile extends StatelessWidget {
 
                     const SizedBox(height: AppSpacing.xs),
 
-                    // Meta row: estimated minutes + last read + complexity
+                    // Meta row: word count + estimated minutes + last read + complexity
                     Row(
                       children: [
+                        Icon(
+                          Icons.description_outlined,
+                          size: 12,
+                          color: onSurfaceVariant,
+                        ),
+                        const SizedBox(width: AppSpacing.micro),
+                        Flexible(
+                          child: Text(
+                            wordCountLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.labelTiny.copyWith(
+                              color: onSurfaceVariant,
+                            ),
+                          ),
+                        ),
                         if (minutesLabel != null) ...[
+                          Text(
+                            ' · ',
+                            style: AppTypography.labelTiny.copyWith(
+                              color: onSurfaceVariant,
+                            ),
+                          ),
                           Icon(
                             Icons.schedule_rounded,
                             size: 12,
@@ -196,16 +222,14 @@ class DocumentListTile extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (lastReadLabel != null) ...[
-                            Text(
-                              ' · ',
-                              style: AppTypography.labelTiny.copyWith(
-                                color: onSurfaceVariant,
-                              ),
-                            ),
-                          ],
                         ],
-                        if (lastReadLabel != null)
+                        if (lastReadLabel != null) ...[
+                          Text(
+                            ' · ',
+                            style: AppTypography.labelTiny.copyWith(
+                              color: onSurfaceVariant,
+                            ),
+                          ),
                           Flexible(
                             child: Text(
                               lastReadLabel,
@@ -216,6 +240,7 @@ class DocumentListTile extends StatelessWidget {
                               ),
                             ),
                           ),
+                        ],
                         const Spacer(),
                         _ComplexityBadge(level: document.complexityLevel),
                       ],
@@ -296,20 +321,6 @@ class DocumentListTile extends StatelessWidget {
     }
 
     return tileContent;
-  }
-
-  String? _estimatedMinutes() {
-    if (wpm <= 0 || document.totalWords <= 0) return null;
-    if (document.isInProgress) {
-      final wordsLeft = document.totalWords - document.wordsRead;
-      if (wordsLeft <= 0) return null;
-      final mins = (wordsLeft / wpm).ceil();
-      if (mins <= 0) return null;
-      return AppStrings.homeEstimatedLeft.trParams({'n': '$mins'});
-    }
-    final mins = (document.totalWords / wpm).ceil();
-    if (mins <= 0) return null;
-    return AppStrings.homeEstimatedTotal.trParams({'n': '$mins'});
   }
 
   String? _formatLastRead(DateTime? lastReadAt) {
