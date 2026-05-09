@@ -312,6 +312,22 @@ abstract final class AppTypography {
     height: 1,
   );
 
+  /// Celebration emoji glyph (e.g. fire) — 48px display.
+  static TextStyle get celebrationEmoji => const TextStyle(fontSize: 48);
+
+  /// Celebration streak hero number — 56 / w800 / serif display.
+  static TextStyle get celebrationStreakNumber => _serif.copyWith(
+    fontSize: 56,
+    fontWeight: FontWeight.w800,
+    height: 1.0,
+  );
+
+  /// Celebration "DAY STREAK" label — `button` w800 with editorial tracking.
+  static TextStyle get celebrationStreakLabel => button.copyWith(
+    fontWeight: FontWeight.w800,
+    letterSpacing: AppTracking.editorial,
+  );
+
   // ── About / legal screens ──
   /// About screen app-name display — same wordmark style as [brandMark]
   /// and [splashBrand], scaled down for the about-screen header.
