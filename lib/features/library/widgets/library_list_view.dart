@@ -8,22 +8,16 @@ import 'package:readline_app/features/library/widgets/document_list_tile.dart';
 class LibraryListView extends StatelessWidget {
   final List<DocumentModel> docs;
   final LibraryViewModel viewModel;
-  final Set<String> selectedIds;
-  final bool isMultiSelect;
   final Future<void> Function(DocumentModel) onDeleteDocument;
   final ValueChanged<DocumentModel> onEditDocument;
-  final ValueChanged<DocumentModel> onLongPress;
   final String searchQuery;
 
   const LibraryListView({
     super.key,
     required this.docs,
     required this.viewModel,
-    required this.selectedIds,
-    required this.isMultiSelect,
     required this.onDeleteDocument,
     required this.onEditDocument,
-    required this.onLongPress,
     this.searchQuery = '',
   });
 
@@ -44,15 +38,11 @@ class LibraryListView extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
           child: DocumentListTile(
             document: doc,
-            isSelected: selectedIds.contains(doc.id),
-            isMultiSelectMode: isMultiSelect,
             searchQuery: searchQuery,
             wpm: viewModel.currentWpm,
             onTap: () => openDocumentForReading(context, doc),
             onDelete: () => onDeleteDocument(doc),
             onEdit: () => onEditDocument(doc),
-            onLongPress: () => onLongPress(doc),
-            onToggleSelect: () => viewModel.toggleSelection(doc.id),
           ),
         );
       },

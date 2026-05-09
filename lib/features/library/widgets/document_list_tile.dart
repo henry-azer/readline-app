@@ -16,10 +16,6 @@ class DocumentListTile extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
-  final bool isSelected;
-  final bool isMultiSelectMode;
-  final VoidCallback? onToggleSelect;
-  final VoidCallback? onLongPress;
   final String? searchQuery;
 
   /// Words-per-minute used to estimate "min left" / "min total" — supplied by
@@ -32,10 +28,6 @@ class DocumentListTile extends StatelessWidget {
     required this.onTap,
     this.onDelete,
     this.onEdit,
-    this.isSelected = false,
-    this.isMultiSelectMode = false,
-    this.onToggleSelect,
-    this.onLongPress,
     this.searchQuery,
     this.wpm = 200,
   });
@@ -67,65 +59,40 @@ class DocumentListTile extends StatelessWidget {
     final minutesLabel = _estimatedMinutes();
 
     final tileContent = TapScale(
-      onTap: isMultiSelectMode ? onToggleSelect : onTap,
-      child: GestureDetector(
-        onLongPress: onLongPress,
-        child: Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: AppRadius.lgBorder,
-            border: Border.all(
-              color: isSelected
-                  ? primary
-                  : outlineVariant.withValues(alpha: 0.3),
-              width: isSelected ? 2 : 1,
-            ),
-            boxShadow: [
-              isDark
-                  ? AppColors.darkAmbientShadow(blur: 12, opacity: 0.2)
-                  : AppColors.ambientShadow(blur: 12, opacity: 0.05),
-            ],
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: AppRadius.lgBorder,
+          border: Border.all(
+            color: outlineVariant.withValues(alpha: 0.3),
+            width: 1,
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Leading element: multi-select check or chip-style icon.
-              if (isMultiSelectMode)
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: isSelected ? primary : AppColors.transparent,
-                    shape: BoxShape.circle,
-                    border: isSelected
-                        ? null
-                        : Border.all(color: onSurfaceVariant, width: 1.5),
-                  ),
-                  child: isSelected
-                      ? const Icon(
-                          Icons.check_rounded,
-                          size: 14,
-                          color: AppColors.white,
-                        )
-                      : null,
-                )
-              else
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.08),
-                    borderRadius: AppRadius.smdBorder,
-                  ),
-                  child: Icon(
-                    sourceTypeIcon(document.sourceType),
-                    size: 22,
-                    color: primary,
-                  ),
-                ),
+          boxShadow: [
+            isDark
+                ? AppColors.darkAmbientShadow(blur: 12, opacity: 0.2)
+                : AppColors.ambientShadow(blur: 12, opacity: 0.05),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.08),
+                borderRadius: AppRadius.smdBorder,
+              ),
+              child: Icon(
+                sourceTypeIcon(document.sourceType),
+                size: 22,
+                color: primary,
+              ),
+            ),
 
-              const SizedBox(width: AppSpacing.md),
+            const SizedBox(width: AppSpacing.md),
 
               // Body: title row, progress, meta row.
               Expanded(
@@ -257,54 +224,50 @@ class DocumentListTile extends StatelessWidget {
                 ),
               ),
 
-              // Inline edit + delete (hidden in multi-select mode).
-              if (!isMultiSelectMode) ...[
-                const SizedBox(width: AppSpacing.xxs),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (onEdit != null)
-                      IconButton(
-                        onPressed: onEdit,
-                        icon: Icon(
-                          Icons.edit_outlined,
-                          size: 18,
-                          color: onSurfaceVariant.withValues(alpha: 0.6),
-                        ),
-                        padding: const EdgeInsets.all(AppSpacing.xs),
-                        constraints: const BoxConstraints(
-                          minWidth: AppSpacing.buttonHeight,
-                          minHeight: AppSpacing.buttonHeight,
-                        ),
-                      ),
-                    if (onDelete != null)
-                      IconButton(
-                        onPressed: onDelete,
-                        icon: Icon(
-                          Icons.delete_outline_rounded,
-                          size: 18,
-                          color: (isDark
-                                  ? AppColors.error
-                                  : AppColors.lightError)
-                              .withValues(alpha: 0.7),
-                        ),
-                        padding: const EdgeInsets.all(AppSpacing.xs),
-                        constraints: const BoxConstraints(
-                          minWidth: AppSpacing.buttonHeight,
-                          minHeight: AppSpacing.buttonHeight,
-                        ),
-                      ),
-                  ],
-                ),
+            const SizedBox(width: AppSpacing.xxs),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (onEdit != null)
+                  IconButton(
+                    onPressed: onEdit,
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                      color: onSurfaceVariant.withValues(alpha: 0.6),
+                    ),
+                    padding: const EdgeInsets.all(AppSpacing.xs),
+                    constraints: const BoxConstraints(
+                      minWidth: AppSpacing.buttonHeight,
+                      minHeight: AppSpacing.buttonHeight,
+                    ),
+                  ),
+                if (onDelete != null)
+                  IconButton(
+                    onPressed: onDelete,
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 18,
+                      color: (isDark
+                              ? AppColors.error
+                              : AppColors.lightError)
+                          .withValues(alpha: 0.7),
+                    ),
+                    padding: const EdgeInsets.all(AppSpacing.xs),
+                    constraints: const BoxConstraints(
+                      minWidth: AppSpacing.buttonHeight,
+                      minHeight: AppSpacing.buttonHeight,
+                    ),
+                  ),
               ],
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
 
     // Wrap in Dismissible for swipe-to-delete in list mode
-    if (onDelete != null && !isMultiSelectMode) {
+    if (onDelete != null) {
       return Dismissible(
         key: ValueKey(document.id),
         direction: DismissDirection.endToStart,

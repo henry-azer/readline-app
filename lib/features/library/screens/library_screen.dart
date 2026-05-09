@@ -14,7 +14,6 @@ import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/home/widgets/import_content_sheet.dart';
 import 'package:readline_app/features/library/viewmodels/library_viewmodel.dart';
 import 'package:readline_app/features/library/widgets/library_body.dart';
-import 'package:readline_app/features/library/widgets/multi_select_toolbar.dart';
 import 'package:readline_app/features/library/widgets/new_reading_fab.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -137,12 +136,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 
-  // Long-press now activates multi-select directly — the previous bottom-sheet
-  // popup is gone; per-doc edit / delete actions live as inline icon buttons
-  // on each card / tile.
-  void _activateMultiSelect(DocumentModel doc) =>
-      _viewModel.activateMultiSelectWith(doc.id);
-
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
@@ -164,13 +157,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         builder: (context, snap) {
           final docs = snap.data ?? const [];
           if (docs.isEmpty) return const SizedBox.shrink();
-          return StreamBuilder<bool>(
-            stream: _viewModel.isMultiSelectMode$,
-            builder: (context, multiSnap) {
-              if (multiSnap.data ?? false) return const SizedBox.shrink();
-              return NewReadingFab(onPressed: _openImportSheet);
-            },
-          );
+          return NewReadingFab(onPressed: _openImportSheet);
         },
       ),
       // Tap anywhere outside the search field to dismiss the keyboard —
@@ -189,44 +176,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
               return Center(child: CircularProgressIndicator(color: primary));
             }
 
-            return Stack(
-              children: [
-                LibraryBody(
-                  viewModel: _viewModel,
-                  onDeleteDocument: _confirmDelete,
-                  onEditDocument: _openEditSheet,
-                  onLongPress: _activateMultiSelect,
-                  searchFocusNode: _searchFocusNode,
-                  onSearchFieldTap: _onSearchFieldTap,
-                ),
-
-                // Multi-select toolbar overlay
-                StreamBuilder<bool>(
-                  stream: _viewModel.isMultiSelectMode$,
-                  builder: (context, multiSnap) {
-                    if (!(multiSnap.data ?? false)) {
-                      return const SizedBox.shrink();
-                    }
-                    return Positioned(
-                      left: AppSpacing.xl,
-                      right: AppSpacing.xl,
-                      bottom: AppSpacing.xl,
-                      child: StreamBuilder<Set<String>>(
-                        stream: _viewModel.selectedIds$,
-                        builder: (context, selSnap) {
-                          return MultiSelectToolbar(
-                            selectedCount: (selSnap.data ?? {}).length,
-                            onCancel: _viewModel.exitMultiSelect,
-                            onDelete: () async {
-                              await _viewModel.deleteSelectedDocuments();
-                            },
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
+            return LibraryBody(
+              viewModel: _viewModel,
+              onDeleteDocument: _confirmDelete,
+              onEditDocument: _openEditSheet,
+              searchFocusNode: _searchFocusNode,
+              onSearchFieldTap: _onSearchFieldTap,
             );
           },
         ),

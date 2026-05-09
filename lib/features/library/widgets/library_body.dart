@@ -21,7 +21,6 @@ class LibraryBody extends StatelessWidget {
   final LibraryViewModel viewModel;
   final Future<void> Function(DocumentModel) onDeleteDocument;
   final ValueChanged<DocumentModel> onEditDocument;
-  final ValueChanged<DocumentModel> onLongPress;
   final FocusNode? searchFocusNode;
   final VoidCallback? onSearchFieldTap;
 
@@ -30,7 +29,6 @@ class LibraryBody extends StatelessWidget {
     required this.viewModel,
     required this.onDeleteDocument,
     required this.onEditDocument,
-    required this.onLongPress,
     this.searchFocusNode,
     this.onSearchFieldTap,
   });
@@ -52,8 +50,6 @@ class LibraryBody extends StatelessWidget {
         final filter = state?.filter ?? 'all';
         final viewMode = state?.viewMode ?? ViewMode.grid;
         final totalCount = viewModel.documentCount;
-        final selectedIds = state?.selectedIds ?? const <String>{};
-        final isMultiSelect = state?.isMultiSelect ?? false;
 
         return Column(
           children: [
@@ -136,8 +132,6 @@ class LibraryBody extends StatelessWidget {
                   filter: filter,
                   viewMode: viewMode,
                   totalCount: totalCount,
-                  selectedIds: selectedIds,
-                  isMultiSelect: isMultiSelect,
                 ),
               ),
             ),
@@ -154,8 +148,6 @@ class LibraryBody extends StatelessWidget {
     required String filter,
     required ViewMode viewMode,
     required int totalCount,
-    required Set<String> selectedIds,
-    required bool isMultiSelect,
   }) {
     if (totalCount == 0) {
       return ListView(
@@ -182,22 +174,16 @@ class LibraryBody extends StatelessWidget {
               key: const ValueKey('grid'),
               docs: docs,
               viewModel: viewModel,
-              selectedIds: selectedIds,
-              isMultiSelect: isMultiSelect,
               onDeleteDocument: onDeleteDocument,
               onEditDocument: onEditDocument,
-              onLongPress: onLongPress,
               searchQuery: viewModel.searchQuery$.value,
             )
           : LibraryListView(
               key: const ValueKey('list'),
               docs: docs,
               viewModel: viewModel,
-              selectedIds: selectedIds,
-              isMultiSelect: isMultiSelect,
               onDeleteDocument: onDeleteDocument,
               onEditDocument: onEditDocument,
-              onLongPress: onLongPress,
               searchQuery: viewModel.searchQuery$.value,
             ),
     );

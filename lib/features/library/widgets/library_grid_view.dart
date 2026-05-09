@@ -8,22 +8,16 @@ import 'package:readline_app/features/library/widgets/document_grid_card.dart';
 class LibraryGridView extends StatelessWidget {
   final List<DocumentModel> docs;
   final LibraryViewModel viewModel;
-  final Set<String> selectedIds;
-  final bool isMultiSelect;
   final Future<void> Function(DocumentModel) onDeleteDocument;
   final ValueChanged<DocumentModel> onEditDocument;
-  final ValueChanged<DocumentModel> onLongPress;
   final String searchQuery;
 
   const LibraryGridView({
     super.key,
     required this.docs,
     required this.viewModel,
-    required this.selectedIds,
-    required this.isMultiSelect,
     required this.onDeleteDocument,
     required this.onEditDocument,
-    required this.onLongPress,
     this.searchQuery = '',
   });
 
@@ -48,13 +42,10 @@ class LibraryGridView extends StatelessWidget {
         final doc = docs[index];
         return DocumentGridCard(
           document: doc,
-          isSelected: selectedIds.contains(doc.id),
-          isMultiSelectMode: isMultiSelect,
           searchQuery: searchQuery,
           onTap: () => openDocumentForReading(context, doc),
+          onEdit: () => onEditDocument(doc),
           onDelete: () => onDeleteDocument(doc),
-          onLongPress: () => onLongPress(doc),
-          onToggleSelect: () => viewModel.toggleSelection(doc.id),
         );
       },
     );

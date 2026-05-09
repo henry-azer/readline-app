@@ -17,8 +17,6 @@ typedef LibraryBodyState = ({
   List<DocumentModel> docs,
   String filter,
   ViewMode viewMode,
-  Set<String> selectedIds,
-  bool isMultiSelect,
   String sortField,
   bool sortAsc,
 });
@@ -41,12 +39,6 @@ class LibraryViewModel {
   final BehaviorSubject<String> searchQuery$ = BehaviorSubject.seeded('');
   final BehaviorSubject<String> sortField$ = BehaviorSubject.seeded('lastRead');
   final BehaviorSubject<bool> sortAscending$ = BehaviorSubject.seeded(false);
-  final BehaviorSubject<Set<String>> selectedIds$ = BehaviorSubject.seeded(
-    const {},
-  );
-  final BehaviorSubject<bool> isMultiSelectMode$ = BehaviorSubject.seeded(
-    false,
-  );
 
   // Advanced filters
   final BehaviorSubject<Set<String>> filterStatuses$ = BehaviorSubject.seeded(
@@ -75,24 +67,19 @@ class LibraryViewModel {
   );
 
   /// Combined stream for the library body UI — replaces nested StreamBuilders.
-  late final Stream<LibraryBodyState> bodyState$ = Rx.combineLatest7(
+  late final Stream<LibraryBodyState> bodyState$ = Rx.combineLatest5(
     documents$,
     activeFilter$,
     viewMode$,
-    selectedIds$,
-    isMultiSelectMode$,
     sortField$,
     sortAscending$,
-    (docs, filter, viewMode, selectedIds, isMultiSelect, sortField, sortAsc) =>
-        (
-          docs: docs,
-          filter: filter,
-          viewMode: viewMode,
-          selectedIds: selectedIds,
-          isMultiSelect: isMultiSelect,
-          sortField: sortField,
-          sortAsc: sortAsc,
-        ),
+    (docs, filter, viewMode, sortField, sortAsc) => (
+      docs: docs,
+      filter: filter,
+      viewMode: viewMode,
+      sortField: sortField,
+      sortAsc: sortAsc,
+    ),
   );
 
   LibraryViewModel({
@@ -113,7 +100,6 @@ class LibraryViewModel {
   String get currentFilter => activeFilter$.value;
   ViewMode get currentViewMode => viewMode$.value;
   int get documentCount => allDocuments$.value.length;
-  bool get isMultiSelectActive => isMultiSelectMode$.value;
 
   Map<String, int> get filterCounts {
     final all = allDocuments$.value;
@@ -231,36 +217,6 @@ class LibraryViewModel {
     } catch (_) {}
   }
 
-  // ── Multi-select ──────────────────────────────────────────────────────────
-
-  void toggleMultiSelect() {
-    final isActive = !isMultiSelectMode$.value;
-    isMultiSelectMode$.add(isActive);
-    if (!isActive) {
-      selectedIds$.add(const {});
-    }
-  }
-
-  void exitMultiSelect() {
-    isMultiSelectMode$.add(false);
-    selectedIds$.add(const {});
-  }
-
-  void toggleSelection(String docId) {
-    final current = Set<String>.from(selectedIds$.value);
-    if (current.contains(docId)) {
-      current.remove(docId);
-    } else {
-      current.add(docId);
-    }
-    selectedIds$.add(current);
-  }
-
-  void activateMultiSelectWith(String docId) {
-    isMultiSelectMode$.add(true);
-    selectedIds$.add({docId});
-  }
-
   // ── CRUD: Documents ───────────────────────────────────────────────────────
 
   /// Captured cascade data for undo support.
@@ -309,14 +265,6 @@ class LibraryViewModel {
     final updated = [...allDocuments$.value, document];
     allDocuments$.add(updated);
     _applyAllFilters();
-  }
-
-  Future<void> deleteSelectedDocuments() async {
-    final ids = Set<String>.from(selectedIds$.value);
-    for (final id in ids) {
-      await deleteDocument(id);
-    }
-    exitMultiSelect();
   }
 
   // ── Filter engine ─────────────────────────────────────────────────────────
@@ -420,8 +368,6 @@ class LibraryViewModel {
     searchQuery$.close();
     sortField$.close();
     sortAscending$.close();
-    selectedIds$.close();
-    isMultiSelectMode$.close();
     filterStatuses$.close();
     filterSourceTypes$.close();
     filterDateRange$.close();

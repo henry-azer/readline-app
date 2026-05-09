@@ -17,10 +17,6 @@ class DocumentGridCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
-  final bool isSelected;
-  final bool isMultiSelectMode;
-  final VoidCallback? onToggleSelect;
-  final VoidCallback? onLongPress;
   final String? searchQuery;
 
   const DocumentGridCard({
@@ -29,10 +25,6 @@ class DocumentGridCard extends StatelessWidget {
     required this.onTap,
     this.onDelete,
     this.onEdit,
-    this.isSelected = false,
-    this.isMultiSelectMode = false,
-    this.onToggleSelect,
-    this.onLongPress,
     this.searchQuery,
   });
 
@@ -61,38 +53,32 @@ class DocumentGridCard extends StatelessWidget {
     final progressPercent = (progress * 100).round();
     final lastReadAt = document.lastReadAt;
 
-    return GestureDetector(
-      onLongPress: onLongPress,
-      child: TapScale(
-        onTap: isMultiSelectMode ? onToggleSelect : onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: AppRadius.lgBorder,
-            border: Border.all(
-              color: isSelected
-                  ? primary
-                  : outlineVariant.withValues(alpha: 0.3),
-              width: isSelected ? 2 : 1,
-            ),
-            boxShadow: [
-              isDark
-                  ? AppColors.darkAmbientShadow(blur: 16, opacity: 0.25)
-                  : AppColors.ambientShadow(blur: 16, opacity: 0.06),
-            ],
+    return TapScale(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: AppRadius.lgBorder,
+          border: Border.all(
+            color: outlineVariant.withValues(alpha: 0.3),
+            width: 1,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Cover / thumbnail area
-              Expanded(
-                child: _CoverArea(
-                  document: document,
-                  isDark: isDark,
-                  isMultiSelectMode: isMultiSelectMode,
-                  isSelected: isSelected,
-                ),
+          boxShadow: [
+            isDark
+                ? AppColors.darkAmbientShadow(blur: 16, opacity: 0.25)
+                : AppColors.ambientShadow(blur: 16, opacity: 0.06),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Cover / thumbnail area
+            Expanded(
+              child: _CoverArea(
+                document: document,
+                isDark: isDark,
               ),
+            ),
 
               // Info section
               Padding(
@@ -238,22 +224,17 @@ class DocumentGridCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
 class _CoverArea extends StatelessWidget {
   final DocumentModel document;
   final bool isDark;
-  final bool isMultiSelectMode;
-  final bool isSelected;
 
   const _CoverArea({
     required this.document,
     required this.isDark,
-    this.isMultiSelectMode = false,
-    this.isSelected = false,
   });
 
   @override
@@ -264,7 +245,6 @@ class _CoverArea extends StatelessWidget {
     final onSurfaceVariant = isDark
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
-    final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
@@ -296,31 +276,6 @@ class _CoverArea extends StatelessWidget {
               ),
             ),
           ),
-
-          // Multi-select checkbox
-          if (isMultiSelectMode)
-            Positioned(
-              top: AppSpacing.xs,
-              right: AppSpacing.xs,
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: isSelected ? primary : surfaceHigh,
-                  shape: BoxShape.circle,
-                  border: isSelected
-                      ? null
-                      : Border.all(color: onSurfaceVariant, width: 1.5),
-                ),
-                child: isSelected
-                    ? const Icon(
-                        Icons.check_rounded,
-                        size: 14,
-                        color: AppColors.white,
-                      )
-                    : null,
-              ),
-            ),
         ],
       ),
     );
