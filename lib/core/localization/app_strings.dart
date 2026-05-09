@@ -240,7 +240,6 @@ class AppStrings {
   static const String libraryEmptyNotStarted = 'library.emptyNotStarted';
   static const String libraryEmptyNotStartedBody =
       'library.emptyNotStartedBody';
-  static const String libraryPageCount = 'library.pageCount';
   static const String libraryLevelBeginner = 'library.levelBeginner';
   static const String libraryLevelIntermediate = 'library.levelIntermediate';
   static const String libraryLevelAdvanced = 'library.levelAdvanced';
@@ -267,14 +266,12 @@ class AppStrings {
   static const String librarySortWordCount = 'library.sortWordCount';
   static const String librarySortAscending = 'library.sortAscending';
   static const String librarySortDescending = 'library.sortDescending';
-  static const String librarySelectedCount = 'library.selectedCount';
   static const String libraryDeleteAction = 'library.deleteAction';
   static const String libraryEditDocument = 'library.editDocument';
   static const String libraryEditDocumentTitle = 'library.editDocumentTitle';
   static const String librarySaveChanges = 'library.saveChanges';
   static const String libraryContentChangedWarning =
       'library.contentChangedWarning';
-  static const String librarySelectMultiple = 'library.selectMultiple';
   static const String libraryProgressPercent = 'library.progressPercent';
   static const String libraryWordCount = 'library.wordCount';
 
