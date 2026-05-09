@@ -40,6 +40,9 @@ class AppStrings {
   static const String generalHoursMinutes = 'general.hoursMinutes';
   static const String generalHoursOnly = 'general.hoursOnly';
   static const String generalAppName = 'general.appName';
+  static const String generalProgressFraction = 'general.progressFraction';
+  static const String generalLabelWithCount = 'general.labelWithCount';
+  static const String generalQuoted = 'general.quoted';
 
   // ── Navigation ────────────────────────────────────────────────────────────────
 
@@ -301,65 +304,26 @@ class AppStrings {
   // ── Vocabulary screen ─────────────────────────────────────────────────────────
 
   static const String vocabTitle = 'vocab.title';
-  static const String vocabPersonalWordBank = 'vocab.personalWordBank';
-  static const String vocabMasterThe = 'vocab.masterThe';
-  static const String vocabUnspoken = 'vocab.unspoken';
-  static const String vocabCollected = 'vocab.collected';
-  static const String vocabAddWordTitle = 'vocab.addWordTitle';
-  static const String vocabAddWordHint = 'vocab.addWordHint';
   static const String vocabFilterAll = 'vocab.filterAll';
-  static const String vocabFilterNew = 'vocab.filterNew';
-  static const String vocabFilterLearning = 'vocab.filterLearning';
-  static const String vocabFilterMastered = 'vocab.filterMastered';
-  static const String vocabEmptyNew = 'vocab.emptyNew';
-  static const String vocabEmptyNewBody = 'vocab.emptyNewBody';
-  static const String vocabEmptyLearning = 'vocab.emptyLearning';
-  static const String vocabEmptyLearningBody = 'vocab.emptyLearningBody';
-  static const String vocabEmptyMastered = 'vocab.emptyMastered';
-  static const String vocabEmptyMasteredBody = 'vocab.emptyMasteredBody';
-  static const String vocabEmptyBookmarked = 'vocab.emptyBookmarked';
-  static const String vocabEmptyBookmarkedBody = 'vocab.emptyBookmarkedBody';
   static const String vocabEmptyAll = 'vocab.emptyAll';
   static const String vocabEmptyAllBody = 'vocab.emptyAllBody';
   static const String vocabWordCount = 'vocab.wordCount';
   static const String vocabSearchHint = 'vocab.searchHint';
   static const String vocabNoSearchResults = 'vocab.noSearchResults';
-  static const String vocabFilterTitle = 'vocab.filterTitle';
-  static const String vocabFilterDifficulty = 'vocab.filterDifficulty';
-  static const String vocabFilterSource = 'vocab.filterSource';
-  static const String vocabFilterDateRange = 'vocab.filterDateRange';
-  static const String vocabFilterToday = 'vocab.filterToday';
-  static const String vocabFilterThisWeek = 'vocab.filterThisWeek';
-  static const String vocabFilterThisMonth = 'vocab.filterThisMonth';
-  static const String vocabFilterAllTime = 'vocab.filterAllTime';
-  static const String vocabFilterClearAll = 'vocab.filterClearAll';
-  static const String vocabFilterActiveCount = 'vocab.filterActiveCount';
-  static const String vocabSortDateAdded = 'vocab.sortDateAdded';
-  static const String vocabSortAlphabetical = 'vocab.sortAlphabetical';
-  static const String vocabSortDifficulty = 'vocab.sortDifficulty';
-  static const String vocabSortAscending = 'vocab.sortAscending';
-  static const String vocabSortDescending = 'vocab.sortDescending';
   static const String vocabFilterHard = 'vocab.filterHard';
   static const String vocabFilterMedium = 'vocab.filterMedium';
   static const String vocabFilterEasy = 'vocab.filterEasy';
 
   // ── Word card ─────────────────────────────────────────────────────────────────
 
-  static const String wordCardLongPressDelete = 'wordCard.longPressDelete';
-  static const String wordCardSwipeToDelete = 'wordCard.swipeToDelete';
-  static const String wordCardRemoveTitle = 'wordCard.removeTitle';
-  static const String wordCardRemoveBody = 'wordCard.removeBody';
   static const String wordCardMarginalia = 'wordCard.marginalia';
   static const String wordCardMasteryMastered = 'wordCard.masteryMastered';
   static const String wordCardMasteryLearning = 'wordCard.masteryLearning';
   static const String wordCardMasteryNew = 'wordCard.masteryNew';
-  static const String wordCardPartOfSpeech = 'wordCard.partOfSpeech';
-  static const String wordCardExample = 'wordCard.example';
   static const String wordCardDifficultyEasy = 'wordCard.difficultyEasy';
   static const String wordCardDifficultyMedium = 'wordCard.difficultyMedium';
   static const String wordCardDifficultyHard = 'wordCard.difficultyHard';
   static const String wordCardDeleted = 'wordCard.wordDeleted';
-  static const String wordCardRestored = 'wordCard.wordRestored';
 
   // ── Dictionary popup ─────────────────────────────────────────────────────────
 
@@ -599,7 +563,6 @@ class AppStrings {
   static const String playerAlignRight = 'player.alignRight';
   static const String playerAlignJustified = 'player.alignJustified';
   static const String playerTextStyle = 'player.textStyle';
-  static const String playerAutoPlay = 'player.autoPlay';
   static const String playerBackground = 'player.background';
   static const String playerBgDefault = 'player.bgDefault';
   static const String playerBgSepia = 'player.bgSepia';
@@ -828,7 +791,7 @@ class AppStrings {
   static const String onboardingCustomizeLater = 'onboarding.customizeLater';
   static const String onboardingFormatPdf = 'onboarding.formatPdf';
   static const String onboardingFormatTxt = 'onboarding.formatTxt';
-  static const String onboardingFormatEpub = 'onboarding.formatEpub';
+  static const String onboardingFormatDocx = 'onboarding.formatDocx';
   static const String onboardingImportHeadline = 'onboarding.importHeadline';
   static const String onboardingImportSubtitle = 'onboarding.importSubtitle';
   static const String onboardingChooseFromFiles = 'onboarding.chooseFromFiles';

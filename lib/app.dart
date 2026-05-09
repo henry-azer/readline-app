@@ -19,6 +19,11 @@ final libraryChangeNotifier = ValueNotifier<int>(0);
 /// updates the streak, or mutates the vocabulary collection.
 final sessionChangeNotifier = ValueNotifier<int>(0);
 
+/// Bumped whenever the saved-vocabulary set is mutated (word saved, removed,
+/// or auto-collected). The vocabulary screen listens to this so words saved
+/// from the player popup show up without a manual pull-to-refresh.
+final vocabChangeNotifier = ValueNotifier<int>(0);
+
 class ReadlineApp extends StatelessWidget {
   const ReadlineApp({super.key});
 

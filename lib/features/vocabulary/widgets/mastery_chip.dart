@@ -7,6 +7,7 @@ import 'package:readline_app/core/theme/app_opacity.dart';
 import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
+import 'package:readline_app/features/vocabulary/widgets/vocab_chip_style.dart';
 
 /// Small colored pill showing the mastery level of a vocabulary word.
 ///
@@ -22,7 +23,7 @@ class MasteryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
-    final resolved = _resolveStyle(masteryLevel, isDark);
+    final style = _resolveStyle(masteryLevel, isDark);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -30,36 +31,29 @@ class MasteryChip extends StatelessWidget {
         vertical: 3,
       ),
       decoration: BoxDecoration(
-        color: resolved.bgColor,
+        color: style.bgColor,
         borderRadius: AppRadius.fullBorder,
-        border: resolved.borderColor != null
-            ? Border.all(color: resolved.borderColor!, width: 1.5)
+        border: style.borderColor != null
+            ? Border.all(color: style.borderColor!, width: 1.5)
             : null,
       ),
       child: Text(
-        resolved.label,
-        style: AppTypography.label.copyWith(
-          color: resolved.textColor,
-          fontSize: 10,
-          letterSpacing: 0.8,
-        ),
+        style.label,
+        style: AppTypography.vocabMasteryChip.copyWith(color: style.textColor),
       ),
     );
   }
 
-  _MasteryStyle _resolveStyle(String level, bool isDark) {
+  VocabChipStyle _resolveStyle(String level, bool isDark) {
     switch (level.toLowerCase()) {
       case 'mastered':
-        // Fully solid — earned through repetition
-        return _MasteryStyle(
+        return VocabChipStyle(
           bgColor: isDark ? AppColors.masteredBg : AppColors.lightSuccess,
           textColor: isDark ? AppColors.masteredText : AppColors.white,
-          borderColor: null,
           label: AppStrings.wordCardMasteryMastered.tr,
         );
       case 'learning':
-        // Semi-filled with border — active progress
-        return _MasteryStyle(
+        return VocabChipStyle(
           bgColor: isDark
               ? AppColors.tertiaryContainer.withValues(alpha: AppOpacity.medium)
               : AppColors.lightLearningBg,
@@ -71,8 +65,7 @@ class MasteryChip extends StatelessWidget {
         );
       case 'new':
       default:
-        // Outlined/hollow — just arrived
-        return _MasteryStyle(
+        return VocabChipStyle(
           bgColor: AppColors.transparent,
           textColor: isDark ? AppColors.primary : AppColors.lightPrimary,
           borderColor: isDark
@@ -82,18 +75,4 @@ class MasteryChip extends StatelessWidget {
         );
     }
   }
-}
-
-class _MasteryStyle {
-  final Color bgColor;
-  final Color textColor;
-  final Color? borderColor;
-  final String label;
-
-  const _MasteryStyle({
-    required this.bgColor,
-    required this.textColor,
-    required this.borderColor,
-    required this.label,
-  });
 }

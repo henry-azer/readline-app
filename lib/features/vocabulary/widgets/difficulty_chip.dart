@@ -6,6 +6,7 @@ import 'package:readline_app/core/theme/app_colors.dart';
 import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
+import 'package:readline_app/features/vocabulary/widgets/vocab_chip_style.dart';
 
 /// Small colored pill showing the difficulty level of a vocabulary word.
 ///
@@ -19,7 +20,7 @@ class DifficultyChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
-    final resolved = _resolveStyle(difficulty, isDark);
+    final style = _resolveStyle(difficulty, isDark);
 
     return GestureDetector(
       onTap: onTap,
@@ -29,32 +30,30 @@ class DifficultyChip extends StatelessWidget {
           vertical: 3,
         ),
         decoration: BoxDecoration(
-          color: resolved.bgColor,
+          color: style.bgColor,
           borderRadius: AppRadius.fullBorder,
         ),
         child: Text(
-          resolved.label,
-          style: AppTypography.label.copyWith(
-            color: resolved.textColor,
-            fontSize: 9,
-            letterSpacing: 0.8,
+          style.label,
+          style: AppTypography.vocabDifficultyChip.copyWith(
+            color: style.textColor,
           ),
         ),
       ),
     );
   }
 
-  _DifficultyStyle _resolveStyle(String level, bool isDark) {
+  VocabChipStyle _resolveStyle(String level, bool isDark) {
     switch (level.toLowerCase()) {
       case 'easy':
-        return _DifficultyStyle(
+        return VocabChipStyle(
           bgColor: (isDark ? AppColors.success : AppColors.lightSuccess)
               .withValues(alpha: 0.15),
           textColor: isDark ? AppColors.success : AppColors.lightSuccess,
           label: AppStrings.wordCardDifficultyEasy.tr,
         );
       case 'hard':
-        return _DifficultyStyle(
+        return VocabChipStyle(
           bgColor: (isDark ? AppColors.error : AppColors.lightError).withValues(
             alpha: 0.15,
           ),
@@ -63,7 +62,7 @@ class DifficultyChip extends StatelessWidget {
         );
       case 'medium':
       default:
-        return _DifficultyStyle(
+        return VocabChipStyle(
           bgColor: (isDark ? AppColors.tertiary : AppColors.lightTertiary)
               .withValues(alpha: 0.15),
           textColor: isDark ? AppColors.tertiary : AppColors.lightTertiary,
@@ -71,16 +70,4 @@ class DifficultyChip extends StatelessWidget {
         );
     }
   }
-}
-
-class _DifficultyStyle {
-  final Color bgColor;
-  final Color textColor;
-  final String label;
-
-  const _DifficultyStyle({
-    required this.bgColor,
-    required this.textColor,
-    required this.label,
-  });
 }

@@ -34,9 +34,6 @@ class ReviewSessionViewModel {
     : _vocabService = vocabService ?? getIt<VocabularyService>();
 
   List<VocabularyWordModel> get words => words$.value;
-  int get currentIndex => currentIndex$.value;
-  bool get isFlipped => isFlipped$.value;
-  bool get isComplete => isComplete$.value;
 
   VocabularyWordModel? get currentWord {
     final list = words$.value;

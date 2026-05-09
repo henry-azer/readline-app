@@ -12,29 +12,44 @@ class VocabNoSearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
     final onSurfaceVariant = isDark
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xxxl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: AppSpacing.xxxl,
+        right: AppSpacing.xxxl,
+        top: AppSpacing.xxxxl,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: AppSpacing.xxxxl),
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: (isDark
+                      ? AppColors.primaryContainer
+                      : AppColors.lightPrimaryContainer)
+                  .withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
               Icons.search_off_rounded,
-              size: 48,
-              color: onSurfaceVariant.withValues(alpha: 0.35),
+              size: 56,
+              color: onSurfaceVariant.withValues(alpha: 0.7),
             ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              AppStrings.vocabNoSearchResults.tr,
-              style: AppTypography.bodyMedium.copyWith(color: onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            AppStrings.vocabNoSearchResults.tr,
+            style: AppTypography.headlineMedium.copyWith(color: onSurface),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

@@ -6,12 +6,10 @@ import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
 
 class VocabularyEmptyState extends StatelessWidget {
-  final String filter;
   final bool isDark;
 
   const VocabularyEmptyState({
     super.key,
-    required this.filter,
     required this.isDark,
   });
 
@@ -22,23 +20,8 @@ class VocabularyEmptyState extends StatelessWidget {
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
 
-    final (headline, body) = switch (filter) {
-      'new' ||
-      'fresh' => (AppStrings.vocabEmptyNew.tr, AppStrings.vocabEmptyNewBody.tr),
-      'learning' => (
-        AppStrings.vocabEmptyLearning.tr,
-        AppStrings.vocabEmptyLearningBody.tr,
-      ),
-      'mastered' => (
-        AppStrings.vocabEmptyMastered.tr,
-        AppStrings.vocabEmptyMasteredBody.tr,
-      ),
-      'bookmarked' => (
-        AppStrings.vocabEmptyBookmarked.tr,
-        AppStrings.vocabEmptyBookmarkedBody.tr,
-      ),
-      _ => (AppStrings.vocabEmptyAll.tr, AppStrings.vocabEmptyAllBody.tr),
-    };
+    final headline = AppStrings.vocabEmptyAll.tr;
+    final body = AppStrings.vocabEmptyAllBody.tr;
 
     return Padding(
       padding: const EdgeInsets.only(

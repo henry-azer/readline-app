@@ -14,13 +14,11 @@ import 'package:readline_app/widgets/tap_scale.dart';
 /// Only rendered when [dueCount] > 0.
 class ReviewBloomCard extends StatelessWidget {
   final int dueCount;
-  final String? sourceDocTitle;
   final VoidCallback onStartReview;
 
   const ReviewBloomCard({
     super.key,
     required this.dueCount,
-    this.sourceDocTitle,
     required this.onStartReview,
   });
 
@@ -112,16 +110,14 @@ class ReviewBloomCard extends StatelessWidget {
               children: [
                 Text(
                   AppStrings.bloomStart.tr,
-                  style: AppTypography.button.copyWith(
+                  style: AppTypography.vocabBloomCta.copyWith(
                     color: AppColors.white,
-                    fontSize: 11,
                   ),
                 ),
                 Text(
                   AppStrings.bloomSession.tr,
-                  style: AppTypography.button.copyWith(
+                  style: AppTypography.vocabBloomCta.copyWith(
                     color: AppColors.white,
-                    fontSize: 11,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.micro),
