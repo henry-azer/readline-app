@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readline_app/core/theme/app_gradients.dart';
 
 class SplashBookMark extends StatelessWidget {
@@ -33,7 +34,13 @@ class SplashBookMark extends StatelessWidget {
             shaderCallback: (bounds) =>
                 AppGradients.primary(isDark).createShader(bounds),
             blendMode: BlendMode.srcIn,
-            child: const Icon(Icons.auto_stories_rounded, size: 80),
+            // Custom asset (rather than `Icons.auto_stories_rounded`) so the
+            // left page renders solid — matching the iOS LaunchSplash PNG.
+            child: SvgPicture.asset(
+              'assets/branding/book_mark.svg',
+              width: 80,
+              height: 80,
+            ),
           ),
         ),
       ),

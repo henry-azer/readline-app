@@ -42,14 +42,19 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _initializeAnimations() {
+    // Fade + scale start fully forward so the first Flutter frame matches
+    // the native LaunchScreen exactly — no fade-in flicker on takeover.
+    // Only the wave continues to animate.
     _fadeController = AnimationController(
       duration: AppDurations.splash,
       vsync: this,
+      value: 1.0,
     );
 
     _scaleController = AnimationController(
       duration: AppDurations.stagger,
       vsync: this,
+      value: 1.0,
     );
 
     _waveController = AnimationController(
@@ -57,14 +62,8 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
-
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
-    );
+    _fadeAnimation = const AlwaysStoppedAnimation<double>(1.0);
+    _scaleAnimation = const AlwaysStoppedAnimation<double>(1.0);
 
     _waveAnimation = Tween<double>(begin: 0.0, end: 5.0).animate(
       CurvedAnimation(parent: _waveController, curve: Curves.easeInOut),
@@ -72,8 +71,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startAnimations() {
-    _fadeController.forward();
-    _scaleController.forward();
     _waveController.repeat(reverse: true);
   }
 

@@ -14,12 +14,6 @@ class SplashViewModel {
     : _prefsRepo = prefsRepo ?? getIt<PreferencesRepository>();
 
   Future<void> init() async {
-    await Future.delayed(AppDurations.stagger);
-    await Future.delayed(AppDurations.stagger);
-    await Future.delayed(AppDurations.stagger);
-    await Future.delayed(AppDurations.stagger);
-    await Future.delayed(AppDurations.stagger);
-
     final prefs = await _prefsRepo.get();
     final onboardingDone = prefs.onboardingCompleted;
 
@@ -32,6 +26,8 @@ class SplashViewModel {
       targetRoute$.add(route);
       return;
     }
+
+    await Future.delayed(AppDurations.stagger);
 
     // Android: allow animations to play
     targetRoute$.add(route);

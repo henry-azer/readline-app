@@ -20,7 +20,7 @@ class SplashBrandTitle extends StatelessWidget {
       child: Text(
         // Same wordmark used by every AppBar BrandMark — keeps the splash
         // hero visually consistent with the rest of the app instead of an
-        // upper-case "READ-IT" variant.
+        // upper-case "READLINE" variant.
         AppStrings.generalAppName.tr,
         style: AppTypography.splashBrand.copyWith(color: color),
       ),

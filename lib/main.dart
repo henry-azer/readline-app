@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'app.dart';
 import 'core/di/injection.dart';
@@ -28,6 +29,19 @@ void main() async {
     prefsRepo: getIt<PreferencesRepository>(),
   );
   await languageProvider.initialize();
+
+  // Preload splash typefaces so the first frame already has Newsreader/Inter
+  // resolved — otherwise google_fonts fetches asynchronously and the splash
+  // text visibly swaps from the platform fallback to the brand font.
+  try {
+    await GoogleFonts.pendingFonts([
+      GoogleFonts.newsreader(),
+      GoogleFonts.inter(),
+    ]).timeout(const Duration(seconds: 2));
+  } catch (_) {
+    // Offline / slow network on first launch — proceed; subsequent launches
+    // hit the local cache and the flash disappears.
+  }
 
   runApp(const ReadlineApp());
 }
