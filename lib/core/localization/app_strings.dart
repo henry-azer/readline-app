@@ -205,6 +205,13 @@ class AppStrings {
   static const String homeImportSheetSavedToLibrary =
       'home.importSheetSavedToLibrary';
   static const String homeImportSheetUntitled = 'home.importSheetUntitled';
+  static const String homeImportSheetPdfEncrypted =
+      'home.importSheetPdfEncrypted';
+  static const String homeImportSheetPdfImageOnly =
+      'home.importSheetPdfImageOnly';
+  static const String homeImportSheetPdfCorrupt = 'home.importSheetPdfCorrupt';
+  static const String homeImportSheetTxtUnreadable =
+      'home.importSheetTxtUnreadable';
 
   // ── Document ──────────────────────────────────────────────────────────────────
 

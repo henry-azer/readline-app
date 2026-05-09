@@ -117,7 +117,24 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
         if (fromFile != null) _titleController.text = fromFile;
       }
     });
+
+    _viewModel.processingError$.listen((kind) {
+      if (!mounted) return;
+      AppSnackbar.error(context, _processingErrorMessage(kind));
+    });
   }
+
+  String _processingErrorMessage(ImportProcessingError kind) => switch (kind) {
+    ImportProcessingError.pdfEncrypted =>
+      AppStrings.homeImportSheetPdfEncrypted.tr,
+    ImportProcessingError.pdfImageOnly =>
+      AppStrings.homeImportSheetPdfImageOnly.tr,
+    ImportProcessingError.pdfCorrupt =>
+      AppStrings.homeImportSheetPdfCorrupt.tr,
+    ImportProcessingError.txtUnreadable =>
+      AppStrings.homeImportSheetTxtUnreadable.tr,
+    ImportProcessingError.unknown => AppStrings.errorSomethingWrong.tr,
+  };
 
   @override
   void dispose() {
@@ -143,11 +160,7 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
       title: _titleController.text,
       text: _textController.text,
     );
-    if (!mounted) return;
-    if (doc == null) {
-      AppSnackbar.error(context, AppStrings.errorSomethingWrong.tr);
-      return;
-    }
+    if (!mounted || doc == null) return;
     widget.onContentAdded?.call();
     Navigator.of(context).pop();
     AppSnackbar.success(context, AppStrings.homeImportSheetSavedToLibrary.tr);
@@ -158,11 +171,7 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
       title: _titleController.text,
       text: _textController.text,
     );
-    if (!mounted) return;
-    if (doc == null) {
-      AppSnackbar.error(context, AppStrings.errorSomethingWrong.tr);
-      return;
-    }
+    if (!mounted || doc == null) return;
     widget.onContentAdded?.call();
     Navigator.of(context).pop();
   }
