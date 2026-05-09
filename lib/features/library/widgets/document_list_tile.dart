@@ -22,6 +22,10 @@ class DocumentListTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final String? searchQuery;
 
+  /// Words-per-minute used to estimate "min left" / "min total" — supplied by
+  /// the library viewmodel from cached user prefs.
+  final int wpm;
+
   const DocumentListTile({
     super.key,
     required this.document,
@@ -33,6 +37,7 @@ class DocumentListTile extends StatelessWidget {
     this.onToggleSelect,
     this.onLongPress,
     this.searchQuery,
+    this.wpm = 200,
   });
 
   @override
@@ -49,26 +54,24 @@ class DocumentListTile extends StatelessWidget {
     final outlineVariant = isDark
         ? AppColors.outlineVariant
         : AppColors.lightOutlineVariant;
-    final surfaceHigh = isDark
-        ? AppColors.surfaceContainerHigh
-        : AppColors.lightSurfaceContainerHigh;
+    final successColor = isDark ? AppColors.success : AppColors.lightSuccess;
 
     final progress = document.totalWords > 0
         ? (document.wordsRead / document.totalWords).clamp(0.0, 1.0)
         : 0.0;
     final isCompleted = document.isCompleted;
     final isUnread = document.isUnread;
-    final successColor = isDark ? AppColors.success : AppColors.lightSuccess;
     final progressColor = isCompleted ? successColor : primary;
     final progressPercent = (progress * 100).round();
     final lastReadLabel = _formatLastRead(document.lastReadAt);
+    final minutesLabel = _estimatedMinutes();
 
     final tileContent = TapScale(
       onTap: isMultiSelectMode ? onToggleSelect : onTap,
       child: GestureDetector(
         onLongPress: onLongPress,
         child: Container(
-          padding: const EdgeInsets.all(AppSpacing.sm),
+          padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: AppRadius.lgBorder,
@@ -85,61 +88,54 @@ class DocumentListTile extends StatelessWidget {
             ],
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Multi-select checkbox or thumbnail
+              // Leading element: multi-select check or chip-style icon.
               if (isMultiSelectMode)
-                Padding(
-                  padding: const EdgeInsets.only(right: AppSpacing.sm),
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: isSelected ? primary : AppColors.transparent,
-                      shape: BoxShape.circle,
-                      border: isSelected
-                          ? null
-                          : Border.all(color: onSurfaceVariant, width: 1.5),
-                    ),
-                    child: isSelected
-                        ? const Icon(
-                            Icons.check_rounded,
-                            size: 14,
-                            color: AppColors.white,
-                          )
-                        : null,
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: isSelected ? primary : AppColors.transparent,
+                    shape: BoxShape.circle,
+                    border: isSelected
+                        ? null
+                        : Border.all(color: onSurfaceVariant, width: 1.5),
                   ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: AppColors.white,
+                        )
+                      : null,
                 )
               else
-                // Thumbnail / cover
-                ClipRRect(
-                  borderRadius: AppRadius.mdBorder,
-                  child: Container(
-                    width: 56,
-                    height: 72,
-                    color: surfaceHigh,
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Icon(
-                            sourceTypeIcon(document.sourceType),
-                            size: 28,
-                            color: onSurfaceVariant.withValues(alpha: 0.5),
-                          ),
-                        ),
-                      ],
-                    ),
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: primary.withValues(alpha: 0.08),
+                    borderRadius: AppRadius.smdBorder,
+                  ),
+                  child: Icon(
+                    sourceTypeIcon(document.sourceType),
+                    size: 22,
+                    color: primary,
                   ),
                 ),
 
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.md),
 
-              // Document info
+              // Body: title row, progress, meta row.
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Title row with status
+                    // Title + status badge
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: HighlightedText(
@@ -162,40 +158,10 @@ class DocumentListTile extends StatelessWidget {
                       ],
                     ),
 
-                    // Description
-                    if (document.description != null &&
-                        document.description!.isNotEmpty) ...[
-                      const SizedBox(height: AppSpacing.micro),
-                      HighlightedText(
-                        text: document.description!,
-                        query: searchQuery,
-                        style: AppTypography.labelSmall.copyWith(
-                          color: onSurfaceVariant,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        highlightColor: primary,
-                        maxLines: 1,
-                      ),
-                    ],
-
-                    const SizedBox(height: AppSpacing.xxs),
-
-                    // Page count
-                    Text(
-                      AppStrings.libraryPageCount.trParams({
-                        'current': '${document.currentPage}',
-                        'total': '${document.totalPages}',
-                      }),
-                      style: AppTypography.labelTiny.copyWith(
-                        color: onSurfaceVariant,
-                      ),
-                    ),
-
                     const SizedBox(height: AppSpacing.xs),
 
-                    // Progress bar + percentage label
+                    // Progress bar + percentage / completion check
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Stack(
@@ -241,25 +207,48 @@ class DocumentListTile extends StatelessWidget {
                       ],
                     ),
 
-                    const SizedBox(height: AppSpacing.xxs),
+                    const SizedBox(height: AppSpacing.xs),
 
-                    // Last read + complexity
+                    // Meta row: estimated minutes + last read + complexity
                     Row(
                       children: [
-                        Icon(
-                          sourceTypeIcon(document.sourceType),
-                          size: 10,
-                          color: onSurfaceVariant,
-                        ),
-                        if (lastReadLabel != null) ...[
-                          const SizedBox(width: AppSpacing.xxs),
-                          Text(
-                            lastReadLabel,
-                            style: AppTypography.labelTiny.copyWith(
-                              color: onSurfaceVariant,
+                        if (minutesLabel != null) ...[
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 12,
+                            color: onSurfaceVariant,
+                          ),
+                          const SizedBox(width: AppSpacing.micro),
+                          Flexible(
+                            child: Text(
+                              minutesLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.labelTiny.copyWith(
+                                color: onSurfaceVariant,
+                              ),
                             ),
                           ),
+                          if (lastReadLabel != null) ...[
+                            Text(
+                              ' · ',
+                              style: AppTypography.labelTiny.copyWith(
+                                color: onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ],
+                        if (lastReadLabel != null)
+                          Flexible(
+                            child: Text(
+                              lastReadLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.labelTiny.copyWith(
+                                color: onSurfaceVariant,
+                              ),
+                            ),
+                          ),
                         const Spacer(),
                         _ComplexityBadge(level: document.complexityLevel),
                       ],
@@ -268,21 +257,46 @@ class DocumentListTile extends StatelessWidget {
                 ),
               ),
 
-              // Actions (only when not in multi-select mode)
-              if (!isMultiSelectMode && onDelete != null)
-                IconButton(
-                  onPressed: onDelete,
-                  icon: Icon(
-                    Icons.delete_outline_rounded,
-                    size: 20,
-                    color: onSurfaceVariant.withValues(alpha: 0.6),
-                  ),
-                  padding: const EdgeInsets.all(AppSpacing.xs),
-                  constraints: const BoxConstraints(
-                    minWidth: AppSpacing.buttonHeight,
-                    minHeight: AppSpacing.buttonHeight,
-                  ),
+              // Inline edit + delete (hidden in multi-select mode).
+              if (!isMultiSelectMode) ...[
+                const SizedBox(width: AppSpacing.xxs),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (onEdit != null)
+                      IconButton(
+                        onPressed: onEdit,
+                        icon: Icon(
+                          Icons.edit_outlined,
+                          size: 18,
+                          color: onSurfaceVariant.withValues(alpha: 0.6),
+                        ),
+                        padding: const EdgeInsets.all(AppSpacing.xs),
+                        constraints: const BoxConstraints(
+                          minWidth: AppSpacing.buttonHeight,
+                          minHeight: AppSpacing.buttonHeight,
+                        ),
+                      ),
+                    if (onDelete != null)
+                      IconButton(
+                        onPressed: onDelete,
+                        icon: Icon(
+                          Icons.delete_outline_rounded,
+                          size: 18,
+                          color: (isDark
+                                  ? AppColors.error
+                                  : AppColors.lightError)
+                              .withValues(alpha: 0.7),
+                        ),
+                        padding: const EdgeInsets.all(AppSpacing.xs),
+                        constraints: const BoxConstraints(
+                          minWidth: AppSpacing.buttonHeight,
+                          minHeight: AppSpacing.buttonHeight,
+                        ),
+                      ),
+                  ],
                 ),
+              ],
             ],
           ),
         ),
@@ -321,6 +335,20 @@ class DocumentListTile extends StatelessWidget {
     return tileContent;
   }
 
+  String? _estimatedMinutes() {
+    if (wpm <= 0 || document.totalWords <= 0) return null;
+    if (document.isInProgress) {
+      final wordsLeft = document.totalWords - document.wordsRead;
+      if (wordsLeft <= 0) return null;
+      final mins = (wordsLeft / wpm).ceil();
+      if (mins <= 0) return null;
+      return AppStrings.homeEstimatedLeft.trParams({'n': '$mins'});
+    }
+    final mins = (document.totalWords / wpm).ceil();
+    if (mins <= 0) return null;
+    return AppStrings.homeEstimatedTotal.trParams({'n': '$mins'});
+  }
+
   String? _formatLastRead(DateTime? lastReadAt) {
     if (lastReadAt == null) return null;
     final diff = DateTime.now().difference(lastReadAt);
@@ -356,7 +384,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       'reading' => (
         AppStrings.libraryStatusInProgress.tr,
-        AppColors.complexityIntermediate,
+        isDark ? AppColors.primary : AppColors.lightPrimary,
         null,
       ),
       _ => (
@@ -367,11 +395,10 @@ class _StatusBadge extends StatelessWidget {
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: color.withValues(alpha: 0.12),
         borderRadius: AppRadius.fullBorder,
-        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -401,9 +428,8 @@ class _ComplexityBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: color.withValues(alpha: 0.12),
         borderRadius: AppRadius.fullBorder,
-        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
         level.toUpperCase(),

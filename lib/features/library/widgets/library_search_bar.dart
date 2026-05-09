@@ -12,6 +12,8 @@ class LibrarySearchBar extends StatefulWidget {
   final VoidCallback onClear;
   final String initialQuery;
   final String? hintText;
+  final FocusNode? focusNode;
+  final VoidCallback? onTap;
 
   const LibrarySearchBar({
     super.key,
@@ -19,6 +21,8 @@ class LibrarySearchBar extends StatefulWidget {
     required this.onClear,
     this.initialQuery = '',
     this.hintText,
+    this.focusNode,
+    this.onTap,
   });
 
   @override
@@ -27,18 +31,40 @@ class LibrarySearchBar extends StatefulWidget {
 
 class _LibrarySearchBarState extends State<LibrarySearchBar> {
   late final TextEditingController _controller;
+  // Internal fallback when the parent doesn't pass a FocusNode — keeps the
+  // hasFocus state observable here so the X icon can react to focus changes.
+  FocusNode? _internalFocusNode;
+
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialQuery);
     _controller.addListener(() => setState(() {}));
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant LibrarySearchBar old) {
+    super.didUpdateWidget(old);
+    if (old.focusNode != widget.focusNode) {
+      old.focusNode?.removeListener(_onFocusChanged);
+      _focusNode.addListener(_onFocusChanged);
+    }
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
+    _internalFocusNode?.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _onFocusChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -53,22 +79,28 @@ class _LibrarySearchBarState extends State<LibrarySearchBar> {
     final textColor = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
     final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
 
+    final showClear = _focusNode.hasFocus || _controller.text.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: TextField(
         controller: _controller,
+        focusNode: _focusNode,
+        onTap: widget.onTap,
         onChanged: widget.onChanged,
         style: AppTypography.bodyMedium.copyWith(color: textColor),
         decoration: InputDecoration(
           hintText: widget.hintText ?? AppStrings.librarySearchHint.tr,
           hintStyle: AppTypography.bodyMedium.copyWith(color: hintColor),
           prefixIcon: Icon(Icons.search_rounded, size: 20, color: hintColor),
-          suffixIcon: _controller.text.isNotEmpty
+          suffixIcon: showClear
               ? IconButton(
                   icon: Icon(Icons.close_rounded, size: 18, color: hintColor),
                   onPressed: () {
-                    _controller.clear();
-                    widget.onClear();
+                    if (_controller.text.isNotEmpty) {
+                      _controller.clear();
+                      widget.onClear();
+                    }
+                    _focusNode.unfocus();
                   },
                 )
               : null,

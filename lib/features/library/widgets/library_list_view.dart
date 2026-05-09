@@ -11,6 +11,7 @@ class LibraryListView extends StatelessWidget {
   final Set<String> selectedIds;
   final bool isMultiSelect;
   final Future<void> Function(DocumentModel) onDeleteDocument;
+  final ValueChanged<DocumentModel> onEditDocument;
   final ValueChanged<DocumentModel> onLongPress;
   final String searchQuery;
 
@@ -21,40 +22,40 @@ class LibraryListView extends StatelessWidget {
     required this.selectedIds,
     required this.isMultiSelect,
     required this.onDeleteDocument,
+    required this.onEditDocument,
     required this.onLongPress,
     this.searchQuery = '',
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.xl,
         0,
         AppSpacing.xl,
-        AppSpacing.bottomNavClearance,
+        AppSpacing.bottomNavClearance + AppSpacing.xxl,
       ),
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: docs.length,
-        itemBuilder: (context, index) {
-          final doc = docs[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: DocumentListTile(
-              document: doc,
-              isSelected: selectedIds.contains(doc.id),
-              isMultiSelectMode: isMultiSelect,
-              searchQuery: searchQuery,
-              onTap: () => openDocumentForReading(context, doc),
-              onDelete: () => onDeleteDocument(doc),
-              onLongPress: () => onLongPress(doc),
-              onToggleSelect: () => viewModel.toggleSelection(doc.id),
-            ),
-          );
-        },
-      ),
+      itemCount: docs.length,
+      itemBuilder: (context, index) {
+        final doc = docs[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: DocumentListTile(
+            document: doc,
+            isSelected: selectedIds.contains(doc.id),
+            isMultiSelectMode: isMultiSelect,
+            searchQuery: searchQuery,
+            wpm: viewModel.currentWpm,
+            onTap: () => openDocumentForReading(context, doc),
+            onDelete: () => onDeleteDocument(doc),
+            onEdit: () => onEditDocument(doc),
+            onLongPress: () => onLongPress(doc),
+            onToggleSelect: () => viewModel.toggleSelection(doc.id),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:readline_app/app.dart' show libraryChangeNotifier;
+import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/extensions/context_extensions.dart';
 import 'package:readline_app/core/localization/app_localization.dart';
 import 'package:readline_app/core/localization/app_strings.dart';
+import 'package:readline_app/core/services/haptic_service.dart';
 import 'package:readline_app/core/theme/app_colors.dart';
-import 'package:readline_app/core/theme/app_durations.dart';
-import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
-import 'package:go_router/go_router.dart';
-import 'package:readline_app/core/router/app_router.dart';
+import 'package:readline_app/widgets/app_snackbar.dart';
 import 'package:readline_app/widgets/brand_mark.dart';
 import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/home/widgets/import_content_sheet.dart';
 import 'package:readline_app/features/library/viewmodels/library_viewmodel.dart';
 import 'package:readline_app/features/library/widgets/library_body.dart';
-import 'package:readline_app/features/library/widgets/library_filter_sheet.dart';
 import 'package:readline_app/features/library/widgets/multi_select_toolbar.dart';
 import 'package:readline_app/features/library/widgets/new_reading_fab.dart';
 
@@ -28,6 +26,7 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   late final LibraryViewModel _viewModel;
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -39,9 +38,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   void _onLibraryChanged() => _viewModel.refresh();
 
+  void _onSearchFieldTap() => getIt<HapticService>().light();
+
   @override
   void dispose() {
     libraryChangeNotifier.removeListener(_onLibraryChanged);
+    _searchFocusNode.dispose();
     _viewModel.dispose();
     super.dispose();
   }
@@ -66,23 +68,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
       builder: (ctx) => ImportContentSheet(
         onContentAdded: () => _viewModel.refresh(),
         existingDocument: document,
-      ),
-    );
-  }
-
-  void _openFilterSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.transparent,
-      builder: (ctx) => LibraryFilterSheet(
-        selectedStatuses: _viewModel.filterStatuses$.value,
-        selectedSourceTypes: _viewModel.filterSourceTypes$.value,
-        selectedDateRange: _viewModel.filterDateRange$.value,
-        onStatusChanged: _viewModel.setFilterStatuses,
-        onSourceTypeChanged: _viewModel.setFilterSourceTypes,
-        onDateRangeChanged: _viewModel.setFilterDateRange,
-        onClearAll: _viewModel.clearAllAdvancedFilters,
       ),
     );
   }
@@ -141,121 +126,28 @@ class _LibraryScreenState extends State<LibraryScreen> {
     libraryChangeNotifier.value++;
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppStrings.libraryRemoveBody.trParams({'title': document.title}),
-        ),
-        duration: AppDurations.snackbarLong,
-        action: SnackBarAction(
-          label: AppStrings.undo.tr,
-          onPressed: () {
-            _viewModel.undoDelete(document);
-            libraryChangeNotifier.value++;
-          },
-        ),
-      ),
+    AppSnackbar.info(
+      context,
+      AppStrings.libraryRemoveBody.trParams({'title': document.title}),
+      actionLabel: AppStrings.undo.tr,
+      onAction: () {
+        _viewModel.undoDelete(document);
+        libraryChangeNotifier.value++;
+      },
     );
   }
 
-  void _showDocumentContextMenu(DocumentModel doc) {
-    final isDark = context.isDark;
-    final textColor = isDark ? AppColors.onSurface : AppColors.lightOnSurface;
-    final subtextColor = isDark
-        ? AppColors.onSurfaceVariant
-        : AppColors.lightOnSurfaceVariant;
-    final errorColor = isDark ? AppColors.error : AppColors.lightError;
-    final bgColor = isDark ? AppColors.surface : AppColors.lightSurface;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: bgColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-      ),
-      builder: (ctx) => SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.xl,
-            AppSpacing.md,
-            AppSpacing.xl,
-            AppSpacing.xl,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Handle
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: subtextColor.withValues(alpha: 0.3),
-                    borderRadius: AppRadius.fullBorder,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-
-              // Document title
-              Text(
-                doc.title,
-                style: AppTypography.titleMedium.copyWith(color: textColor),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-
-              // Edit
-              _ContextMenuItem(
-                icon: Icons.edit_rounded,
-                label: AppStrings.libraryEditDocument.tr,
-                color: textColor,
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  _openEditSheet(doc);
-                },
-              ),
-
-              // Select multiple
-              _ContextMenuItem(
-                icon: Icons.checklist_rounded,
-                label: AppStrings.librarySelectMultiple.tr,
-                color: textColor,
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  _viewModel.activateMultiSelectWith(doc.id);
-                },
-              ),
-
-              // Delete
-              _ContextMenuItem(
-                icon: Icons.delete_outline_rounded,
-                label: AppStrings.libraryDeleteAction.tr,
-                color: errorColor,
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  _confirmDelete(doc);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Long-press now activates multi-select directly — the previous bottom-sheet
+  // popup is gone; per-doc edit / delete actions live as inline icon buttons
+  // on each card / tile.
+  void _activateMultiSelect(DocumentModel doc) =>
+      _viewModel.activateMultiSelectWith(doc.id);
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
     final bgColor = isDark ? AppColors.surface : AppColors.lightSurface;
-    final onSurfaceVariant = isDark
-        ? AppColors.onSurfaceVariant
-        : AppColors.lightOnSurfaceVariant;
     final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
-    final onPrimary = isDark ? AppColors.onPrimary : AppColors.lightOnPrimary;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -266,30 +158,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
         titleSpacing: AppSpacing.xl,
         title: const BrandMark(),
         centerTitle: false,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.auto_stories_rounded, color: onSurfaceVariant),
-            onPressed: () => context.go(AppRoutes.vocabulary),
-          ),
-          StreamBuilder<int>(
-            stream: _viewModel.activeFilterCount$,
-            initialData: _viewModel.activeFilterCount,
-            builder: (context, snap) {
-              final activeCount = snap.data ?? 0;
-              return IconButton(
-                icon: Badge(
-                  isLabelVisible: activeCount > 0,
-                  backgroundColor: primary,
-                  textColor: onPrimary,
-                  textStyle: AppTypography.labelMicro,
-                  label: Text('$activeCount'),
-                  child: Icon(Icons.tune_rounded, color: onSurfaceVariant),
-                ),
-                onPressed: _openFilterSheet,
-              );
-            },
-          ),
-        ],
       ),
       floatingActionButton: StreamBuilder<List<DocumentModel>>(
         stream: _viewModel.allDocuments$,
@@ -305,100 +173,65 @@ class _LibraryScreenState extends State<LibraryScreen> {
           );
         },
       ),
-      body: StreamBuilder<bool>(
-        stream: _viewModel.isLoading$,
-        builder: (context, loadingSnap) {
-          final isLoading = loadingSnap.data ?? true;
+      // Tap anywhere outside the search field to dismiss the keyboard —
+      // mirrors the vocabulary screen behavior.
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          if (_searchFocusNode.hasFocus) _searchFocusNode.unfocus();
+        },
+        child: StreamBuilder<bool>(
+          stream: _viewModel.isLoading$,
+          builder: (context, loadingSnap) {
+            final isLoading = loadingSnap.data ?? true;
 
-          if (isLoading) {
-            return Center(child: CircularProgressIndicator(color: primary));
-          }
+            if (isLoading) {
+              return Center(child: CircularProgressIndicator(color: primary));
+            }
 
-          return Stack(
-            children: [
-              RefreshIndicator(
-                color: primary,
-                onRefresh: _viewModel.refresh,
-                child: LibraryBody(
+            return Stack(
+              children: [
+                LibraryBody(
                   viewModel: _viewModel,
                   onDeleteDocument: _confirmDelete,
                   onEditDocument: _openEditSheet,
-                  onLongPress: _showDocumentContextMenu,
+                  onLongPress: _activateMultiSelect,
+                  searchFocusNode: _searchFocusNode,
+                  onSearchFieldTap: _onSearchFieldTap,
                 ),
-              ),
 
-              // Multi-select toolbar overlay
-              StreamBuilder<bool>(
-                stream: _viewModel.isMultiSelectMode$,
-                builder: (context, multiSnap) {
-                  if (!(multiSnap.data ?? false)) {
-                    return const SizedBox.shrink();
-                  }
-                  return Positioned(
-                    left: AppSpacing.xl,
-                    right: AppSpacing.xl,
-                    bottom: AppSpacing.xl,
-                    child: StreamBuilder<Set<String>>(
-                      stream: _viewModel.selectedIds$,
-                      builder: (context, selSnap) {
-                        return MultiSelectToolbar(
-                          selectedCount: (selSnap.data ?? {}).length,
-                          onCancel: _viewModel.exitMultiSelect,
-                          onDelete: () async {
-                            await _viewModel.deleteSelectedDocuments();
-                          },
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-// ── Context menu item ───────────────────────────────────────────────────────
-
-class _ContextMenuItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _ContextMenuItem({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: AppRadius.mdBorder,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: AppSpacing.sm,
-          horizontal: AppSpacing.md,
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: color),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Text(
-                label,
-                style: AppTypography.bodyLarge.copyWith(color: color),
-              ),
-            ),
-          ],
+                // Multi-select toolbar overlay
+                StreamBuilder<bool>(
+                  stream: _viewModel.isMultiSelectMode$,
+                  builder: (context, multiSnap) {
+                    if (!(multiSnap.data ?? false)) {
+                      return const SizedBox.shrink();
+                    }
+                    return Positioned(
+                      left: AppSpacing.xl,
+                      right: AppSpacing.xl,
+                      bottom: AppSpacing.xl,
+                      child: StreamBuilder<Set<String>>(
+                        stream: _viewModel.selectedIds$,
+                        builder: (context, selSnap) {
+                          return MultiSelectToolbar(
+                            selectedCount: (selSnap.data ?? {}).length,
+                            onCancel: _viewModel.exitMultiSelect,
+                            onDelete: () async {
+                              await _viewModel.deleteSelectedDocuments();
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
+

@@ -105,6 +105,11 @@ class LibraryViewModel {
        _sessionRepo = sessionRepo ?? getIt<SessionRepository>(),
        _vocabRepo = vocabRepo ?? getIt<VocabularyRepository>();
 
+  /// Cached preferred reading speed — used by tiles to estimate minutes left
+  /// vs. minutes total. Resolved from user prefs in [init]; falls back to the
+  /// model default (200 WPM) until prefs load.
+  int currentWpm = 200;
+
   String get currentFilter => activeFilter$.value;
   ViewMode get currentViewMode => viewMode$.value;
   int get documentCount => allDocuments$.value.length;
@@ -132,6 +137,7 @@ class LibraryViewModel {
     final prefs = await _prefsRepo.get();
     sortField$.add(prefs.librarySortField);
     sortAscending$.add(prefs.librarySortAscending);
+    currentWpm = prefs.readingSpeedWpm;
     await refresh();
   }
 
@@ -362,14 +368,12 @@ class LibraryViewModel {
       }
     }
 
-    // Search query
+    // Search query — match against the document title only.
     final query = searchQuery$.value.toLowerCase().trim();
     if (query.isNotEmpty) {
-      filtered = filtered.where((d) {
-        return d.title.toLowerCase().contains(query) ||
-            (d.description?.toLowerCase().contains(query) ?? false) ||
-            d.extractedText.toLowerCase().contains(query);
-      }).toList();
+      filtered = filtered
+          .where((d) => d.title.toLowerCase().contains(query))
+          .toList();
     }
 
     // Sort

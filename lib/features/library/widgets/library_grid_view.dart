@@ -11,6 +11,7 @@ class LibraryGridView extends StatelessWidget {
   final Set<String> selectedIds;
   final bool isMultiSelect;
   final Future<void> Function(DocumentModel) onDeleteDocument;
+  final ValueChanged<DocumentModel> onEditDocument;
   final ValueChanged<DocumentModel> onLongPress;
   final String searchQuery;
 
@@ -21,43 +22,41 @@ class LibraryGridView extends StatelessWidget {
     required this.selectedIds,
     required this.isMultiSelect,
     required this.onDeleteDocument,
+    required this.onEditDocument,
     required this.onLongPress,
     this.searchQuery = '',
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return GridView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.xl,
         0,
         AppSpacing.xl,
-        AppSpacing.bottomNavClearance,
+        AppSpacing.bottomNavClearance + AppSpacing.xxl,
       ),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: AppSpacing.md,
-          mainAxisSpacing: AppSpacing.md,
-          childAspectRatio: 0.58,
-        ),
-        itemCount: docs.length,
-        itemBuilder: (context, index) {
-          final doc = docs[index];
-          return DocumentGridCard(
-            document: doc,
-            isSelected: selectedIds.contains(doc.id),
-            isMultiSelectMode: isMultiSelect,
-            searchQuery: searchQuery,
-            onTap: () => openDocumentForReading(context, doc),
-            onDelete: () => onDeleteDocument(doc),
-            onLongPress: () => onLongPress(doc),
-            onToggleSelect: () => viewModel.toggleSelection(doc.id),
-          );
-        },
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppSpacing.md,
+        mainAxisSpacing: AppSpacing.md,
+        childAspectRatio: 0.58,
       ),
+      itemCount: docs.length,
+      itemBuilder: (context, index) {
+        final doc = docs[index];
+        return DocumentGridCard(
+          document: doc,
+          isSelected: selectedIds.contains(doc.id),
+          isMultiSelectMode: isMultiSelect,
+          searchQuery: searchQuery,
+          onTap: () => openDocumentForReading(context, doc),
+          onDelete: () => onDeleteDocument(doc),
+          onLongPress: () => onLongPress(doc),
+          onToggleSelect: () => viewModel.toggleSelection(doc.id),
+        );
+      },
     );
   }
 }

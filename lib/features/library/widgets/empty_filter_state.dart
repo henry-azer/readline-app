@@ -45,37 +45,52 @@ class EmptyFilterState extends StatelessWidget {
             ),
           };
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xxxl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: AppSpacing.xxxl,
+        right: AppSpacing.xxxl,
+        top: AppSpacing.xxxxl,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: AppSpacing.xxxxl),
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color:
+                  (isDark
+                          ? AppColors.primaryContainer
+                          : AppColors.lightPrimaryContainer)
+                      .withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
               searchQuery.isNotEmpty
                   ? Icons.search_off_rounded
                   : Icons.library_books_rounded,
-              size: 48,
-              color: onSurfaceVariant.withValues(alpha: 0.5),
+              size: 56,
+              color: onSurfaceVariant.withValues(alpha: 0.7),
             ),
-            const SizedBox(height: AppSpacing.lg),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            headline,
+            style: AppTypography.headlineMedium.copyWith(color: onSurface),
+            textAlign: TextAlign.center,
+          ),
+          if (subtext.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
             Text(
-              headline,
-              style: AppTypography.headlineMedium.copyWith(color: onSurface),
+              subtext,
+              style: AppTypography.bodyMedium.copyWith(
+                color: onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
-            if (subtext.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                subtext,
-                style: AppTypography.bodyMedium.copyWith(
-                  color: onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
           ],
-        ),
+        ],
       ),
     );
   }
