@@ -8,6 +8,7 @@ import 'package:readline_app/core/theme/app_colors.dart';
 import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
+import 'package:readline_app/core/utils/date_formatter.dart';
 import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/library/utils/open_document.dart';
 import 'package:readline_app/widgets/tap_scale.dart';
@@ -18,12 +19,18 @@ class ShelfCard extends StatelessWidget {
   final int avgWpm;
   final int savedWpm;
 
+  /// Total minutes the user actually spent reading this document (sum of
+  /// session durations). Used for completed-doc cards to show real time
+  /// spent instead of a WPM projection.
+  final double? actualMinutes;
+
   const ShelfCard({
     super.key,
     required this.document,
     this.onReturn,
     required this.avgWpm,
     required this.savedWpm,
+    this.actualMinutes,
   });
 
   ({String label, Color color, IconData? icon})? _statusBadge(bool isDark) {
@@ -45,6 +52,14 @@ class ShelfCard extends StatelessWidget {
   }
 
   String _metaText() {
+    // Completed docs: show what the user actually spent reading (sum of
+    // sessions) rather than a projection.
+    if (document.isCompleted &&
+        actualMinutes != null &&
+        actualMinutes! > 0) {
+      return DateFormatter.duration(actualMinutes!);
+    }
+
     if (document.totalWords <= 0) return '';
 
     final wpm = savedWpm > 0 ? savedWpm : avgWpm;

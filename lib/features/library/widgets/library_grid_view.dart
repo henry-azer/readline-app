@@ -29,13 +29,13 @@ class LibraryGridView extends StatelessWidget {
         AppSpacing.xl,
         0,
         AppSpacing.xl,
-        AppSpacing.bottomNavClearance + AppSpacing.xxl,
+        AppSpacing.bottomNavClearance + AppSpacing.xxxxl + AppSpacing.xl,
       ),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: AppSpacing.md,
         mainAxisSpacing: AppSpacing.md,
-        childAspectRatio: 0.58,
+        childAspectRatio: 0.64,
       ),
       itemCount: docs.length,
       itemBuilder: (context, index) {
@@ -44,6 +44,7 @@ class LibraryGridView extends StatelessWidget {
           document: doc,
           searchQuery: searchQuery,
           wpm: viewModel.currentWpm,
+          actualMinutes: viewModel.actualMinutesFor(doc.id),
           onTap: () => openDocumentForReading(context, doc),
           onEdit: () => onEditDocument(doc),
           onDelete: () => onDeleteDocument(doc),

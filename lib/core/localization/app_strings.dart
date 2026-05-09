@@ -223,8 +223,6 @@ class AppStrings {
   static const String libraryNewReading = 'library.newReading';
   static const String libraryRemoveTitle = 'library.removeTitle';
   static const String libraryRemoveBody = 'library.removeBody';
-  static const String libraryDeleteConfirmTitle = 'library.deleteConfirmTitle';
-  static const String libraryDeleteConfirmBody = 'library.deleteConfirmBody';
   static const String libraryFilterAll = 'library.filterAll';
   static const String libraryFilterReading = 'library.filterReading';
   static const String libraryFilterCompleted = 'library.filterCompleted';
@@ -258,19 +256,10 @@ class AppStrings {
   static const String libraryFilterAllTime = 'library.filterAllTime';
   static const String libraryFilterClearAll = 'library.filterClearAll';
   static const String libraryFilterActiveCount = 'library.filterActiveCount';
-  static const String librarySortLastRead = 'library.sortLastRead';
-  static const String librarySortDateAdded = 'library.sortDateAdded';
-  static const String librarySortTitle = 'library.sortTitle';
-  static const String librarySortProgress = 'library.sortProgress';
-  static const String librarySortWordCount = 'library.sortWordCount';
-  static const String librarySortAscending = 'library.sortAscending';
-  static const String librarySortDescending = 'library.sortDescending';
   static const String libraryDeleteAction = 'library.deleteAction';
   static const String libraryEditDocument = 'library.editDocument';
   static const String libraryEditDocumentTitle = 'library.editDocumentTitle';
   static const String librarySaveChanges = 'library.saveChanges';
-  static const String libraryContentChangedWarning =
-      'library.contentChangedWarning';
   static const String libraryProgressPercent = 'library.progressPercent';
   static const String libraryWordCount = 'library.wordCount';
 

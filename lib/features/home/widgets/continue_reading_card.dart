@@ -9,6 +9,7 @@ import 'package:readline_app/core/theme/app_durations.dart';
 import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
+import 'package:readline_app/core/utils/date_formatter.dart';
 import 'package:readline_app/features/home/viewmodels/home_viewmodel.dart';
 import 'package:readline_app/widgets/tap_scale.dart';
 
@@ -183,6 +184,12 @@ class ContinueReadingCard extends StatelessWidget {
   }
 
   String _metaText(int estimatedMin) {
+    // Completed featured (Read Again) — show actual session time when known.
+    if (featured.mode == HomeFeatureMode.readAgain &&
+        featured.actualMinutes != null &&
+        featured.actualMinutes! > 0) {
+      return DateFormatter.duration(featured.actualMinutes!);
+    }
     if (estimatedMin <= 0) return '';
     final isFresh = featured.mode == HomeFeatureMode.startNew ||
         featured.mode == HomeFeatureMode.readAgain;

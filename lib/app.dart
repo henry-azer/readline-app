@@ -24,6 +24,13 @@ final sessionChangeNotifier = ValueNotifier<int>(0);
 /// from the player popup show up without a manual pull-to-refresh.
 final vocabChangeNotifier = ValueNotifier<int>(0);
 
+/// Bumped on every successful write to `UserPreferencesModel` so screens
+/// that cache derived values (e.g. library/home minutes-left estimates, which
+/// depend on `readingSpeedWpm`) can re-read prefs and recompute. Increment
+/// happens centrally inside `PreferencesRepositoryImpl.save`/`resetToDefaults`,
+/// so callers don't need to remember to bump.
+final preferencesChangeNotifier = ValueNotifier<int>(0);
+
 class ReadlineApp extends StatelessWidget {
   const ReadlineApp({super.key});
 

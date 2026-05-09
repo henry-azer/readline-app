@@ -24,6 +24,7 @@ typedef _HomeData = ({
   StreakModel streak,
   List<ReadingSessionModel> sessions,
   bool streakJustBroke,
+  Map<String, double> actualMinutesByDoc,
 });
 
 class HomeBody extends StatelessWidget {
@@ -73,20 +74,30 @@ class HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<_HomeData>(
-      stream: Rx.combineLatest6(
+      stream: Rx.combineLatest7(
         viewModel.documents$,
         viewModel.stats$,
         viewModel.featured$,
         viewModel.streak$,
         viewModel.recentSessions$,
         viewModel.streakJustBroke$,
-        (docs, stats, featured, streak, sessions, streakJustBroke) => (
+        viewModel.actualMinutesByDoc$,
+        (
+          List<DocumentModel> docs,
+          HomeStats stats,
+          FeaturedDocument? featured,
+          StreakModel streak,
+          List<ReadingSessionModel> sessions,
+          bool streakJustBroke,
+          Map<String, double> actualMinutesByDoc,
+        ) => (
           docs: docs,
           stats: stats,
           featured: featured,
           streak: streak,
           sessions: sessions,
           streakJustBroke: streakJustBroke,
+          actualMinutesByDoc: actualMinutesByDoc,
         ),
       ),
       builder: (context, snapshot) {
@@ -178,6 +189,7 @@ class HomeBody extends StatelessWidget {
                           onReturn: () => viewModel.refresh(),
                           avgWpm: data.stats.avgSpeedWpm,
                           savedWpm: data.stats.savedSpeedWpm,
+                          actualMinutesByDoc: data.actualMinutesByDoc,
                         ),
                       ),
                     ],

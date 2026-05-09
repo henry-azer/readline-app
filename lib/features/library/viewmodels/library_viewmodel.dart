@@ -10,15 +10,15 @@ import 'package:readline_app/data/contracts/vocabulary_repository.dart';
 import 'package:readline_app/data/enums/view_mode.dart';
 import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/data/models/reading_session_model.dart';
+import 'package:readline_app/data/models/user_preferences_model.dart';
 import 'package:readline_app/data/models/vocabulary_word_model.dart';
+import 'package:readline_app/data/utils/document_sort.dart';
 
 /// Combined state for the library body to avoid nested StreamBuilders.
 typedef LibraryBodyState = ({
   List<DocumentModel> docs,
   String filter,
   ViewMode viewMode,
-  String sortField,
-  bool sortAsc,
 });
 
 class LibraryViewModel {
@@ -37,8 +37,6 @@ class LibraryViewModel {
   );
   final BehaviorSubject<bool> isLoading$ = BehaviorSubject.seeded(false);
   final BehaviorSubject<String> searchQuery$ = BehaviorSubject.seeded('');
-  final BehaviorSubject<String> sortField$ = BehaviorSubject.seeded('lastRead');
-  final BehaviorSubject<bool> sortAscending$ = BehaviorSubject.seeded(false);
 
   // Advanced filters
   final BehaviorSubject<Set<String>> filterStatuses$ = BehaviorSubject.seeded(
@@ -67,18 +65,14 @@ class LibraryViewModel {
   );
 
   /// Combined stream for the library body UI — replaces nested StreamBuilders.
-  late final Stream<LibraryBodyState> bodyState$ = Rx.combineLatest5(
+  late final Stream<LibraryBodyState> bodyState$ = Rx.combineLatest3(
     documents$,
     activeFilter$,
     viewMode$,
-    sortField$,
-    sortAscending$,
-    (docs, filter, viewMode, sortField, sortAsc) => (
+    (List<DocumentModel> docs, String filter, ViewMode viewMode) => (
       docs: docs,
       filter: filter,
       viewMode: viewMode,
-      sortField: sortField,
-      sortAsc: sortAsc,
     ),
   );
 
@@ -96,6 +90,14 @@ class LibraryViewModel {
   /// vs. minutes total. Resolved from user prefs in [init]; falls back to the
   /// model default (200 WPM) until prefs load.
   int currentWpm = 200;
+
+  /// Sum of session `durationMinutes` per document id. Tiles use this for
+  /// completed documents so the time label reflects what the user actually
+  /// spent rather than a projected total. Refreshed from the session repo
+  /// on every [refresh] call.
+  Map<String, double> _actualMinutesByDoc = const {};
+
+  double? actualMinutesFor(String docId) => _actualMinutesByDoc[docId];
 
   String get currentFilter => activeFilter$.value;
   ViewMode get currentViewMode => viewMode$.value;
@@ -120,22 +122,39 @@ class LibraryViewModel {
   }
 
   Future<void> init() async {
-    final prefs = await _prefsRepo.get();
-    sortField$.add(prefs.librarySortField);
-    sortAscending$.add(prefs.librarySortAscending);
-    currentWpm = prefs.readingSpeedWpm;
     await refresh();
   }
 
   Future<void> refresh() async {
     isLoading$.add(true);
     try {
-      final docs = await _docRepo.getAll();
+      final results = await Future.wait([
+        _docRepo.getAll(),
+        _prefsRepo.get(),
+        _sessionRepo.getAll(),
+      ]);
+      final docs = results[0] as List<DocumentModel>;
+      final prefs = results[1] as UserPreferencesModel;
+      final sessions = results[2] as List<ReadingSessionModel>;
+      currentWpm = prefs.readingSpeedWpm;
+      _actualMinutesByDoc = _aggregateDurations(sessions);
       allDocuments$.add(docs);
       _applyAllFilters();
     } finally {
       isLoading$.add(false);
     }
+  }
+
+  Map<String, double> _aggregateDurations(List<ReadingSessionModel> sessions) {
+    final result = <String, double>{};
+    for (final s in sessions) {
+      result.update(
+        s.documentId,
+        (prev) => prev + s.durationMinutes,
+        ifAbsent: () => s.durationMinutes,
+      );
+    }
+    return result;
   }
 
   // ── Quick filter chips ──────────────────────────────────────────────────────
@@ -191,32 +210,6 @@ class LibraryViewModel {
     _applyAllFilters();
   }
 
-  // ── Sorting ───────────────────────────────────────────────────────────────
-
-  void setSortField(String field) {
-    sortField$.add(field);
-    _applyAllFilters();
-    _persistSortPreferences();
-  }
-
-  void toggleSortDirection() {
-    sortAscending$.add(!sortAscending$.value);
-    _applyAllFilters();
-    _persistSortPreferences();
-  }
-
-  Future<void> _persistSortPreferences() async {
-    try {
-      final prefs = await _prefsRepo.get();
-      await _prefsRepo.save(
-        prefs.copyWith(
-          librarySortField: sortField$.value,
-          librarySortAscending: sortAscending$.value,
-        ),
-      );
-    } catch (_) {}
-  }
-
   // ── CRUD: Documents ───────────────────────────────────────────────────────
 
   /// Captured cascade data for undo support.
@@ -262,7 +255,12 @@ class LibraryViewModel {
     _deletedSessions = null;
     _deletedVocabWords = null;
 
-    final updated = [...allDocuments$.value, document];
+    // Dedupe-then-append so this is idempotent even if a notifier-driven
+    // refresh raced with us and already restored the doc via getAll().
+    final updated = [
+      ...allDocuments$.value.where((d) => d.id != document.id),
+      document,
+    ];
     allDocuments$.add(updated);
     _applyAllFilters();
   }
@@ -324,38 +322,10 @@ class LibraryViewModel {
           .toList();
     }
 
-    // Sort
-    _sortDocuments(filtered);
+    // Sort — canonical tri-tier order, the only sort the library offers.
+    sortDocumentsSmart(filtered);
 
     documents$.add(filtered);
-  }
-
-  void _sortDocuments(List<DocumentModel> docs) {
-    final field = sortField$.value;
-    final asc = sortAscending$.value;
-
-    docs.sort((a, b) {
-      int cmp;
-      switch (field) {
-        case 'lastRead':
-          final aDate = a.lastReadAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-          final bDate = b.lastReadAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-          cmp = aDate.compareTo(bDate);
-        case 'dateAdded':
-          cmp = a.importedAt.compareTo(b.importedAt);
-        case 'title':
-          cmp = a.title.toLowerCase().compareTo(b.title.toLowerCase());
-        case 'progress':
-          final aProg = a.totalWords > 0 ? a.wordsRead / a.totalWords : 0.0;
-          final bProg = b.totalWords > 0 ? b.wordsRead / b.totalWords : 0.0;
-          cmp = aProg.compareTo(bProg);
-        case 'wordCount':
-          cmp = a.totalWords.compareTo(b.totalWords);
-        default:
-          cmp = 0;
-      }
-      return asc ? cmp : -cmp;
-    });
   }
 
   void dispose() {
@@ -366,8 +336,6 @@ class LibraryViewModel {
     viewMode$.close();
     isLoading$.close();
     searchQuery$.close();
-    sortField$.close();
-    sortAscending$.close();
     filterStatuses$.close();
     filterSourceTypes$.close();
     filterDateRange$.close();

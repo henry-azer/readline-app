@@ -1,3 +1,4 @@
+import 'package:readline_app/app.dart' show preferencesChangeNotifier;
 import 'package:readline_app/data/contracts/preferences_repository.dart';
 import 'package:readline_app/data/datasources/local/hive_preferences_source.dart';
 import 'package:readline_app/data/models/user_preferences_model.dart';
@@ -15,6 +16,7 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
   Future<void> save(UserPreferencesModel preferences) {
     _pendingUpdate = _pendingUpdate.then((_) async {
       await _source.savePreferences(preferences);
+      preferencesChangeNotifier.value++;
     });
     return _pendingUpdate;
   }
@@ -30,6 +32,7 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
           readingLevel: current.readingLevel,
         ),
       );
+      preferencesChangeNotifier.value++;
     });
     return _pendingUpdate;
   }

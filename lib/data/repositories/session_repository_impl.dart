@@ -11,6 +11,9 @@ class SessionRepositoryImpl implements SessionRepository {
   Future<void> save(ReadingSessionModel session) => _source.save(session);
 
   @override
+  Future<List<ReadingSessionModel>> getAll() => _source.getAll();
+
+  @override
   Future<List<ReadingSessionModel>> getByDocumentId(String documentId) async {
     final all = await _source.getAll();
     return all.where((s) => s.documentId == documentId).toList();

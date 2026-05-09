@@ -29,7 +29,7 @@ class LibraryListView extends StatelessWidget {
         AppSpacing.xl,
         0,
         AppSpacing.xl,
-        AppSpacing.bottomNavClearance + AppSpacing.xxl,
+        AppSpacing.bottomNavClearance + AppSpacing.xxxxl + AppSpacing.xl,
       ),
       itemCount: docs.length,
       itemBuilder: (context, index) {
@@ -40,6 +40,7 @@ class LibraryListView extends StatelessWidget {
             document: doc,
             searchQuery: searchQuery,
             wpm: viewModel.currentWpm,
+            actualMinutes: viewModel.actualMinutesFor(doc.id),
             onTap: () => openDocumentForReading(context, doc),
             onDelete: () => onDeleteDocument(doc),
             onEdit: () => onEditDocument(doc),

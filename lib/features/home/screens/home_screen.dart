@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:readline_app/app.dart'
-    show libraryChangeNotifier, sessionChangeNotifier;
+    show
+        libraryChangeNotifier,
+        preferencesChangeNotifier,
+        sessionChangeNotifier;
 import 'package:readline_app/core/extensions/context_extensions.dart';
 import 'package:readline_app/core/theme/app_colors.dart';
 import 'package:readline_app/core/theme/app_durations.dart';
@@ -45,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen>
     _viewModel = HomeViewModel();
     libraryChangeNotifier.addListener(_onLibraryChanged);
     sessionChangeNotifier.addListener(_onSessionChanged);
+    preferencesChangeNotifier.addListener(_onPreferencesChanged);
     _celebrationSub = _viewModel.pendingCelebration$.listen((celebration) {
       if (celebration == null || !mounted) return;
       if (_celebrationOpen) {
@@ -92,11 +96,17 @@ class _HomeScreenState extends State<HomeScreen>
   // updated featured doc.
   void _onSessionChanged() => _viewModel.refresh();
 
+  // WPM / daily-goal / userName changed elsewhere — re-refresh so the
+  // featured-card minutes estimate, target chip, and greeting line stay
+  // in sync without needing a hot reload.
+  void _onPreferencesChanged() => _viewModel.refresh();
+
   @override
   void dispose() {
     _celebrationSub?.cancel();
     libraryChangeNotifier.removeListener(_onLibraryChanged);
     sessionChangeNotifier.removeListener(_onSessionChanged);
+    preferencesChangeNotifier.removeListener(_onPreferencesChanged);
     _staggerController.dispose();
     _viewModel.dispose();
     super.dispose();

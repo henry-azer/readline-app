@@ -3,43 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:readline_app/features/library/utils/cover_palette.dart';
 
 void main() {
-  group('CoverPalette.paletteIndex', () {
-    test('returns a value in [0, 7] for any title', () {
-      const titles = [
-        'a',
-        'The Sound of the Mountain',
-        'Notes',
-        '日本語のタイトル',
-        '',
-        'A really really really really really really long title',
-        '12345',
-      ];
-      for (final t in titles) {
-        final idx = CoverPalette.paletteIndex(t);
-        expect(idx, inInclusiveRange(0, 7), reason: 'title "$t"');
-      }
-    });
-
-    test('is stable: same title → same index across calls', () {
-      const title = 'The Sound of the Mountain';
-      final first = CoverPalette.paletteIndex(title);
-      for (var i = 0; i < 100; i++) {
-        expect(CoverPalette.paletteIndex(title), first);
-      }
-    });
-
-    test('different titles can yield different indices', () {
-      // Sample many titles; expect at least 4 distinct indices to land.
-      // Guards against a degenerate hash that always returns 0.
-      final indices = <int>{};
-      for (var i = 0; i < 200; i++) {
-        indices.add(CoverPalette.paletteIndex('title-$i'));
-      }
-      expect(indices.length, greaterThanOrEqualTo(4));
-    });
-  });
-
   group('CoverPalette.forTitle', () {
+    test('different titles can yield different gradients', () {
+      // Sample many titles; with hue ∈ [0, 360) we expect a wide spread.
+      final firstStops = <Color>{};
+      for (var i = 0; i < 200; i++) {
+        firstStops.add(CoverPalette.forTitle('title-$i', isDark: false).first);
+      }
+      expect(firstStops.length, greaterThanOrEqualTo(50));
+    });
     test('returns a 3-color gradient', () {
       final colors = CoverPalette.forTitle('any', isDark: false);
       expect(colors.length, 3);

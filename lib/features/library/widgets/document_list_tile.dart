@@ -23,6 +23,11 @@ class DocumentListTile extends StatelessWidget {
   /// the library viewmodel from cached user prefs.
   final int wpm;
 
+  /// Total minutes the user actually spent reading this document
+  /// (sum of session durations). Only consulted for completed documents,
+  /// where it overrides the WPM-based projection.
+  final double? actualMinutes;
+
   const DocumentListTile({
     super.key,
     required this.document,
@@ -31,6 +36,7 @@ class DocumentListTile extends StatelessWidget {
     this.onEdit,
     this.searchQuery,
     this.wpm = 200,
+    this.actualMinutes,
   });
 
   @override
@@ -57,7 +63,11 @@ class DocumentListTile extends StatelessWidget {
     final progressColor = isCompleted ? successColor : primary;
     final progressPercent = (progress * 100).round();
     final lastReadLabel = _formatLastRead(document.lastReadAt);
-    final minutesLabel = DocumentMeta.estimatedTime(document, wpm);
+    final minutesLabel = DocumentMeta.estimatedTime(
+      document,
+      wpm,
+      actualMinutes: actualMinutes,
+    );
     final wordCountLabel = AppStrings.libraryWordCount.trParams({
       'n': DocumentMeta.wordCount(document.totalWords),
     });

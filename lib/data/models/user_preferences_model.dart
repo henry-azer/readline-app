@@ -26,8 +26,6 @@ class UserPreferencesModel {
   final List<String> celebratedMilestones;
   final String vocabSortField;
   final bool vocabSortAscending;
-  final String librarySortField;
-  final bool librarySortAscending;
   final bool hapticsEnabled;
   /// One-shot flag set after the vocabulary difficulty backfill runs against
   /// the user's existing words (which used to all default to "medium"). Once
@@ -63,8 +61,6 @@ class UserPreferencesModel {
     this.celebratedMilestones = const [],
     this.vocabSortField = 'dateAdded',
     this.vocabSortAscending = false,
-    this.librarySortField = 'lastRead',
-    this.librarySortAscending = false,
     this.hapticsEnabled = true,
     this.vocabDifficultyBackfilled = false,
   });
@@ -97,8 +93,6 @@ class UserPreferencesModel {
     'celebratedMilestones': celebratedMilestones,
     'vocabSortField': vocabSortField,
     'vocabSortAscending': vocabSortAscending,
-    'librarySortField': librarySortField,
-    'librarySortAscending': librarySortAscending,
     'hapticsEnabled': hapticsEnabled,
     'vocabDifficultyBackfilled': vocabDifficultyBackfilled,
   };
@@ -134,8 +128,6 @@ class UserPreferencesModel {
           const [],
       vocabSortField: map['vocabSortField'] as String? ?? 'dateAdded',
       vocabSortAscending: map['vocabSortAscending'] as bool? ?? false,
-      librarySortField: map['librarySortField'] as String? ?? 'lastRead',
-      librarySortAscending: map['librarySortAscending'] as bool? ?? false,
       hapticsEnabled: map['hapticsEnabled'] as bool? ?? true,
       vocabDifficultyBackfilled:
           map['vocabDifficultyBackfilled'] as bool? ?? false,
@@ -170,8 +162,6 @@ class UserPreferencesModel {
     List<String>? celebratedMilestones,
     String? vocabSortField,
     bool? vocabSortAscending,
-    String? librarySortField,
-    bool? librarySortAscending,
     bool? hapticsEnabled,
     bool? vocabDifficultyBackfilled,
   }) {
@@ -204,8 +194,6 @@ class UserPreferencesModel {
       celebratedMilestones: celebratedMilestones ?? this.celebratedMilestones,
       vocabSortField: vocabSortField ?? this.vocabSortField,
       vocabSortAscending: vocabSortAscending ?? this.vocabSortAscending,
-      librarySortField: librarySortField ?? this.librarySortField,
-      librarySortAscending: librarySortAscending ?? this.librarySortAscending,
       hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
       vocabDifficultyBackfilled:
           vocabDifficultyBackfilled ?? this.vocabDifficultyBackfilled,

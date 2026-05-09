@@ -1,5 +1,6 @@
 import 'package:readline_app/core/localization/app_localization.dart';
 import 'package:readline_app/core/localization/app_strings.dart';
+import 'package:readline_app/core/utils/date_formatter.dart';
 import 'package:readline_app/data/models/document_model.dart';
 
 /// Formatting helpers shared by the library grid card and list tile so the
@@ -25,13 +26,28 @@ abstract final class DocumentMeta {
     return buf.toString();
   }
 
-  /// Returns the human-readable estimated reading time for [doc] at [wpm]
-  /// words per minute, or `null` when the time can't be estimated.
+  /// Returns the human-readable reading time for [doc].
   ///
-  /// In-progress documents return "~N min left" using remaining words;
-  /// unread and completed documents return "~N min total" using the full
-  /// word count.
-  static String? estimatedTime(DocumentModel doc, int wpm) {
+  /// - **Completed** documents prefer the actual time the user spent reading
+  ///   (sum of session durations) when [actualMinutes] is provided and > 0,
+  ///   formatted via [DateFormatter.duration] (e.g. "23 min", "1h 12m"),
+  ///   so the label reflects what the user *did*, not a projection.
+  /// - **In-progress** documents fall through to "~N min left" using
+  ///   remaining words at [wpm].
+  /// - **Unread** (and completed without recorded sessions) fall through to
+  ///   "~N min total" using the full word count at [wpm].
+  ///
+  /// Returns `null` when nothing reasonable can be displayed.
+  static String? estimatedTime(
+    DocumentModel doc,
+    int wpm, {
+    double? actualMinutes,
+  }) {
+    if (doc.isCompleted &&
+        actualMinutes != null &&
+        actualMinutes > 0) {
+      return DateFormatter.duration(actualMinutes);
+    }
     if (wpm <= 0 || doc.totalWords <= 0) return null;
     if (doc.isInProgress) {
       final wordsLeft = doc.totalWords - doc.wordsRead;

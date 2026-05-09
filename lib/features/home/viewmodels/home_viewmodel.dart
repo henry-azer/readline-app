@@ -21,11 +21,17 @@ class FeaturedDocument {
   final double progress;
   final int estimatedMinutes;
 
+  /// Total minutes the user actually spent reading this document (sum of
+  /// session durations). Populated only when the featured doc is completed
+  /// — `readAgain` mode prefers this over the WPM-based projection.
+  final double? actualMinutes;
+
   const FeaturedDocument({
     required this.document,
     required this.mode,
     required this.progress,
     required this.estimatedMinutes,
+    this.actualMinutes,
   });
 }
 
@@ -73,6 +79,12 @@ class HomeViewModel {
   final BehaviorSubject<bool> isLoading$ = BehaviorSubject.seeded(true);
   final BehaviorSubject<bool> streakJustBroke$ = BehaviorSubject.seeded(false);
 
+  /// Sum of session `durationMinutes` per document id. The shelf uses this to
+  /// show actual reading time on completed-doc cards instead of the WPM
+  /// projection.
+  final BehaviorSubject<Map<String, double>> actualMinutesByDoc$ =
+      BehaviorSubject.seeded(const {});
+
   HomeViewModel({
     DocumentRepository? docRepo,
     SessionRepository? sessionRepo,
@@ -118,12 +130,24 @@ class HomeViewModel {
         _sessionRepo.getRecent(5),
         _sessionRepo.getByDateRange(todayStart, tomorrowStart),
         _prefsRepo.get(),
+        _sessionRepo.getAll(),
       ]);
 
       final docs = results[0] as List<DocumentModel>;
       final recentSessions = results[1] as List<ReadingSessionModel>;
       final todaySessions = results[2] as List<ReadingSessionModel>;
       final prefs = results[3] as UserPreferencesModel;
+      final allSessions = results[4] as List<ReadingSessionModel>;
+
+      final actualMinutesByDoc = <String, double>{};
+      for (final s in allSessions) {
+        actualMinutesByDoc.update(
+          s.documentId,
+          (prev) => prev + s.durationMinutes,
+          ifAbsent: () => s.durationMinutes,
+        );
+      }
+      actualMinutesByDoc$.add(actualMinutesByDoc);
 
       documents$.add(docs);
       recentSessions$.add(recentSessions);
@@ -191,6 +215,8 @@ class HomeViewModel {
           mode,
           savedWpm: prefs.readingSpeedWpm,
           avgWpm: avgWpm,
+          actualMinutes:
+              featured == null ? null : actualMinutesByDoc[featured.id],
         ),
       );
     } finally {
@@ -203,6 +229,7 @@ class HomeViewModel {
     HomeFeatureMode mode, {
     required int savedWpm,
     required int avgWpm,
+    double? actualMinutes,
   }) {
     if (doc == null) return null;
     final wpm = savedWpm > 0 ? savedWpm : avgWpm;
@@ -230,6 +257,10 @@ class HomeViewModel {
       mode: mode,
       progress: progress,
       estimatedMinutes: minutes,
+      // Only carry actual minutes when the featured doc is the completed
+      // "read again" — for in-progress / unread we want the projection.
+      actualMinutes:
+          mode == HomeFeatureMode.readAgain ? actualMinutes : null,
     );
   }
 
@@ -252,5 +283,6 @@ class HomeViewModel {
     stats$.close();
     isLoading$.close();
     streakJustBroke$.close();
+    actualMinutesByDoc$.close();
   }
 }

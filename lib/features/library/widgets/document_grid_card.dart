@@ -5,13 +5,13 @@ import 'package:readline_app/core/localization/app_strings.dart';
 import 'package:readline_app/core/theme/app_colors.dart';
 import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
+import 'package:readline_app/core/theme/app_tracking.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/library/utils/cover_palette.dart';
 import 'package:readline_app/features/library/utils/document_meta.dart';
 import 'package:readline_app/features/library/widgets/highlighted_text.dart';
 import 'package:readline_app/widgets/tap_scale.dart';
-
 
 class DocumentGridCard extends StatelessWidget {
   final DocumentModel document;
@@ -24,6 +24,11 @@ class DocumentGridCard extends StatelessWidget {
   /// the library viewmodel from cached user prefs.
   final int wpm;
 
+  /// Total minutes the user actually spent reading this document
+  /// (sum of session durations). Only consulted for completed documents,
+  /// where it overrides the WPM-based projection.
+  final double? actualMinutes;
+
   const DocumentGridCard({
     super.key,
     required this.document,
@@ -32,6 +37,7 @@ class DocumentGridCard extends StatelessWidget {
     this.onEdit,
     this.searchQuery,
     this.wpm = 200,
+    this.actualMinutes,
   });
 
   @override
@@ -56,10 +62,11 @@ class DocumentGridCard extends StatelessWidget {
     final isCompleted = document.isCompleted;
     final progressColor = isCompleted ? successColor : primary;
     final progressPercent = (progress * 100).round();
-    final wordCountLabel = AppStrings.libraryWordCount.trParams({
-      'n': DocumentMeta.wordCount(document.totalWords),
-    });
-    final timeLabel = DocumentMeta.estimatedTime(document, wpm);
+    final timeLabel = DocumentMeta.estimatedTime(
+      document,
+      wpm,
+      actualMinutes: actualMinutes,
+    );
 
     return TapScale(
       onTap: onTap,
@@ -91,128 +98,108 @@ class DocumentGridCard extends StatelessWidget {
               ),
             ),
 
-            // Body
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.sm,
-                AppSpacing.md,
-                AppSpacing.md,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  HighlightedText(
-                    text: document.title,
-                    query: searchQuery,
-                    style: AppTypography.labelMedium.copyWith(
-                      color: onSurface,
-                      fontWeight: FontWeight.w600,
+            // Body — fixed height so the cover never resizes with content.
+            SizedBox(
+              height: 100,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Title
+                    HighlightedText(
+                      text: document.title,
+                      query: searchQuery,
+                      style: AppTypography.labelMedium.copyWith(
+                        color: onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      highlightColor: primary,
+                      maxLines: 2,
                     ),
-                    highlightColor: primary,
-                    maxLines: 2,
-                  ),
 
-                  const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.xs),
 
-                  // Word count meta line
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.description_outlined,
-                        size: 10,
-                        color: onSurfaceVariant,
-                      ),
-                      const SizedBox(width: AppSpacing.micro),
-                      Expanded(
-                        child: Text(
-                          wordCountLabel,
-                          style: AppTypography.labelTiny.copyWith(
-                            color: onSurfaceVariant,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Estimated time meta line
-                  if (timeLabel != null) ...[
-                    const SizedBox(height: AppSpacing.micro),
+                    // Progress bar + percentage / completion check
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.schedule_rounded,
-                          size: 10,
-                          color: onSurfaceVariant,
-                        ),
-                        const SizedBox(width: AppSpacing.micro),
                         Expanded(
-                          child: Text(
-                            timeLabel,
-                            style: AppTypography.labelTiny.copyWith(
-                              color: onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-
-                  const SizedBox(height: AppSpacing.xs),
-
-                  // Progress bar + percentage / completion check
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                color: outlineVariant.withValues(alpha: 0.4),
-                                borderRadius: AppRadius.fullBorder,
-                              ),
-                            ),
-                            FractionallySizedBox(
-                              widthFactor: progress,
-                              child: Container(
+                          child: Stack(
+                            children: [
+                              Container(
                                 height: 5,
                                 decoration: BoxDecoration(
-                                  color: progressColor,
+                                  color: outlineVariant.withValues(alpha: 0.4),
                                   borderRadius: AppRadius.fullBorder,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (isCompleted) ...[
-                        const SizedBox(width: AppSpacing.micro),
-                        Icon(
-                          Icons.check_rounded,
-                          size: 12,
-                          color: successColor,
-                        ),
-                      ] else if (document.isInProgress) ...[
-                        const SizedBox(width: AppSpacing.micro),
-                        Text(
-                          AppStrings.libraryProgressPercent.trParams({
-                            'n': '$progressPercent',
-                          }),
-                          style: AppTypography.labelMicro.copyWith(
-                            color: onSurfaceVariant,
+                              FractionallySizedBox(
+                                widthFactor: progress,
+                                child: Container(
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                    color: progressColor,
+                                    borderRadius: AppRadius.fullBorder,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                        if (isCompleted) ...[
+                          const SizedBox(width: AppSpacing.xs),
+                          Icon(
+                            Icons.check_rounded,
+                            size: 12,
+                            color: successColor,
+                          ),
+                        ] else if (document.isInProgress) ...[
+                          const SizedBox(width: AppSpacing.xs),
+                          Text(
+                            AppStrings.libraryProgressPercent.trParams({
+                              'n': '$progressPercent',
+                            }),
+                            style: AppTypography.labelMicro.copyWith(
+                              color: onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ],
+                    ),
+
+                    // Estimated time meta line — under the progress bar.
+                    if (timeLabel != null) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 10,
+                            color: onSurfaceVariant,
+                          ),
+                          const SizedBox(width: AppSpacing.micro),
+                          Expanded(
+                            child: Text(
+                              timeLabel,
+                              style: AppTypography.labelTiny.copyWith(
+                                color: onSurfaceVariant,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -244,9 +231,7 @@ class _CoverArea extends StatelessWidget {
       isDark: isDark,
     );
     final titleColor = CoverPalette.titleColor(isDark: isDark);
-    final highlightColor = isDark
-        ? AppColors.primary
-        : AppColors.lightPrimary;
+    final highlightColor = isDark ? AppColors.primary : AppColors.lightPrimary;
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
@@ -295,6 +280,27 @@ class _CoverArea extends StatelessWidget {
             ),
           ),
 
+          // Word count badge centered along the bottom of the cover.
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: AppSpacing.xs,
+            child: Center(
+              child: Text(
+                '— ${AppStrings.libraryWordCount.trParams({'n': DocumentMeta.wordCount(document.totalWords)})} —',
+                style: AppTypography.labelMicro.copyWith(
+                  color: titleColor.withValues(alpha: 0.75),
+                  fontSize: 8,
+                  fontWeight: FontWeight.w300,
+                  letterSpacing: AppTracking.wide,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+
           // Status pill (top-left)
           Positioned(
             top: AppSpacing.xs,
@@ -307,30 +313,14 @@ class _CoverArea extends StatelessWidget {
             ),
           ),
 
-          // Edit / delete overlay (top-right)
+          // Edit / delete overlay (top-right) — glass pill with stacked icons.
           Positioned(
             top: AppSpacing.xs,
             right: AppSpacing.xs,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (onEdit != null)
-                  _CoverIconButton(
-                    icon: Icons.edit_outlined,
-                    onTap: onEdit!,
-                    isDark: isDark,
-                    isDestructive: false,
-                  ),
-                if (onEdit != null && onDelete != null)
-                  const SizedBox(width: AppSpacing.micro),
-                if (onDelete != null)
-                  _CoverIconButton(
-                    icon: Icons.delete_outline_rounded,
-                    onTap: onDelete!,
-                    isDark: isDark,
-                    isDestructive: true,
-                  ),
-              ],
+            child: _CoverActionStack(
+              isDark: isDark,
+              onEdit: onEdit,
+              onDelete: onDelete,
             ),
           ),
         ],
@@ -339,43 +329,70 @@ class _CoverArea extends StatelessWidget {
   }
 }
 
-class _CoverIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
+class _CoverActionStack extends StatelessWidget {
   final bool isDark;
-  final bool isDestructive;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const _CoverIconButton({
-    required this.icon,
-    required this.onTap,
+  const _CoverActionStack({
     required this.isDark,
-    required this.isDestructive,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bg = (isDark
-            ? AppColors.surfaceContainerHigh
-            : AppColors.lightSurfaceContainerHigh)
-        .withValues(alpha: 0.85);
-    final iconColor = isDestructive
-        ? (isDark ? AppColors.error : AppColors.lightError)
-              .withValues(alpha: 0.85)
-        : (isDark
-              ? AppColors.onSurfaceVariant
-              : AppColors.lightOnSurfaceVariant);
+    if (onEdit == null && onDelete == null) return const SizedBox.shrink();
 
+    // Match the cover title's contrast (light text on dark gradient,
+    // near-black on light gradient) with a subtle alpha so the icons
+    // read as muted controls rather than primary CTAs.
+    final iconColor = CoverPalette.titleColor(
+      isDark: isDark,
+    ).withValues(alpha: 0.7);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (onEdit != null)
+          _CoverIconButton(
+            icon: Icons.edit_outlined,
+            onTap: onEdit!,
+            color: iconColor,
+          ),
+        if (onDelete != null)
+          _CoverIconButton(
+            icon: Icons.delete_outline_rounded,
+            onTap: onDelete!,
+            color: iconColor,
+          ),
+      ],
+    );
+  }
+}
+
+class _CoverIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color color;
+
+  const _CoverIconButton({
+    required this.icon,
+    required this.onTap,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Container(
-        width: 28,
-        height: 28,
-        decoration: BoxDecoration(
-          color: bg,
-          shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xxs,
+          vertical: AppSpacing.micro,
         ),
-        child: Icon(icon, size: 14, color: iconColor),
+        child: Icon(icon, size: 14, color: color),
       ),
     );
   }
@@ -430,10 +447,7 @@ class _StatusPill extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.micro),
           ],
-          Text(
-            label,
-            style: AppTypography.labelMicro.copyWith(color: color),
-          ),
+          Text(label, style: AppTypography.labelMicro.copyWith(color: color)),
         ],
       ),
     );

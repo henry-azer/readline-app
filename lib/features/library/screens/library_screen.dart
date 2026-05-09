@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:readline_app/app.dart' show libraryChangeNotifier;
+import 'package:readline_app/app.dart'
+    show
+        libraryChangeNotifier,
+        preferencesChangeNotifier,
+        sessionChangeNotifier;
 import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/extensions/context_extensions.dart';
 import 'package:readline_app/core/localization/app_localization.dart';
@@ -7,7 +11,6 @@ import 'package:readline_app/core/localization/app_strings.dart';
 import 'package:readline_app/core/services/haptic_service.dart';
 import 'package:readline_app/core/theme/app_colors.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
-import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/widgets/app_snackbar.dart';
 import 'package:readline_app/widgets/brand_mark.dart';
 import 'package:readline_app/data/models/document_model.dart';
@@ -33,15 +36,29 @@ class _LibraryScreenState extends State<LibraryScreen> {
     _viewModel = LibraryViewModel();
     _viewModel.init();
     libraryChangeNotifier.addListener(_onLibraryChanged);
+    preferencesChangeNotifier.addListener(_onPreferencesChanged);
+    sessionChangeNotifier.addListener(_onSessionChanged);
   }
 
   void _onLibraryChanged() => _viewModel.refresh();
+
+  // WPM (and other prefs the tile estimates depend on) changed elsewhere —
+  // re-run refresh so the cached `currentWpm` and any derived display data
+  // get re-read from prefs immediately.
+  void _onPreferencesChanged() => _viewModel.refresh();
+
+  // A reading session was saved → the actual-minutes total for that doc
+  // changed. Refresh so completed-doc tiles reflect real time spent
+  // without waiting for a navigation cycle.
+  void _onSessionChanged() => _viewModel.refresh();
 
   void _onSearchFieldTap() => getIt<HapticService>().light();
 
   @override
   void dispose() {
     libraryChangeNotifier.removeListener(_onLibraryChanged);
+    preferencesChangeNotifier.removeListener(_onPreferencesChanged);
+    sessionChangeNotifier.removeListener(_onSessionChanged);
     _searchFocusNode.dispose();
     _viewModel.dispose();
     super.dispose();
@@ -59,68 +76,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   void _openEditSheet(DocumentModel document) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: AppColors.transparent,
-      builder: (ctx) => ImportContentSheet(
-        onContentAdded: () => _viewModel.refresh(),
-        existingDocument: document,
-      ),
-    );
+    // Route edit through the same full-screen page that the add flow uses,
+    // so both screens render the identical AppBar treatment.
+    // Library refresh is driven by libraryChangeNotifier from the viewmodel,
+    // so we don't need onContentAdded here.
+    ImportContentSheet.show(context, existingDocument: document);
   }
 
-  Future<void> _confirmDelete(DocumentModel document) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final isDark = context.isDark;
-        final textColor = isDark
-            ? AppColors.onSurface
-            : AppColors.lightOnSurface;
-        final subtextColor = isDark
-            ? AppColors.onSurfaceVariant
-            : AppColors.lightOnSurfaceVariant;
-        final errorColor = isDark ? AppColors.error : AppColors.lightError;
-        final bgColor = isDark
-            ? AppColors.surfaceContainerHigh
-            : AppColors.lightSurfaceContainerLowest;
-
-        return AlertDialog(
-          backgroundColor: bgColor,
-          title: Text(
-            AppStrings.libraryDeleteConfirmTitle.tr,
-            style: AppTypography.titleMedium.copyWith(color: textColor),
-          ),
-          content: Text(
-            AppStrings.libraryDeleteConfirmBody.trParams({
-              'title': document.title,
-            }),
-            style: AppTypography.bodyMedium.copyWith(color: subtextColor),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(
-                AppStrings.cancel.tr,
-                style: AppTypography.button.copyWith(color: subtextColor),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(
-                AppStrings.remove.tr,
-                style: AppTypography.button.copyWith(color: errorColor),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirmed != true) return;
-
+  Future<void> _handleDelete(DocumentModel document) async {
     await _viewModel.deleteDocument(document.id);
     libraryChangeNotifier.value++;
 
@@ -178,7 +141,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
             return LibraryBody(
               viewModel: _viewModel,
-              onDeleteDocument: _confirmDelete,
+              onDeleteDocument: _handleDelete,
               onEditDocument: _openEditSheet,
               searchFocusNode: _searchFocusNode,
               onSearchFieldTap: _onSearchFieldTap,

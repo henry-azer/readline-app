@@ -6,6 +6,7 @@ import 'package:readline_app/core/theme/app_colors.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/data/models/document_model.dart';
+import 'package:readline_app/data/utils/document_sort.dart';
 import 'package:readline_app/features/home/widgets/shelf_card.dart';
 
 class DocumentShelf extends StatelessWidget {
@@ -15,6 +16,11 @@ class DocumentShelf extends StatelessWidget {
   final int avgWpm;
   final int savedWpm;
 
+  /// Map of document id → total minutes the user actually spent reading it
+  /// (sum of session durations). Looked up per card so completed shelf
+  /// items show real time spent instead of a WPM projection.
+  final Map<String, double> actualMinutesByDoc;
+
   const DocumentShelf({
     super.key,
     required this.documents,
@@ -22,6 +28,7 @@ class DocumentShelf extends StatelessWidget {
     this.onReturn,
     required this.avgWpm,
     required this.savedWpm,
+    this.actualMinutesByDoc = const {},
   });
 
   @override
@@ -31,12 +38,10 @@ class DocumentShelf extends StatelessWidget {
         ? AppColors.onSurfaceVariant
         : AppColors.lightOnSurfaceVariant;
 
-    final others = documents.where((d) => d.id != currentDocId).toList()
-      ..sort((a, b) {
-        final aDate = a.lastReadAt ?? a.importedAt;
-        final bDate = b.lastReadAt ?? b.importedAt;
-        return bDate.compareTo(aDate);
-      });
+    // Same tri-tier "smart" sort the library uses, so the home shelf and
+    // library list always agree on ordering.
+    final others = documents.where((d) => d.id != currentDocId).toList();
+    sortDocumentsSmart(others);
 
     if (others.isEmpty) return const SizedBox.shrink();
 
@@ -67,6 +72,7 @@ class DocumentShelf extends StatelessWidget {
                 onReturn: onReturn,
                 avgWpm: avgWpm,
                 savedWpm: savedWpm,
+                actualMinutes: actualMinutesByDoc[others[index].id],
               );
             },
           ),

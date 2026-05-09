@@ -361,35 +361,6 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
               ),
             ),
 
-            if (isEdit)
-              StreamBuilder<bool>(
-                stream: _viewModel.contentChanged$,
-                builder: (context, snap) {
-                  if (snap.data != true) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(top: AppSpacing.xs),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          size: 14,
-                          color: tertiary,
-                        ),
-                        const SizedBox(width: AppSpacing.xxs),
-                        Expanded(
-                          child: Text(
-                            AppStrings.libraryContentChangedWarning.tr,
-                            style: AppTypography.homeBadgeLabel.copyWith(
-                              color: tertiary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-
             StreamBuilder<int>(
               stream: _viewModel.wordCount$,
               builder: (context, snap) {
@@ -536,21 +507,23 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
                             onSaveAndRead: _handleSaveAndRead,
                             onSaveToLibrary: _handleSaveToLibrary,
                           ),
-                        const SizedBox(height: AppSpacing.sm),
-                        TextButton.icon(
-                          onPressed: isProcessing ? null : _viewModel.pickFile,
-                          icon: Icon(
-                            Icons.attach_file_rounded,
-                            size: 18,
-                            color: subtextColor,
-                          ),
-                          label: Text(
-                            AppStrings.homeImportSheetPickFile.tr,
-                            style: AppTypography.bodyMedium.copyWith(
+                        if (!isEdit) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          TextButton.icon(
+                            onPressed: isProcessing ? null : _viewModel.pickFile,
+                            icon: Icon(
+                              Icons.attach_file_rounded,
+                              size: 18,
                               color: subtextColor,
                             ),
+                            label: Text(
+                              AppStrings.homeImportSheetPickFile.tr,
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: subtextColor,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     );
                   },
