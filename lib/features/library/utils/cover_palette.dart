@@ -6,12 +6,19 @@ import 'package:flutter/material.dart';
 /// light-mode and dark-mode variant. Same title always yields the same
 /// gradient, giving every document a unique-but-stable visual identity.
 abstract final class CoverPalette {
-  /// Number of available palettes.
-  static const int count = 8;
+  static const int _count = 8;
 
-  /// Returns 0..7 for [title]. Stable across calls.
-  static int paletteIndex(String title) =>
-      title.hashCode.abs() % count;
+  /// Returns 0..7 for [title]. Stable across platforms — uses an FNV-1a
+  /// hash over title code units rather than [String.hashCode], which is
+  /// not guaranteed to agree across mobile and web.
+  static int paletteIndex(String title) {
+    var h = 2166136261;
+    for (final u in title.codeUnits) {
+      h ^= u;
+      h = (h * 16777619) & 0xFFFFFFFF;
+    }
+    return h % _count;
+  }
 
   /// Returns the 3-stop gradient (TL → BR) for [title]. The selected
   /// palette varies by [isDark].
