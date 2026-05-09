@@ -3,7 +3,6 @@ import 'package:readline_app/core/services/celebration_service.dart';
 import 'package:readline_app/core/services/dictionary_service.dart';
 import 'package:readline_app/core/services/haptic_service.dart';
 import 'package:readline_app/core/services/pdf_processing_service.dart';
-import 'package:readline_app/core/services/share_card_service.dart';
 import 'package:readline_app/core/services/reading_engine_service.dart';
 import 'package:readline_app/core/services/streak_service.dart';
 import 'package:readline_app/core/services/tts_service.dart';
@@ -68,7 +67,6 @@ Future<void> configureDependencies() async {
       getIt<HiveMilestoneSource>(),
     ),
   );
-  getIt.registerLazySingleton(() => ShareCardService());
   getIt.registerLazySingleton(
     () => DictionaryService(getIt<HiveDefinitionCacheSource>()),
   );
