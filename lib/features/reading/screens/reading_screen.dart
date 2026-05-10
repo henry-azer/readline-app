@@ -279,9 +279,10 @@ class _ReadingScreenState extends State<ReadingScreen>
     if (mounted) _dismissDefinitionPopup();
   }
 
-  Future<void> _handleBack() async {
-    await _viewModel.saveSession();
-    if (!mounted) return;
+  void _handleBack() {
+    // Fire-and-forget so close happens immediately without being blocked
+    // by the post-session celebration check awaiting inside saveSession.
+    unawaited(_viewModel.saveSession());
     if (Navigator.of(context).canPop()) {
       context.pop();
     } else {
@@ -480,8 +481,8 @@ class _ReadingScreenState extends State<ReadingScreen>
 
         final popScope = PopScope(
           canPop: false,
-          onPopInvokedWithResult: (didPop, _) async {
-            if (!didPop) await _handleBack();
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) _handleBack();
           },
           child: Scaffold(
             backgroundColor: bgColor,
