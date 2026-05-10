@@ -3,10 +3,14 @@ import 'package:readline_app/core/services/celebration_service.dart';
 import 'package:readline_app/core/services/dictionary_service.dart';
 import 'package:readline_app/core/services/haptic_service.dart';
 import 'package:readline_app/core/services/pdf_processing_service.dart';
+import 'package:readline_app/core/services/content_generation/groq_credential_validator.dart';
+import 'package:readline_app/core/services/content_generation/magic_content_settings_service.dart';
+import 'package:readline_app/core/services/content_generation/settings_aware_content_generation_service.dart';
 import 'package:readline_app/core/services/reading_engine_service.dart';
 import 'package:readline_app/core/services/streak_service.dart';
 import 'package:readline_app/core/services/tts_service.dart';
 import 'package:readline_app/core/services/vocabulary_service.dart';
+import 'package:readline_app/data/contracts/content_generation_service.dart';
 import 'package:readline_app/data/contracts/document_repository.dart';
 import 'package:readline_app/data/contracts/preferences_repository.dart';
 import 'package:readline_app/data/contracts/session_repository.dart';
@@ -73,5 +77,18 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton(() => TtsService());
   getIt.registerLazySingleton(
     () => HapticService(prefsRepo: getIt<PreferencesRepository>()),
+  );
+  getIt.registerLazySingleton<MagicContentSettingsService>(
+    () => MagicContentSettingsService(
+      prefsRepo: getIt<PreferencesRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<GroqCredentialValidator>(
+    () => GroqCredentialValidator(),
+  );
+  getIt.registerLazySingleton<ContentGenerationService>(
+    () => SettingsAwareContentGenerationService(
+      getIt<MagicContentSettingsService>(),
+    ),
   );
 }

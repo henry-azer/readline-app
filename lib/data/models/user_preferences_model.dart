@@ -32,6 +32,7 @@ class UserPreferencesModel {
   /// true, the backfill never runs again, so any subsequent
   /// [VocabularyViewModel.cycleDifficulty] choices stay sticky.
   final bool vocabDifficultyBackfilled;
+  final bool magicContentEnabled;
 
   const UserPreferencesModel({
     this.readingSpeedWpm = 200,
@@ -63,6 +64,7 @@ class UserPreferencesModel {
     this.vocabSortAscending = false,
     this.hapticsEnabled = true,
     this.vocabDifficultyBackfilled = false,
+    this.magicContentEnabled = false,
   });
 
   Map<String, dynamic> toMap() => {
@@ -95,6 +97,7 @@ class UserPreferencesModel {
     'vocabSortAscending': vocabSortAscending,
     'hapticsEnabled': hapticsEnabled,
     'vocabDifficultyBackfilled': vocabDifficultyBackfilled,
+    'magicContentEnabled': magicContentEnabled,
   };
 
   factory UserPreferencesModel.fromMap(Map<dynamic, dynamic> map) {
@@ -131,6 +134,7 @@ class UserPreferencesModel {
       hapticsEnabled: map['hapticsEnabled'] as bool? ?? true,
       vocabDifficultyBackfilled:
           map['vocabDifficultyBackfilled'] as bool? ?? false,
+      magicContentEnabled: map['magicContentEnabled'] as bool? ?? false,
     );
   }
 
@@ -164,6 +168,7 @@ class UserPreferencesModel {
     bool? vocabSortAscending,
     bool? hapticsEnabled,
     bool? vocabDifficultyBackfilled,
+    bool? magicContentEnabled,
   }) {
     return UserPreferencesModel(
       readingSpeedWpm: readingSpeedWpm ?? this.readingSpeedWpm,
@@ -197,6 +202,7 @@ class UserPreferencesModel {
       hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
       vocabDifficultyBackfilled:
           vocabDifficultyBackfilled ?? this.vocabDifficultyBackfilled,
+      magicContentEnabled: magicContentEnabled ?? this.magicContentEnabled,
     );
   }
 }

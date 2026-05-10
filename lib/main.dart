@@ -6,6 +6,7 @@ import 'app.dart';
 import 'core/di/injection.dart';
 import 'core/localization/app_localization.dart';
 import 'core/localization/language_provider.dart';
+import 'core/services/content_generation/magic_content_settings_service.dart';
 import 'data/contracts/preferences_repository.dart';
 
 late final LanguageProvider languageProvider;
@@ -19,6 +20,7 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('definitions_cache');
   await configureDependencies();
+  await getIt<MagicContentSettingsService>().init();
 
   final prefsRepo = getIt<PreferencesRepository>();
   final prefs = await prefsRepo.get();

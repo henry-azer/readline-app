@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
@@ -5,6 +6,7 @@ import 'package:readline_app/app.dart';
 import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/localization/language_provider.dart';
 import 'package:readline_app/core/localization/language_option.dart';
+import 'package:readline_app/core/services/content_generation/magic_content_settings_service.dart';
 import 'package:readline_app/core/services/haptic_service.dart';
 import 'package:readline_app/data/contracts/preferences_repository.dart';
 import 'package:readline_app/data/models/user_preferences_model.dart';
@@ -13,6 +15,7 @@ import 'package:readline_app/main.dart' as app_main;
 class SettingsViewModel {
   final PreferencesRepository _prefsRepo;
   final LanguageProvider _languageProvider;
+  final MagicContentSettingsService _magicSettingsService;
 
   final BehaviorSubject<UserPreferencesModel> preferences$ =
       BehaviorSubject.seeded(const UserPreferencesModel());
@@ -21,14 +24,21 @@ class SettingsViewModel {
   final BehaviorSubject<String?> selectedLocale$ = BehaviorSubject.seeded(null);
   final BehaviorSubject<bool> hapticEnabled$ = BehaviorSubject.seeded(true);
   final BehaviorSubject<String> version$ = BehaviorSubject.seeded('');
+  final BehaviorSubject<bool> magicEnabled$ = BehaviorSubject.seeded(false);
+  final BehaviorSubject<bool> magicHasKey$ = BehaviorSubject.seeded(false);
 
   late final VoidCallback _localeListener;
+  StreamSubscription<bool>? _magicEnabledSub;
+  StreamSubscription<bool>? _magicHasKeySub;
 
   SettingsViewModel({
     PreferencesRepository? prefsRepo,
     LanguageProvider? languageProvider,
+    MagicContentSettingsService? magicSettingsService,
   })  : _prefsRepo = prefsRepo ?? getIt<PreferencesRepository>(),
-        _languageProvider = languageProvider ?? app_main.languageProvider {
+        _languageProvider = languageProvider ?? app_main.languageProvider,
+        _magicSettingsService =
+            magicSettingsService ?? getIt<MagicContentSettingsService>() {
     _localeListener = () {
       selectedLocale$.add(_languageProvider.locale.value?.languageCode);
     };
@@ -56,6 +66,13 @@ class SettingsViewModel {
     selectedLocale$.add(_languageProvider.locale.value?.languageCode);
     themeModeNotifier.value = prefs.themeMode;
     _loadVersion();
+
+    _magicEnabledSub = _magicSettingsService.enabled$.listen((value) {
+      magicEnabled$.add(value);
+    });
+    _magicHasKeySub = _magicSettingsService.hasKey$.listen((hasKey) {
+      magicHasKey$.add(hasKey);
+    });
   }
 
   Future<void> _loadVersion() async {
@@ -99,13 +116,26 @@ class SettingsViewModel {
     }
   }
 
+  Future<void> saveMagicEnabled(bool enabled) async {
+    isSaving$.add(true);
+    try {
+      await _magicSettingsService.setEnabled(enabled);
+    } finally {
+      isSaving$.add(false);
+    }
+  }
+
   void dispose() {
     _languageProvider.locale.removeListener(_localeListener);
+    _magicEnabledSub?.cancel();
+    _magicHasKeySub?.cancel();
     preferences$.close();
     isSaving$.close();
     themeMode$.close();
     selectedLocale$.close();
     hapticEnabled$.close();
     version$.close();
+    magicEnabled$.close();
+    magicHasKey$.close();
   }
 }

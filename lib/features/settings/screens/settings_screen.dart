@@ -112,25 +112,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: AppSpacing.xl),
 
-              // ── APPEARANCE ──────────────────────────────────────────────
-              SectionLabel(text: AppStrings.settingsSectionAppearance.tr),
+              // ── AI ──────────────────────────────────────────────────────
+              SectionLabel(text: AppStrings.settingsSectionAi.tr),
               const SizedBox(height: AppSpacing.smd),
               SettingsSectionCard(
                 children: [
-                  StreamBuilder<String>(
-                    stream: _vm.themeMode$,
-                    builder: (context, snap) {
-                      final mode = snap.data ?? 'system';
-                      final subtitle = mode == 'dark'
-                          ? AppStrings.settingsThemeDark.tr
-                          : mode == 'light'
-                          ? AppStrings.settingsThemeLight.tr
-                          : AppStrings.settingsThemeSystem.tr;
-                      return SettingsRowChevron(
-                        icon: Icons.dark_mode_outlined,
-                        label: AppStrings.settingsTheme.tr,
-                        subtitle: subtitle,
-                        onTap: () => ThemePickerSheet.show(context, _vm),
+                  StreamBuilder<bool>(
+                    stream: _vm.magicEnabled$,
+                    builder: (context, enabledSnap) {
+                      final enabled = enabledSnap.data ?? false;
+                      return Column(
+                        children: [
+                          SettingsRowToggle(
+                            icon: Icons.auto_awesome_outlined,
+                            label: AppStrings.magicSettingsRowLabel.tr,
+                            value: enabled,
+                            onChanged: _vm.saveMagicEnabled,
+                          ),
+                          if (enabled) ...[
+                            const SettingsDivider(),
+                            StreamBuilder<bool>(
+                              stream: _vm.magicHasKey$,
+                              builder: (context, hasKeySnap) {
+                                final hasKey = hasKeySnap.data ?? false;
+                                final subtitle = hasKey
+                                    ? AppStrings
+                                          .magicSettingsSubRowSubtitleSet.tr
+                                    : AppStrings
+                                          .magicSettingsSubRowSubtitleEmpty.tr;
+                                return SettingsRowChevron(
+                                  icon: Icons.vpn_key_outlined,
+                                  label:
+                                      AppStrings.magicSettingsSubRowLabel.tr,
+                                  subtitle: subtitle,
+                                  onTap: () => context.push(
+                                    AppRoutes.magicContentSettings,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ],
                       );
                     },
                   ),
@@ -166,6 +188,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         label: AppStrings.settingsLanguage.tr,
                         subtitle: subtitle,
                         onTap: () => LanguagePickerSheet.show(context, _vm),
+                      );
+                    },
+                  ),
+                  const SettingsDivider(),
+                  StreamBuilder<String>(
+                    stream: _vm.themeMode$,
+                    builder: (context, snap) {
+                      final mode = snap.data ?? 'system';
+                      final subtitle = mode == 'dark'
+                          ? AppStrings.settingsThemeDark.tr
+                          : mode == 'light'
+                          ? AppStrings.settingsThemeLight.tr
+                          : AppStrings.settingsThemeSystem.tr;
+                      return SettingsRowChevron(
+                        icon: Icons.dark_mode_outlined,
+                        label: AppStrings.settingsTheme.tr,
+                        subtitle: subtitle,
+                        onTap: () => ThemePickerSheet.show(context, _vm),
                       );
                     },
                   ),

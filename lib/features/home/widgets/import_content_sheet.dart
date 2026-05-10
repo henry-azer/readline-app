@@ -12,9 +12,11 @@ import 'package:readline_app/core/theme/app_durations.dart';
 import 'package:readline_app/core/theme/app_radius.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
+import 'package:readline_app/data/contracts/content_generation_service.dart';
 import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/home/viewmodels/import_content_viewmodel.dart';
 import 'package:readline_app/features/home/widgets/import_content_actions.dart';
+import 'package:readline_app/features/home/widgets/magic_content_sheet.dart';
 import 'package:readline_app/widgets/app_snackbar.dart';
 import 'package:readline_app/widgets/readline_button.dart';
 
@@ -80,6 +82,7 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
   late final ImportContentViewModel _viewModel;
   final _titleController = TextEditingController();
   final _textController = TextEditingController();
+  bool _magicAvailable = false;
 
   @override
   void initState() {
@@ -122,6 +125,29 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
       if (!mounted) return;
       AppSnackbar.error(context, _processingErrorMessage(kind));
     });
+
+    if (!_viewModel.isEditMode) {
+      _checkMagicAvailability();
+    }
+  }
+
+  Future<void> _checkMagicAvailability() async {
+    final available = await getIt<ContentGenerationService>().isAvailable();
+    if (!mounted) return;
+    setState(() => _magicAvailable = available);
+  }
+
+  void _openMagicSheet() {
+    getIt<HapticService>().light();
+    MagicContentSheet.show(
+      context,
+      onGenerated: (generated) {
+        if (!mounted) return;
+        _titleController.text = generated.title;
+        _textController.text = generated.body;
+        AppSnackbar.success(context, AppStrings.magicGenerate.tr);
+      },
+    );
   }
 
   String _processingErrorMessage(ImportProcessingError kind) => switch (kind) {
@@ -290,9 +316,13 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
           statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
           statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
         ),
-        leading: IconButton(
-          icon: Icon(Icons.close, color: textColor),
-          onPressed: () => Navigator.of(context).pop(),
+        leadingWidth: kToolbarHeight + AppSpacing.xs,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.xs),
+          child: IconButton(
+            icon: Icon(Icons.close, color: textColor),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         centerTitle: true,
         title: Text(
@@ -301,6 +331,18 @@ class _ImportContentSheetState extends State<ImportContentSheet> {
               : AppStrings.homeImportSheetTitle.tr,
           style: AppTypography.titleMedium.copyWith(color: textColor),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.xs),
+            child: (!isEdit && _magicAvailable)
+                ? IconButton(
+                    tooltip: AppStrings.magicTooltip.tr,
+                    icon: Icon(Icons.auto_awesome_rounded, color: primary),
+                    onPressed: _openMagicSheet,
+                  )
+                : const SizedBox(width: kToolbarHeight),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),

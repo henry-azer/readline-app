@@ -16,6 +16,7 @@ import 'package:readline_app/features/vocabulary/screens/review_session_screen.d
 import 'package:readline_app/features/about/screens/about_screen.dart';
 import 'package:readline_app/features/about/screens/privacy_policy_screen.dart';
 import 'package:readline_app/features/about/screens/terms_of_service_screen.dart';
+import 'package:readline_app/features/settings/screens/magic_content_settings_screen.dart';
 import 'package:readline_app/features/support/screens/bug_report_screen.dart';
 import 'package:readline_app/features/support/screens/help_support_screen.dart';
 import 'package:readline_app/features/support/screens/rate_app_screen.dart';
@@ -36,6 +37,7 @@ abstract final class AppRoutes {
   static const helpSupport = '/help-support';
   static const bugReport = '/bug-report';
   static const rateApp = '/rate-app';
+  static const magicContentSettings = '/settings/magic-content';
 }
 
 /// Per-branch navigator keys for the persistent shell. Exposed so the
@@ -188,6 +190,13 @@ final appRouter = GoRouter(
       path: AppRoutes.rateApp,
       pageBuilder: (ctx, state) =>
           slideUpFadePage(state: state, child: const RateAppScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.magicContentSettings,
+      pageBuilder: (ctx, state) => slideUpFadePage(
+        state: state,
+        child: const MagicContentSettingsScreen(),
+      ),
     ),
   ],
 );

@@ -213,6 +213,40 @@ class AppStrings {
   static const String homeImportSheetTxtUnreadable =
       'home.importSheetTxtUnreadable';
 
+  // ── Magic content generation ─────────────────────────────────────────────────
+
+  static const String magicSheetTitle = 'magic.sheetTitle';
+  static const String magicSheetSubtitle = 'magic.sheetSubtitle';
+  static const String magicCategoryLabel = 'magic.categoryLabel';
+  static const String magicCategoryGeneral = 'magic.categoryGeneral';
+  static const String magicCategoryScience = 'magic.categoryScience';
+  static const String magicCategoryHistory = 'magic.categoryHistory';
+  static const String magicCategoryTechnology = 'magic.categoryTechnology';
+  static const String magicCategoryNature = 'magic.categoryNature';
+  static const String magicCategoryBusiness = 'magic.categoryBusiness';
+  static const String magicCategoryPhilosophy = 'magic.categoryPhilosophy';
+  static const String magicCategoryTravel = 'magic.categoryTravel';
+  static const String magicCategoryCulture = 'magic.categoryCulture';
+  static const String magicCategoryHealth = 'magic.categoryHealth';
+  static const String magicLengthLabel = 'magic.lengthLabel';
+  static const String magicLengthShort = 'magic.lengthShort';
+  static const String magicLengthMedium = 'magic.lengthMedium';
+  static const String magicLengthLong = 'magic.lengthLong';
+  static const String magicDifficultyLabel = 'magic.difficultyLabel';
+  static const String magicDifficultyBeginner = 'magic.difficultyBeginner';
+  static const String magicDifficultyIntermediate =
+      'magic.difficultyIntermediate';
+  static const String magicDifficultyAdvanced = 'magic.difficultyAdvanced';
+  static const String magicTopicLabel = 'magic.topicLabel';
+  static const String magicTopicHint = 'magic.topicHint';
+  static const String magicGenerate = 'magic.generate';
+  static const String magicGenerating = 'magic.generating';
+  static const String magicErrorNetwork = 'magic.errorNetwork';
+  static const String magicErrorTimeout = 'magic.errorTimeout';
+  static const String magicErrorServer = 'magic.errorServer';
+  static const String magicErrorEmpty = 'magic.errorEmpty';
+  static const String magicTooltip = 'magic.tooltip';
+
   // ── Document ──────────────────────────────────────────────────────────────────
 
   static const String documentSourceTypePdf = 'document.sourceTypePdf';
@@ -536,11 +570,11 @@ class AppStrings {
 
   static const String settingsTitle = 'settings.title';
   static const String settingsSectionReading = 'settings.sectionReading';
-  static const String settingsSectionAppearance = 'settings.sectionAppearance';
   static const String settingsSectionAdvanced = 'settings.sectionAdvanced';
   static const String settingsSectionLivePreview =
       'settings.sectionLivePreview';
   static const String settingsSectionInsights = 'settings.sectionInsights';
+  static const String settingsSectionAi = 'settings.sectionAi';
   static const String settingsAnalyticsTitle = 'settings.analyticsTitle';
   static const String settingsAnalyticsSubtitle = 'settings.analyticsSubtitle';
   static const String settingsSpeedLabel = 'settings.speedLabel';
@@ -891,4 +925,31 @@ class AppStrings {
   // ── Footer ──────────────────────────────────────────────────────────────────
 
   static const String footerMadeForReaders = 'footer.madeForReaders';
+
+  // ── Magic Content Settings ──────────────────────────────────────────────────
+
+  static const String magicSettingsTitle = 'magicSettings.title';
+  static const String magicSettingsRowLabel = 'magicSettings.rowLabel';
+  static const String magicSettingsSubRowLabel = 'magicSettings.subRowLabel';
+  static const String magicSettingsSubRowSubtitleEmpty =
+      'magicSettings.subRowSubtitleEmpty';
+  static const String magicSettingsSubRowSubtitleSet =
+      'magicSettings.subRowSubtitleSet';
+
+  static const String magicSettingsKeyHint = 'magicSettings.keyHint';
+  static const String magicSettingsKeyHelp = 'magicSettings.keyHelp';
+  static const String magicSettingsKeyShow = 'magicSettings.keyShow';
+  static const String magicSettingsKeyHide = 'magicSettings.keyHide';
+
+  static const String magicSettingsTestButton = 'magicSettings.testButton';
+  static const String magicSettingsSaveButton = 'magicSettings.saveButton';
+  static const String magicSettingsClearButton = 'magicSettings.clearButton';
+
+  static const String magicSettingsStatusValid = 'magicSettings.statusValid';
+  static const String magicSettingsStatusInvalid = 'magicSettings.statusInvalid';
+  static const String magicSettingsStatusUnreachable = 'magicSettings.statusUnreachable';
+  static const String magicSettingsStatusSaved = 'magicSettings.statusSaved';
+  static const String magicSettingsStatusCleared = 'magicSettings.statusCleared';
+
+  static const String magicSettingsDisclaimer = 'magicSettings.disclaimer';
 }

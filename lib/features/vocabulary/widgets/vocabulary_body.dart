@@ -65,7 +65,7 @@ class VocabularyBody extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
                                 AppSpacing.xl,
-                                AppSpacing.md,
+                                AppSpacing.micro,
                                 AppSpacing.xl,
                                 AppSpacing.xs,
                               ),
