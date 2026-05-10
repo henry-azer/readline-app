@@ -139,11 +139,11 @@ class _CelebrationOverlayState extends State<CelebrationOverlay>
         color: AppColors.transparent,
         child: Stack(
           children: [
-            // Scrim — blurred with a barely-there ~8% black tint so the
+            // Scrim — light blur with a barely-there ~8% black tint so the
             // underlying screen reads clearly behind the popup.
             Positioned.fill(
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
                 child: const ColoredBox(color: AppColors.scrim08),
               ),
             ),
