@@ -1,4 +1,5 @@
 import 'package:rxdart/rxdart.dart';
+import 'package:readline_app/app.dart' show vocabChangeNotifier;
 import 'package:readline_app/core/di/injection.dart';
 import 'package:readline_app/core/services/vocabulary_service.dart';
 import 'package:readline_app/data/models/vocabulary_word_model.dart';
@@ -29,6 +30,12 @@ class ReviewSessionViewModel {
     const ReviewSessionResults(),
   );
   final BehaviorSubject<bool> isLoading$ = BehaviorSubject.seeded(false);
+
+  /// Fires once at session end with the final results, but only when the
+  /// user actually reviewed at least one word. Empty-deck completions are
+  /// handled by the no-words view in the screen body instead.
+  final PublishSubject<ReviewSessionResults> summaryReady$ =
+      PublishSubject<ReviewSessionResults>();
 
   ReviewSessionViewModel({VocabularyService? vocabService})
     : _vocabService = vocabService ?? getIt<VocabularyService>();
@@ -99,6 +106,13 @@ class ReviewSessionViewModel {
     final nextIndex = currentIndex$.value + 1;
     if (nextIndex >= words$.value.length) {
       isComplete$.add(true);
+      // Refresh the vocabulary screen so the "Start Session" CTA hides
+      // once the just-reviewed words drop out of the due bucket.
+      vocabChangeNotifier.value++;
+      final results = results$.value;
+      if (results.totalReviewed > 0) {
+        summaryReady$.add(results);
+      }
     } else {
       currentIndex$.add(nextIndex);
       isFlipped$.add(false);
@@ -112,5 +126,6 @@ class ReviewSessionViewModel {
     isComplete$.close();
     results$.close();
     isLoading$.close();
+    summaryReady$.close();
   }
 }
