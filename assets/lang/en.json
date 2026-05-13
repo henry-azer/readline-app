@@ -318,9 +318,6 @@
   },
   "wordCard": {
     "marginalia": "MARGINALIA",
-    "masteryMastered": "MASTERED",
-    "masteryLearning": "LEARNING",
-    "masteryNew": "NEW",
     "difficultyEasy": "EASY",
     "difficultyMedium": "MEDIUM",
     "difficultyHard": "HARD",
@@ -335,39 +332,13 @@
     "savedLabel": "SAVED",
     "loading": "Looking up..."
   },
-  "review": {
-    "title": "Review Session",
-    "tapToReveal": "TAP TO REVEAL",
-    "tapToRevealHint": "Tap to reveal definition",
-    "stillLearning": "STILL LEARNING",
-    "iKnowThis": "I KNOW THIS",
-    "sessionComplete": "Session Complete",
-    "noWordsDue": "No words were due for review.",
-    "greatWork": "Great work! You reviewed {{count}} word.",
-    "labelReviewed": "Reviewed",
-    "labelMastered": "Mastered",
-    "labelStillLearning": "Still Learning",
-    "labelAccuracy": "Accuracy",
-    "done": "DONE",
-    "allCaughtUp": "All Caught Up!",
-    "allCaughtUpBody": "No words are due for review right now. Check back tomorrow.",
-    "goBack": "GO BACK"
-  },
-  "bloom": {
-    "dailyReview": "Daily Review Bloom",
-    "wordsWaiting": "{{count}} new word waiting for mastery.",
-    "start": "START",
-    "session": "SESSION"
-  },
   "insight": {
     "dailyLabel": "DAILY INSIGHT",
     "dailyHeadline": "Build your lexicon.",
     "dailyBody": "Focus on Latin roots this week to expand your comprehension speed by 15%.",
     "dailyCta": "EXPLORE ROOTS >",
     "wordOfDayLabel": "WORD OF THE DAY",
-    "wordOfDayCta": "SEE IN CONTEXT >",
-    "wordReviewNowCta": "REVIEW NOW >",
-    "wordReviewBody": "Review this word today to reinforce your memory."
+    "wordOfDayCta": "SEE IN CONTEXT >"
   },
   "analytics": {
     "title": "Analytics",

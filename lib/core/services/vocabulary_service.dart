@@ -1,5 +1,4 @@
 import 'package:uuid/uuid.dart';
-import 'package:readline_app/core/constants/app_constants.dart';
 import 'package:readline_app/data/contracts/vocabulary_repository.dart';
 import 'package:readline_app/data/models/vocabulary_word_model.dart';
 import 'package:readline_app/core/services/pdf_processing_service.dart';
@@ -8,9 +7,6 @@ class VocabularyService {
   final VocabularyRepository _repo;
   final PdfProcessingService _pdfService;
   static const _uuid = Uuid();
-
-  /// Spaced repetition intervals in days
-  static const _intervals = AppConstants.spacedRepetitionIntervals;
 
   /// In-memory cache of saved words for O(1) lookup.
   Set<String>? _savedWordsCache;
@@ -66,7 +62,6 @@ class VocabularyService {
       sourceDocumentId: sourceDocumentId,
       sourceDocumentTitle: sourceDocumentTitle,
       addedAt: DateTime.now(),
-      nextReviewAt: DateTime.now().add(const Duration(days: 1)),
       isAutoCollected: isAutoCollected,
       difficulty: _pdfService.classifyDifficulty(normalized),
     );
@@ -99,38 +94,6 @@ class VocabularyService {
         sourceDocumentId: sourceDocumentId,
         sourceDocumentTitle: sourceDocumentTitle,
         isAutoCollected: true,
-      );
-    }
-  }
-
-  Future<List<VocabularyWordModel>> getReviewSession() async {
-    return _repo.getDueForReview();
-  }
-
-  Future<void> markReviewed(String wordId, {required bool mastered}) async {
-    final all = await _repo.getAll();
-    final matches = all.where((w) => w.id == wordId);
-    if (matches.isEmpty) return;
-    final word = matches.first;
-
-    if (mastered) {
-      await _repo.save(
-        word.copyWith(
-          masteryLevel: 'mastered',
-          lastReviewedAt: DateTime.now(),
-          reviewCount: word.reviewCount + 1,
-        ),
-      );
-    } else {
-      final intervalIndex = word.reviewCount.clamp(0, _intervals.length - 1);
-      final nextInterval = _intervals[intervalIndex];
-      await _repo.save(
-        word.copyWith(
-          masteryLevel: 'learning',
-          lastReviewedAt: DateTime.now(),
-          reviewCount: word.reviewCount + 1,
-          nextReviewAt: DateTime.now().add(Duration(days: nextInterval)),
-        ),
       );
     }
   }

@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:readline_app/core/extensions/context_extensions.dart';
 import 'package:readline_app/core/localization/app_localization.dart';
 import 'package:readline_app/core/localization/app_strings.dart';
-import 'package:readline_app/core/router/app_router.dart';
 import 'package:readline_app/core/theme/app_colors.dart';
 import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/core/theme/app_typography.dart';
 import 'package:readline_app/data/models/vocabulary_word_model.dart';
 import 'package:readline_app/features/library/widgets/library_search_bar.dart';
 import 'package:readline_app/features/vocabulary/viewmodels/vocabulary_viewmodel.dart';
-import 'package:readline_app/features/vocabulary/widgets/review_bloom_card.dart';
 import 'package:readline_app/features/vocabulary/widgets/vocabulary_filter_chips.dart';
 import 'package:readline_app/features/vocabulary/widgets/vocabulary_word_list.dart';
 
 /// Composes the vocabulary screen body: header, search, filter chips,
-/// review bloom card, and word list. Pure presentation — sources its
-/// state from streams on [VocabularyViewModel].
+/// and word list. Pure presentation — sources its state from streams
+/// on [VocabularyViewModel].
 class VocabularyBody extends StatelessWidget {
   final VocabularyViewModel viewModel;
   final ValueChanged<VocabularyWordModel> onDelete;
@@ -125,21 +122,6 @@ class VocabularyBody extends StatelessWidget {
                                   activeFilter: filter,
                                   onFilterChanged: viewModel.setFilter,
                                   stats: stats,
-                                ),
-                              ),
-
-                            if (stats.dueForReview > 0)
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.xl,
-                                  0,
-                                  AppSpacing.xl,
-                                  AppSpacing.xl,
-                                ),
-                                child: ReviewBloomCard(
-                                  dueCount: stats.dueForReview,
-                                  onStartReview: () =>
-                                      context.push(AppRoutes.review),
                                 ),
                               ),
 

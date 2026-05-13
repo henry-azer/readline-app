@@ -344,9 +344,6 @@ class AppStrings {
   // ── Word card ─────────────────────────────────────────────────────────────────
 
   static const String wordCardMarginalia = 'wordCard.marginalia';
-  static const String wordCardMasteryMastered = 'wordCard.masteryMastered';
-  static const String wordCardMasteryLearning = 'wordCard.masteryLearning';
-  static const String wordCardMasteryNew = 'wordCard.masteryNew';
   static const String wordCardDifficultyEasy = 'wordCard.difficultyEasy';
   static const String wordCardDifficultyMedium = 'wordCard.difficultyMedium';
   static const String wordCardDifficultyHard = 'wordCard.difficultyHard';
@@ -362,32 +359,6 @@ class AppStrings {
   static const String dictSavedLabel = 'dictionary.savedLabel';
   static const String dictLoading = 'dictionary.loading';
 
-  // ── Review session ────────────────────────────────────────────────────────────
-
-  static const String reviewTitle = 'review.title';
-  static const String reviewTapToReveal = 'review.tapToReveal';
-  static const String reviewTapToRevealHint = 'review.tapToRevealHint';
-  static const String reviewStillLearning = 'review.stillLearning';
-  static const String reviewIKnowThis = 'review.iKnowThis';
-  static const String reviewSessionComplete = 'review.sessionComplete';
-  static const String reviewNoWordsDue = 'review.noWordsDue';
-  static const String reviewGreatWork = 'review.greatWork';
-  static const String reviewLabelReviewed = 'review.labelReviewed';
-  static const String reviewLabelMastered = 'review.labelMastered';
-  static const String reviewLabelStillLearning = 'review.labelStillLearning';
-  static const String reviewLabelAccuracy = 'review.labelAccuracy';
-  static const String reviewDone = 'review.done';
-  static const String reviewAllCaughtUp = 'review.allCaughtUp';
-  static const String reviewAllCaughtUpBody = 'review.allCaughtUpBody';
-  static const String reviewGoBack = 'review.goBack';
-
-  // ── Review bloom card ─────────────────────────────────────────────────────────
-
-  static const String bloomDailyReview = 'bloom.dailyReview';
-  static const String bloomWordsWaiting = 'bloom.wordsWaiting';
-  static const String bloomStart = 'bloom.start';
-  static const String bloomSession = 'bloom.session';
-
   // ── Daily insight card ────────────────────────────────────────────────────────
 
   static const String insightDailyLabel = 'insight.dailyLabel';
@@ -396,8 +367,6 @@ class AppStrings {
   static const String insightDailyCta = 'insight.dailyCta';
   static const String insightWordOfDayLabel = 'insight.wordOfDayLabel';
   static const String insightWordOfDayCta = 'insight.wordOfDayCta';
-  static const String insightWordReviewNowCta = 'insight.wordReviewNowCta';
-  static const String insightWordReviewBody = 'insight.wordReviewBody';
 
   // ── Analytics ─────────────────────────────────────────────────────────────────
 

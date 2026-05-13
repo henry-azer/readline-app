@@ -12,7 +12,6 @@ import 'package:readline_app/features/onboarding/screens/onboarding_screen.dart'
 import 'package:readline_app/features/reading/screens/reading_screen.dart';
 import 'package:readline_app/features/settings/screens/settings_screen.dart';
 import 'package:readline_app/features/splash/screens/splash_screen.dart';
-import 'package:readline_app/features/vocabulary/screens/review_session_screen.dart';
 import 'package:readline_app/features/about/screens/about_screen.dart';
 import 'package:readline_app/features/about/screens/privacy_policy_screen.dart';
 import 'package:readline_app/features/about/screens/terms_of_service_screen.dart';
@@ -30,7 +29,6 @@ abstract final class AppRoutes {
   static const onboarding = '/onboarding';
   static const reading = '/reading';
   static const settings = '/settings';
-  static const review = '/review';
   static const about = '/about';
   static const privacyPolicy = '/privacy-policy';
   static const termsOfService = '/terms-of-service';
@@ -155,11 +153,6 @@ final appRouter = GoRouter(
       path: AppRoutes.analytics,
       pageBuilder: (ctx, state) =>
           slideUpFadePage(state: state, child: const AnalyticsScreen()),
-    ),
-    GoRoute(
-      path: AppRoutes.review,
-      pageBuilder: (ctx, state) =>
-          slideUpFadePage(state: state, child: const ReviewSessionScreen()),
     ),
     GoRoute(
       path: AppRoutes.about,

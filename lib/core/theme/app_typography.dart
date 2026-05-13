@@ -757,39 +757,6 @@ abstract final class AppTypography {
     height: 1,
   );
 
-  /// Mastery pill — 10 / w600 / tracking 0.8.
-  static TextStyle get vocabMasteryChip => _sans.copyWith(
-    fontSize: 10,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-    height: 1,
-  );
-
-  /// Flashcard front word — 40 / w700 / serif display.
-  static TextStyle get vocabFlashcardWord => _serif.copyWith(
-    fontSize: 40,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.5,
-    height: 1.2,
-  );
-
-  /// Flashcard back word — `titleLarge` (22 / w700 / serif).
-  static TextStyle get vocabFlashcardWordBack => titleLarge;
-
-  /// Flashcard back source hint — 10 / `labelTiny`.
-  static TextStyle get vocabFlashcardSourceHint => labelTiny;
-
-  /// Flashcard "tap to reveal" hint — 13 / w700 / button-style.
-  static TextStyle get vocabFlashcardFlipHint => button.copyWith(fontSize: 13);
-
-  /// Flashcard action button label ("Still Learning" / "I Know This") —
-  /// 11 / w700 / button-style.
-  static TextStyle get vocabFlashcardActionLabel =>
-      button.copyWith(fontSize: 11);
-
-  /// Review-bloom CTA word ("Start" / "Session") — 11 / w700 / button-style.
-  static TextStyle get vocabBloomCta => button.copyWith(fontSize: 11);
-
   // ── Word definition popup ──
   /// Word-definition part-of-speech badge — 10 / w600.
   static TextStyle get wordDefBadge => _sans.copyWith(

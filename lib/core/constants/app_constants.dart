@@ -20,9 +20,6 @@ abstract final class AppConstants {
   static const double maxMargin = 80;
   static const double marginStep = 4;
 
-  // Spaced repetition
-  static const List<int> spacedRepetitionIntervals = [1, 3, 7, 14, 30];
-
   // Streak milestones
   static const Map<int, String> streakMilestones = {
     7: 'on fire',

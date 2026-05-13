@@ -17,36 +17,9 @@ class VocabularyRepositoryImpl implements VocabularyRepository {
   Future<void> delete(String id) => _source.delete(id);
 
   @override
-  Future<List<VocabularyWordModel>> getByMasteryLevel(String level) async {
-    final all = await _source.getAll();
-    return all.where((w) => w.masteryLevel == level).toList();
-  }
-
-  @override
   Future<List<VocabularyWordModel>> getByDocumentId(String documentId) async {
     final all = await _source.getAll();
     return all.where((w) => w.sourceDocumentId == documentId).toList();
-  }
-
-  @override
-  Future<List<VocabularyWordModel>> getDueForReview() async {
-    final all = await _source.getAll();
-    final now = DateTime.now();
-    return all
-        .where(
-          (w) =>
-              w.masteryLevel != 'mastered' &&
-              (w.nextReviewAt == null || w.nextReviewAt!.isBefore(now)),
-        )
-        .toList();
-  }
-
-  @override
-  Future<void> updateMastery(String id, String level) async {
-    final all = await _source.getAll();
-    final matches = all.where((w) => w.id == id);
-    if (matches.isEmpty) return;
-    await _source.save(matches.first.copyWith(masteryLevel: level));
   }
 
   @override

@@ -10,20 +10,12 @@ import 'package:readline_app/data/models/vocabulary_word_model.dart';
 
 class VocabularyStats {
   final int total;
-  final int mastered;
-  final int dueForReview;
-  final int learning;
-  final int fresh;
   final int easy;
   final int medium;
   final int hard;
 
   const VocabularyStats({
     this.total = 0,
-    this.mastered = 0,
-    this.dueForReview = 0,
-    this.learning = 0,
-    this.fresh = 0,
     this.easy = 0,
     this.medium = 0,
     this.hard = 0,
@@ -269,15 +261,6 @@ class VocabularyViewModel {
   }
 
   void _computeStats(List<VocabularyWordModel> words) {
-    final now = DateTime.now();
-    final mastered = words.where((w) => w.masteryLevel == 'mastered').length;
-    final learning = words.where((w) => w.masteryLevel == 'learning').length;
-    final fresh = words.where((w) => w.masteryLevel == 'fresh').length;
-    final due = words.where((w) {
-      final next = w.nextReviewAt;
-      return next != null && next.isBefore(now);
-    }).length;
-
     final easy = words.where((w) => w.difficulty == 'easy').length;
     final medium = words.where((w) => w.difficulty == 'medium').length;
     final hard = words.where((w) => w.difficulty == 'hard').length;
@@ -285,10 +268,6 @@ class VocabularyViewModel {
     stats$.add(
       VocabularyStats(
         total: words.length,
-        mastered: mastered,
-        dueForReview: due,
-        learning: learning,
-        fresh: fresh,
         easy: easy,
         medium: medium,
         hard: hard,
