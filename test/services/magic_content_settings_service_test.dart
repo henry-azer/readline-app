@@ -8,6 +8,10 @@ import 'package:readline_app/data/models/user_preferences_model.dart';
 class _FakePrefsRepo implements PreferencesRepository {
   UserPreferencesModel _value = const UserPreferencesModel();
   @override
+  UserPreferencesModel get cached => _value;
+  @override
+  Future<void> preload() async {}
+  @override
   Future<UserPreferencesModel> get() async => _value;
   @override
   Future<void> save(UserPreferencesModel prefs) async => _value = prefs;

@@ -18,6 +18,7 @@ void main() {
     await configureDependencies();
 
     final prefsRepo = getIt<PreferencesRepository>();
+    await prefsRepo.preload();
     final prefs = await prefsRepo.get();
     await AppLocalization.initialize(language: prefs.languageCode);
     app_main.languageProvider = LanguageProvider(

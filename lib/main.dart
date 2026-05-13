@@ -20,10 +20,12 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('definitions_cache');
   await configureDependencies();
-  await getIt<MagicContentSettingsService>().init();
 
   final prefsRepo = getIt<PreferencesRepository>();
-  final prefs = await prefsRepo.get();
+  await prefsRepo.preload();
+  final prefs = prefsRepo.cached;
+
+  await getIt<MagicContentSettingsService>().init();
   themeModeNotifier.value = prefs.themeMode;
 
   await AppLocalization.initialize(language: prefs.languageCode);

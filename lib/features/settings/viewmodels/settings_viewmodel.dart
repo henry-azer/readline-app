@@ -17,15 +17,14 @@ class SettingsViewModel {
   final LanguageProvider _languageProvider;
   final MagicContentSettingsService _magicSettingsService;
 
-  final BehaviorSubject<UserPreferencesModel> preferences$ =
-      BehaviorSubject.seeded(const UserPreferencesModel());
+  late final BehaviorSubject<UserPreferencesModel> preferences$;
   final BehaviorSubject<bool> isSaving$ = BehaviorSubject.seeded(false);
-  final BehaviorSubject<String> themeMode$ = BehaviorSubject.seeded('system');
-  final BehaviorSubject<String?> selectedLocale$ = BehaviorSubject.seeded(null);
-  final BehaviorSubject<bool> hapticEnabled$ = BehaviorSubject.seeded(true);
+  late final BehaviorSubject<String> themeMode$;
+  late final BehaviorSubject<String?> selectedLocale$;
+  late final BehaviorSubject<bool> hapticEnabled$;
   final BehaviorSubject<String> version$ = BehaviorSubject.seeded('');
-  final BehaviorSubject<bool> magicEnabled$ = BehaviorSubject.seeded(false);
-  final BehaviorSubject<bool> magicHasKey$ = BehaviorSubject.seeded(false);
+  late final BehaviorSubject<bool> magicEnabled$;
+  late final BehaviorSubject<bool> magicHasKey$;
 
   late final VoidCallback _localeListener;
   StreamSubscription<bool>? _magicEnabledSub;
@@ -39,6 +38,15 @@ class SettingsViewModel {
         _languageProvider = languageProvider ?? app_main.languageProvider,
         _magicSettingsService =
             magicSettingsService ?? getIt<MagicContentSettingsService>() {
+    final prefs = _prefsRepo.cached;
+    preferences$ = BehaviorSubject.seeded(prefs);
+    themeMode$ = BehaviorSubject.seeded(prefs.themeMode);
+    hapticEnabled$ = BehaviorSubject.seeded(prefs.hapticsEnabled);
+    selectedLocale$ = BehaviorSubject.seeded(
+      _languageProvider.locale.value?.languageCode,
+    );
+    magicEnabled$ = BehaviorSubject.seeded(_magicSettingsService.enabled$.value);
+    magicHasKey$ = BehaviorSubject.seeded(_magicSettingsService.hasKey$.value);
     _localeListener = () {
       selectedLocale$.add(_languageProvider.locale.value?.languageCode);
     };
@@ -59,12 +67,6 @@ class SettingsViewModel {
   }
 
   Future<void> init() async {
-    final prefs = await _prefsRepo.get();
-    preferences$.add(prefs);
-    themeMode$.add(prefs.themeMode);
-    hapticEnabled$.add(prefs.hapticsEnabled);
-    selectedLocale$.add(_languageProvider.locale.value?.languageCode);
-    themeModeNotifier.value = prefs.themeMode;
     _loadVersion();
 
     _magicEnabledSub = _magicSettingsService.enabled$.listen((value) {

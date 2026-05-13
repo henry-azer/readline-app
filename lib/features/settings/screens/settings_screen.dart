@@ -119,6 +119,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   StreamBuilder<bool>(
                     stream: _vm.magicEnabled$,
+                    initialData: _vm.magicEnabled$.value,
                     builder: (context, enabledSnap) {
                       final enabled = enabledSnap.data ?? false;
                       return Column(
@@ -133,6 +134,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const SettingsDivider(),
                             StreamBuilder<bool>(
                               stream: _vm.magicHasKey$,
+                              initialData: _vm.magicHasKey$.value,
                               builder: (context, hasKeySnap) {
                                 final hasKey = hasKeySnap.data ?? false;
                                 final subtitle = hasKey
@@ -168,6 +170,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   StreamBuilder<bool>(
                     stream: _vm.hapticEnabled$,
+                    initialData: _vm.hapticEnabled$.value,
                     builder: (context, snap) => SettingsRowToggle(
                       icon: Icons.vibration_rounded,
                       label: AppStrings.settingsHapticFeedback.tr,

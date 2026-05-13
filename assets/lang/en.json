@@ -761,7 +761,7 @@
     "title": "Groq API key",
     "rowLabel": "AI document generation",
     "subRowLabel": "Groq API key",
-    "subRowSubtitleEmpty": "Disconnected — add your key to connect",
+    "subRowSubtitleEmpty": "Disconnected — add groq key",
     "subRowSubtitleSet": "Connected",
     "keyHint": "gsk_…",
     "keyHelp": "Paste a free key from console.groq.com.",

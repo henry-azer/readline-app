@@ -6,14 +6,26 @@ import 'package:readline_app/data/models/user_preferences_model.dart';
 class PreferencesRepositoryImpl implements PreferencesRepository {
   final HivePreferencesSource _source;
   Future<void> _pendingUpdate = Future.value();
+  UserPreferencesModel _cache = const UserPreferencesModel();
 
   PreferencesRepositoryImpl(this._source);
 
   @override
-  Future<UserPreferencesModel> get() => _source.getPreferences();
+  UserPreferencesModel get cached => _cache;
+
+  @override
+  Future<void> preload() async {
+    _cache = await _source.getPreferences();
+  }
+
+  @override
+  Future<UserPreferencesModel> get() async {
+    return _cache;
+  }
 
   @override
   Future<void> save(UserPreferencesModel preferences) {
+    _cache = preferences;
     _pendingUpdate = _pendingUpdate.then((_) async {
       await _source.savePreferences(preferences);
       preferencesChangeNotifier.value++;
@@ -24,14 +36,13 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
   @override
   Future<void> resetToDefaults() {
     _pendingUpdate = _pendingUpdate.then((_) async {
-      final current = await _source.getPreferences();
       // Preserve onboarding state when resetting
-      await _source.savePreferences(
-        const UserPreferencesModel().copyWith(
-          onboardingCompleted: current.onboardingCompleted,
-          readingLevel: current.readingLevel,
-        ),
+      final reset = const UserPreferencesModel().copyWith(
+        onboardingCompleted: _cache.onboardingCompleted,
+        readingLevel: _cache.readingLevel,
       );
+      _cache = reset;
+      await _source.savePreferences(reset);
       preferencesChangeNotifier.value++;
     });
     return _pendingUpdate;
