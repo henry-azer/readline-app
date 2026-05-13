@@ -5,20 +5,38 @@ import 'package:readline_app/data/models/document_model.dart';
 class DocumentRepositoryImpl implements DocumentRepository {
   final HiveDocumentSource _source;
   Future<void> _pendingUpdate = Future.value();
+  List<DocumentModel> _cache = const [];
 
   DocumentRepositoryImpl(this._source);
 
   @override
-  Future<List<DocumentModel>> getAll() => _source.getAll();
+  List<DocumentModel> get cachedAll => _cache;
+
+  @override
+  Future<void> preload() async {
+    _cache = await _source.getAll();
+  }
+
+  @override
+  Future<List<DocumentModel>> getAll() async {
+    _cache = await _source.getAll();
+    return _cache;
+  }
 
   @override
   Future<DocumentModel?> getById(String id) => _source.getById(id);
 
   @override
-  Future<void> save(DocumentModel document) => _source.save(document);
+  Future<void> save(DocumentModel document) async {
+    await _source.save(document);
+    _cache = await _source.getAll();
+  }
 
   @override
-  Future<void> delete(String id) => _source.delete(id);
+  Future<void> delete(String id) async {
+    await _source.delete(id);
+    _cache = _cache.where((d) => d.id != id).toList();
+  }
 
   @override
   Future<List<DocumentModel>> getByStatus(String status) async {

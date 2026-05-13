@@ -10,6 +10,7 @@ import 'package:readline_app/core/theme/app_spacing.dart';
 import 'package:readline_app/data/models/vocabulary_word_model.dart';
 import 'package:readline_app/features/vocabulary/viewmodels/vocabulary_viewmodel.dart';
 import 'package:readline_app/features/vocabulary/widgets/vocabulary_body.dart';
+import 'package:readline_app/features/vocabulary/widgets/vocabulary_loading_skeleton.dart';
 import 'package:readline_app/widgets/app_snackbar.dart';
 import 'package:readline_app/widgets/brand_mark.dart';
 
@@ -59,7 +60,6 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   Widget build(BuildContext context) {
     final isDark = context.isDark;
     final bgColor = isDark ? AppColors.surface : AppColors.lightSurface;
-    final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -78,9 +78,10 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
         },
         child: StreamBuilder<bool>(
           stream: _viewModel.isLoading$,
+          initialData: _viewModel.isLoading$.value,
           builder: (context, loadingSnap) {
-            if (loadingSnap.data == true) {
-              return Center(child: CircularProgressIndicator(color: primary));
+            if (loadingSnap.data ?? true) {
+              return VocabularyLoadingSkeleton(isDark: isDark);
             }
 
             return VocabularyBody(

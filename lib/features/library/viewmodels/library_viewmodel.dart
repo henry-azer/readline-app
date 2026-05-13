@@ -85,7 +85,14 @@ class LibraryViewModel {
   }) : _docRepo = docRepo ?? getIt<DocumentRepository>(),
        _prefsRepo = prefsRepo ?? getIt<PreferencesRepository>(),
        _sessionRepo = sessionRepo ?? getIt<SessionRepository>(),
-       _vocabRepo = vocabRepo ?? getIt<VocabularyRepository>();
+       _vocabRepo = vocabRepo ?? getIt<VocabularyRepository>() {
+    final docs = _docRepo.cachedAll;
+    if (docs.isNotEmpty) {
+      currentWpm = _prefsRepo.cached.readingSpeedWpm;
+      allDocuments$.add(docs);
+      _applyAllFilters();
+    }
+  }
 
   /// Cached preferred reading speed — used by tiles to estimate minutes left
   /// vs. minutes total. Resolved from user prefs in [init]; falls back to the
@@ -119,7 +126,8 @@ class LibraryViewModel {
   }
 
   Future<void> refresh() async {
-    isLoading$.add(true);
+    final silent = allDocuments$.value.isNotEmpty;
+    if (!silent) isLoading$.add(true);
     try {
       final results = await Future.wait([
         _docRepo.getAll(),
@@ -134,7 +142,7 @@ class LibraryViewModel {
       allDocuments$.add(docs);
       _applyAllFilters();
     } finally {
-      isLoading$.add(false);
+      if (!silent) isLoading$.add(false);
     }
   }
 

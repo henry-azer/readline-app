@@ -44,6 +44,11 @@ class LibraryBody extends StatelessWidget {
 
     return StreamBuilder<LibraryBodyState>(
       stream: viewModel.bodyState$,
+      initialData: (
+        docs: viewModel.documents$.value,
+        filter: viewModel.activeFilter$.value,
+        viewMode: viewModel.viewMode$.value,
+      ),
       builder: (context, snapshot) {
         final state = snapshot.data;
         final docs = state?.docs ?? const [];

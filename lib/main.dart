@@ -7,7 +7,9 @@ import 'core/di/injection.dart';
 import 'core/localization/app_localization.dart';
 import 'core/localization/language_provider.dart';
 import 'core/services/content_generation/magic_content_settings_service.dart';
+import 'data/contracts/document_repository.dart';
 import 'data/contracts/preferences_repository.dart';
+import 'data/contracts/vocabulary_repository.dart';
 
 late final LanguageProvider languageProvider;
 
@@ -22,7 +24,11 @@ void main() async {
   await configureDependencies();
 
   final prefsRepo = getIt<PreferencesRepository>();
-  await prefsRepo.preload();
+  await Future.wait([
+    prefsRepo.preload(),
+    getIt<DocumentRepository>().preload(),
+    getIt<VocabularyRepository>().preload(),
+  ]);
   final prefs = prefsRepo.cached;
 
   await getIt<MagicContentSettingsService>().init();

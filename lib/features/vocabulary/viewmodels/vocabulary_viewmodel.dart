@@ -54,7 +54,14 @@ class VocabularyViewModel {
   }) : _vocabRepo = vocabRepo ?? getIt<VocabularyRepository>(),
        _prefsRepo = prefsRepo ?? getIt<PreferencesRepository>(),
        _dictionaryService = dictionaryService ?? getIt<DictionaryService>(),
-       _pdfService = pdfService ?? getIt<PdfProcessingService>();
+       _pdfService = pdfService ?? getIt<PdfProcessingService>() {
+    final words = _vocabRepo.cachedAll;
+    if (words.isNotEmpty) {
+      allWords$.add(words);
+      _refilter();
+      _computeStats(words);
+    }
+  }
 
   Future<void> init() async {
     await refresh();
@@ -102,14 +109,15 @@ class VocabularyViewModel {
   }
 
   Future<void> refresh() async {
-    isLoading$.add(true);
+    final silent = allWords$.value.isNotEmpty;
+    if (!silent) isLoading$.add(true);
     try {
       final words = await _vocabRepo.getAll();
       allWords$.add(words);
       _refilter();
       _computeStats(words);
     } finally {
-      isLoading$.add(false);
+      if (!silent) isLoading$.add(false);
     }
     unawaited(_backfillEnrichment());
   }

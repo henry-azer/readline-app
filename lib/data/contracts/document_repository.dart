@@ -1,6 +1,8 @@
 import 'package:readline_app/data/models/document_model.dart';
 
 abstract class DocumentRepository {
+  List<DocumentModel> get cachedAll;
+  Future<void> preload();
   Future<List<DocumentModel>> getAll();
   Future<DocumentModel?> getById(String id);
   Future<void> save(DocumentModel document);

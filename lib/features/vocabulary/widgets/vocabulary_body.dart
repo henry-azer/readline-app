@@ -38,18 +38,23 @@ class VocabularyBody extends StatelessWidget {
 
     return StreamBuilder<List<VocabularyWordModel>>(
       stream: viewModel.words$,
+      initialData: viewModel.words$.value,
       builder: (context, wordsSnap) {
         return StreamBuilder<String>(
           stream: viewModel.activeFilter$,
+          initialData: viewModel.activeFilter$.value,
           builder: (context, filterSnap) {
             return StreamBuilder<VocabularyStats>(
               stream: viewModel.stats$,
+              initialData: viewModel.stats$.value,
               builder: (context, statsSnap) {
                 return StreamBuilder<Set<String>>(
                   stream: viewModel.expandedCards$,
+                  initialData: viewModel.expandedCards$.value,
                   builder: (context, expandedSnap) {
                     return StreamBuilder<String>(
                       stream: viewModel.searchQuery$,
+                      initialData: viewModel.searchQuery$.value,
                       builder: (context, searchSnap) {
                         final words = wordsSnap.data ?? const [];
                         final filter = filterSnap.data ?? 'all';

@@ -17,6 +17,7 @@ import 'package:readline_app/data/models/document_model.dart';
 import 'package:readline_app/features/home/widgets/import_content_sheet.dart';
 import 'package:readline_app/features/library/viewmodels/library_viewmodel.dart';
 import 'package:readline_app/features/library/widgets/library_body.dart';
+import 'package:readline_app/features/library/widgets/library_loading_skeleton.dart';
 import 'package:readline_app/features/library/widgets/new_reading_fab.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -99,7 +100,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     final isDark = context.isDark;
     final bgColor = isDark ? AppColors.surface : AppColors.lightSurface;
-    final primary = isDark ? AppColors.primary : AppColors.lightPrimary;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -113,6 +113,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
       floatingActionButton: StreamBuilder<List<DocumentModel>>(
         stream: _viewModel.allDocuments$,
+        initialData: _viewModel.allDocuments$.value,
         builder: (context, snap) {
           final docs = snap.data ?? const [];
           if (docs.isEmpty) return const SizedBox.shrink();
@@ -128,11 +129,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
         },
         child: StreamBuilder<bool>(
           stream: _viewModel.isLoading$,
+          initialData: _viewModel.isLoading$.value,
           builder: (context, loadingSnap) {
             final isLoading = loadingSnap.data ?? true;
 
             if (isLoading) {
-              return Center(child: CircularProgressIndicator(color: primary));
+              return LibraryLoadingSkeleton(isDark: isDark);
             }
 
             return LibraryBody(
